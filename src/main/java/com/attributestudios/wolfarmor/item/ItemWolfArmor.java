@@ -41,7 +41,7 @@ public class ItemWolfArmor extends Item {
         protected ItemStack dispenseStack(@Nonnull IBlockSource source, @Nonnull ItemStack stack)
         {
             ItemStack itemStack = ItemWolfArmor.dispenseWolfArmor(source, stack);
-            return !itemStack.func_190926_b() ? itemStack : super.dispenseStack(source, stack);
+            return itemStack != null ? itemStack : super.dispenseStack(source, stack);
         }
     };
 
@@ -76,8 +76,8 @@ public class ItemWolfArmor extends Item {
      * Removes color data from the given stack
      * @param stack The item stack
      */
-    public void removeColor(@Nonnull ItemStack stack) {
-        if(!stack.func_190926_b() && this.material.getIsDyeable()) {
+    public void removeColor(@Nullable ItemStack stack) {
+        if(stack != null && this.material.getIsDyeable()) {
             if(this.getHasColor(stack)) {
                 NBTTagCompound stackCompound = stack.getTagCompound();
                 if (stackCompound != null) {
@@ -97,28 +97,28 @@ public class ItemWolfArmor extends Item {
      * @param stack The dispensing stack
      * @return An item stack to dispense, or null if default dispense should occur.
      */
-    @Nonnull
+    @Nullable
     private static ItemStack dispenseWolfArmor(@Nonnull IBlockSource source, @Nonnull ItemStack stack) {
-        BlockPos blockPos = source.getBlockPos().offset(source.getBlockState().getValue(BlockDispenser.FACING));
+        BlockPos blockPos = source.getBlockPos().offset(source.func_189992_e().getValue(BlockDispenser.FACING));
         List<EntityWolfArmored> wolves = source.getWorld().getEntitiesWithinAABB(EntityWolfArmored.class, new AxisAlignedBB(blockPos));
-        if(!wolves.isEmpty()) {
+        if (!wolves.isEmpty()) {
             EntityWolfArmored wolf = null;
 
-            for(EntityWolfArmored entity : wolves) {
-                if(entity.isTamed() && !entity.isChild()) {
+            for (EntityWolfArmored entity : wolves) {
+                if (entity.isTamed() && !entity.isChild()) {
                     wolf = entity;
                     break;
                 }
             }
 
-            if(wolf != null) {
+            if (wolf != null) {
                 ItemStack copyStack = stack.copy();
-                copyStack.func_190920_e(1);
+                copyStack.stackSize = 1;
                 if (!wolf.equipArmor(copyStack)) {
-                    return ItemStack.field_190927_a;
+                    return null;
                 }
 
-                stack.func_190918_g(1);
+                stack.stackSize--;
             }
         }
 
@@ -154,7 +154,7 @@ public class ItemWolfArmor extends Item {
      * @param stack The stack to check for an overlay
      * @return Whether or not the wolf armor has an overlay layer
      */
-    public boolean getHasOverlay(@Nonnull ItemStack stack) {
+    public boolean getHasOverlay(@Nullable ItemStack stack) {
         return this.getMaterial().getHasOverlay() || this.getColor(stack) != -1;
     }
 
@@ -163,8 +163,8 @@ public class ItemWolfArmor extends Item {
      * @param stack The item stack
      * @return A boolean representing whether or not the stack has a color applied
      */
-    public boolean getHasColor(@Nonnull ItemStack stack) {
-        if(!stack.func_190926_b() && this.getMaterial().getIsDyeable()) {
+    public boolean getHasColor(@Nullable ItemStack stack) {
+        if(stack != null && this.getMaterial().getIsDyeable()) {
             if(stack.hasTagCompound()) {
                 NBTTagCompound tagCompound = stack.getTagCompound();
 
@@ -184,8 +184,8 @@ public class ItemWolfArmor extends Item {
      * @param stack The item stack
      * @return The integer value of the color
      */
-    public int getColor(@Nonnull ItemStack stack) {
-        if(!this.getMaterial().getIsDyeable() || stack.func_190926_b()) {
+    public int getColor(@Nullable ItemStack stack) {
+        if(!this.getMaterial().getIsDyeable() || stack == null) {
             return -1;
         }
 
@@ -206,11 +206,11 @@ public class ItemWolfArmor extends Item {
      * @param stack The item stack
      * @param color The integer value of the color
      */
-    public void setColor(@Nonnull ItemStack stack, int color) {
-        if(!this.getMaterial().getIsDyeable()) {
+    public void setColor(@Nullable ItemStack stack, int color) {
+        if(!this.material.getIsDyeable()) {
             throw new UnsupportedOperationException("Wolf armor material is not dyeable!");
         }
-        else if(!stack.func_190926_b()) {
+        else if(stack != null) {
             NBTTagCompound tagCompound = stack.getTagCompound();
 
             if(tagCompound == null) {
@@ -241,7 +241,7 @@ public class ItemWolfArmor extends Item {
      * @return The damage reduction amount
      */
     public int getDamageReductionAmount() {
-        return this.getMaterial().getDamageReductionAmount();
+        return getMaterial().getDamageReductionAmount();
     }
 
     //endregion Accessors / Mutators

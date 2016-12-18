@@ -13,6 +13,7 @@ import java.util.Set;
 /**
  * GUI Factory for the WolfArmor Mod
  */
+@SuppressWarnings("unused")
 @SideOnly(Side.CLIENT)
 public class WolfArmorGuiFactory implements IModGuiFactory {
     //region Public / Protected Methods

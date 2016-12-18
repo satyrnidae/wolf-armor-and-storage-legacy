@@ -28,7 +28,6 @@ public class CommonProxy {
     //region Fields
 
     private static final Map<String, ResourceLocation> CACHED_RESOURCE_LOCATIONS = Maps.newHashMap();
-    private static final ResourceLocation ENTITY_WOLF_ARMORED = new ResourceLocation(WolfArmorMod.MOD_ID, "Wolf");
 
     //endregion Fields
 
@@ -58,8 +57,7 @@ public class CommonProxy {
     /**
      * Registers all items for this mod
      */
-    @SuppressWarnings("WeakerAccess")
-    protected void registerItems(@SuppressWarnings("unused") @Nonnull FMLPreInitializationEvent preInitializationEvent) {
+    protected void registerItems(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
         WolfArmorItems.init();
     }
 
@@ -99,8 +97,7 @@ public class CommonProxy {
      * @param initializationEvent The initialization event
      */
     @SuppressWarnings("WeakerAccess")
-    protected void registerRecipes(@SuppressWarnings("unused") @Nonnull FMLInitializationEvent initializationEvent) {
-
+    protected void registerRecipes(@Nonnull FMLInitializationEvent initializationEvent) {
         WolfArmorRecipes.init();
         RecipeSorter.register(WolfArmorMod.MOD_ID + ":WolfArmorDyes", RecipeWolfArmorDyes.class, RecipeSorter.Category.SHAPELESS, "");
     }
@@ -121,7 +118,7 @@ public class CommonProxy {
      */
     @SuppressWarnings("WeakerAccess")
     protected void registerEntities(@SuppressWarnings("unused") @Nonnull FMLInitializationEvent initializationEvent) {
-        EntityRegistry.registerModEntity(ENTITY_WOLF_ARMORED, EntityWolfArmored.class, "Wolf", 0, WolfArmorMod.instance, 80, 3, false);
+        EntityRegistry.registerModEntity(EntityWolfArmored.class, "Wolf", 0, WolfArmorMod.instance, 80, 3, false);
     }
 
     //endregion Initialization

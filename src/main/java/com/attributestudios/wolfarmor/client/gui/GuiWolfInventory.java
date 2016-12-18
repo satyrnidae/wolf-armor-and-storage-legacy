@@ -119,7 +119,7 @@ public class GuiWolfInventory extends GuiContainer {
             }
 
             GuiInventory.drawEntityOnScreen(positionX + 51, positionY + 60, 30, (float) (positionX + 51) - this.screenPositionX,
-                    (float) (positionY - 50) - this.screenPositionY, this.theWolf);
+                                            (float) (positionY - 50) - this.screenPositionY, this.theWolf);
 
         } GlStateManager.popMatrix();
     }
@@ -139,7 +139,7 @@ public class GuiWolfInventory extends GuiContainer {
             this.mc.getTextureManager().bindTexture(Gui.ICONS);
 
             if (WolfArmorMod.getConfiguration().getIsWolfHealthDisplayEnabled()) {
-                //TODO: Active potion effects should alter hearts like they do for the player GUI
+                //TODO: Wolf potion effects should alter hearts like they do for the player GUI
 
                 int health = (int) Math.ceil(this.theWolf.getHealth());
                 float maxHealth = this.theWolf.getMaxHealth();

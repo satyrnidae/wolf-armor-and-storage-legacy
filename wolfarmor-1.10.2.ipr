@@ -41,8 +41,8 @@
   <component name="GradleLocalSettings">
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$/../wolfarmor-1.10.2" value="1482009603143" />
-        <entry key="$PROJECT_DIR$" value="1482009634929" />
+        <entry key="$PROJECT_DIR$" value="1482009603143" />
+        <entry key="$PROJECT_DIR$/../wolfarmor-1.11" value="1481777350444" />
         <entry key="$PROJECT_DIR$/../wolfarmor-1.7.10" value="1481968274745" />
       </map>
     </option>
@@ -73,7 +73,7 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/wolfarmor-1.11.iml" filepath="$PROJECT_DIR$/.idea/modules/wolfarmor-1.11.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/wolfarmor-1.10.2.iml" filepath="$PROJECT_DIR$/.idea/modules/wolfarmor-1.10.2.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" default="false" project-jdk-name="1.8 " project-jdk-type="JavaSDK">
@@ -120,9 +120,9 @@
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="Gradle: com.mojang:authlib:1.5.24">
+    <library name="Gradle: com.mojang:authlib:1.5.22">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mojang/authlib/1.5.24/889ff5477b844800cff734babbf42c1bbda4b10/authlib-1.5.24.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mojang/authlib/1.5.22/afaa8f6df976fcb5520e76ef1d5798c9e6b5c0b2/authlib-1.5.22.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
@@ -134,9 +134,9 @@
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="Gradle: com.mojang:realms:1.10.4">
+    <library name="Gradle: com.mojang:realms:1.9.8">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mojang/realms/1.10.4/7e837a5eae3fc08b13d5e1baf5ddf5b5d31aa2ff/realms-1.10.4.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mojang/realms/1.9.8/c9609760e050cd7c369292252552c0cc81c54331/realms-1.9.8.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
@@ -346,13 +346,13 @@
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="Gradle: net.minecraftforge:forgeSrc:1.11-13.19.1.2189">
+    <library name="Gradle: net.minecraftforge:forgeSrc:1.10.2-12.18.2.2099">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/minecraft/net/minecraftforge/forge/1.11-13.19.1.2189/snapshot/20161111/forgeSrc-1.11-13.19.1.2189.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/minecraft/net/minecraftforge/forge/1.10.2-12.18.2.2099/snapshot/20160518/forgeSrc-1.10.2-12.18.2.2099.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/minecraft/net/minecraftforge/forge/1.11-13.19.1.2189/snapshot/20161111/forgeSrc-1.11-13.19.1.2189-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/minecraft/net/minecraftforge/forge/1.10.2-12.18.2.2099/snapshot/20160518/forgeSrc-1.10.2-12.18.2.2099-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: net.sf.jopt-simple:jopt-simple:4.6">

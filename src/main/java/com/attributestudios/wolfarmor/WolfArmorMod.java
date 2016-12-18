@@ -22,13 +22,13 @@ public class WolfArmorMod {
 
     public static final String MOD_NAME = "Wolf Armor and Storage";
     public static final String MOD_ID = "wolfarmor";
-    public static final String MOD_VERSION = "1.3.2";
+    public static final String MOD_VERSION = "1.3.1";
 
     @Mod.Instance(WolfArmorMod.MOD_ID)
     public static WolfArmorMod instance;
 
     @SidedProxy(clientSide = "com.attributestudios.wolfarmor.client.ClientProxy",
-            serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
+                serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
     public static CommonProxy proxy;
 
     private static LogHelper logger;

@@ -81,7 +81,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
 
                 ItemStack itemStack = entityWolfArmored.getArmorItemStack();
 
-                if (!itemStack.func_190926_b() && itemStack.getItem() instanceof ItemWolfArmor) {
+                if (itemStack != null && itemStack.getItem() instanceof ItemWolfArmor) {
                     ItemWolfArmor armorItem = (ItemWolfArmor) itemStack.getItem();
 
                     for (int layer = 0; layer < modelWolfArmors.length; layer++) {
@@ -132,8 +132,8 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
         ModelWolfArmor modelWolfArmorLayer1 = new ModelWolfArmor(0.1F);
 
         this.modelWolfArmors = new ModelWolfArmor[] {
-                modelWolfArmorLayer0,
-                modelWolfArmorLayer1
+            modelWolfArmorLayer0,
+            modelWolfArmorLayer1
         };
     }
 

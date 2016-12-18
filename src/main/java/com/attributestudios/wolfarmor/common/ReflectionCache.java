@@ -14,11 +14,20 @@ import java.util.Map;
  * Caches reflection calls
  */
 public final class ReflectionCache {
+    //region Fields
 
     private static Map<String, Field> CACHED_REFLECTION_FIELDS = Maps.newHashMap();
     private static Map<String, Method> CACHED_REFLECTION_METHODS = Maps.newHashMap();
 
+    //endregion Fields
+
+    //region Constructors
+
     private ReflectionCache() {}
+
+    //endregion Constructors
+
+    //region Accessors / Mutators
 
     /**
      * Finds and caches a field.
@@ -108,4 +117,6 @@ public final class ReflectionCache {
         }
         throw new IllegalArgumentException("Must specify at least one method name.");
     }
+
+    //endregion Accessors / Mutators
 }
