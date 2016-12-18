@@ -4,16 +4,15 @@ import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.common.inventory.ContainerWolfInventory;
 import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor.WolfArmorMaterial;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 
@@ -46,9 +45,8 @@ public class GuiWolfInventory extends GuiContainer {
      */
     public GuiWolfInventory(@Nonnull IInventory playerInventory,
                             @Nonnull IInventory wolfInventory,
-                            @Nonnull EntityWolfArmored theWolf,
-                            @Nonnull EntityPlayer player) {
-        super(new ContainerWolfInventory(playerInventory, wolfInventory, theWolf, player));
+                            @Nonnull EntityWolfArmored theWolf) {
+        super(new ContainerWolfInventory(playerInventory, wolfInventory, theWolf));
         this.wolfInventory = wolfInventory;
         this.playerInventory = playerInventory;
         this.theWolf = theWolf;
@@ -66,16 +64,16 @@ public class GuiWolfInventory extends GuiContainer {
      */
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String wolfName = this.theWolf.hasCustomName()
+        String wolfName = this.theWolf.hasCustomNameTag()
                 ? this.theWolf.getCustomNameTag()
                 : I18n.format("entity.wolfarmor.Wolf.name");
 
-        this.fontRendererObj.drawString(this.wolfInventory.hasCustomName()
-                ? this.wolfInventory.getName()
-                : I18n.format(this.wolfInventory.getName(), wolfName), 8, 6, 0x404040);
-        this.fontRendererObj.drawString(this.playerInventory.hasCustomName()
-                ? this.playerInventory.getName()
-                : I18n.format(this.playerInventory.getName()), 8, this.ySize - 94, 0x404040);
+        this.fontRendererObj.drawString(this.wolfInventory.hasCustomInventoryName()
+                ? this.wolfInventory.getInventoryName()
+                : I18n.format(this.wolfInventory.getInventoryName(), wolfName), 8, 6, 0x404040);
+        this.fontRendererObj.drawString(this.playerInventory.hasCustomInventoryName()
+                ? this.playerInventory.getInventoryName()
+                : I18n.format(this.playerInventory.getInventoryName()), 8, this.ySize - 94, 0x404040);
 
         this.drawWolfHealthAndArmor();
     }
@@ -101,8 +99,8 @@ public class GuiWolfInventory extends GuiContainer {
      */
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix(); {
-            GlStateManager.color(1, 1, 1, 1);
+        GL11.glPushMatrix(); {
+            GL11.glColor4f(1, 1, 1, 1);
 
             this.mc.getTextureManager().bindTexture(TEXTURE_GUI_WOLF_INVENTORY);
 
@@ -118,10 +116,10 @@ public class GuiWolfInventory extends GuiContainer {
                 this.drawTexturedModalRect(positionX + 97, positionY + 17, this.xSize, 0, 54, 36);
             }
 
-            GuiInventory.drawEntityOnScreen(positionX + 51, positionY + 60, 30, (float) (positionX + 51) - this.screenPositionX,
-                    (float) (positionY - 50) - this.screenPositionY, this.theWolf);
+            GuiInventory.func_147046_a(positionX + 51, positionY + 60, 30, (float) (positionX + 51) - this.screenPositionX,
+                                       (float) (positionY - 50) - this.screenPositionY, this.theWolf);
 
-        } GlStateManager.popMatrix();
+        } GL11.glPopMatrix();
     }
 
     //endregion Public / Protected Methods
@@ -132,14 +130,14 @@ public class GuiWolfInventory extends GuiContainer {
      * Draws the wolf's current health and armor rating.
      */
     private void drawWolfHealthAndArmor() {
-        GlStateManager.pushMatrix();
+        GL11.glPushMatrix();
         {
-            GlStateManager.color(1, 1, 1, 1);
+            GL11.glColor4f(1, 1, 1, 1);
 
-            this.mc.getTextureManager().bindTexture(Gui.ICONS);
+            this.mc.getTextureManager().bindTexture(Gui.icons);
 
             if (WolfArmorMod.getConfiguration().getIsWolfHealthDisplayEnabled()) {
-                //TODO: Active potion effects should alter hearts like they do for the player GUI
+                //TODO: Wolf potion effects should alter hearts like they do for the player GUI
 
                 int health = (int) Math.ceil(this.theWolf.getHealth());
                 float maxHealth = this.theWolf.getMaxHealth();
@@ -202,7 +200,7 @@ public class GuiWolfInventory extends GuiContainer {
                 }
             }
         }
-        GlStateManager.popMatrix();
+        GL11.glPopMatrix();
     }
 
     //endregion Private Methods

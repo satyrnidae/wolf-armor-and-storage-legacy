@@ -1,14 +1,14 @@
 package com.attributestudios.wolfarmor.client.model;
 
 import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.MathHelper;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,26 +37,27 @@ public class ModelWolfBackpack extends ModelBase {
      * Constructs a new wolf backpack model
      * @param scale The scale
      */
-    public ModelWolfBackpack(float scale) {
+    public ModelWolfBackpack(float scale)
+    {
         this.backpackRightTop = new ModelRenderer(this, 0, 0);
         this.backpackRightTop.setTextureSize(16, 32);
-        this.backpackRightTop.addBox(3, -2, 0, 2, 2, 5, scale);
+        this.backpackRightTop.addBox(2, -2, 0, 2, 2, 5, scale);
         this.backpackRightTop.setRotationPoint(0, 14, 2);
 
         this.backpackRightBottom = new ModelRenderer(this, 0, 14);
         this.backpackRightBottom.setTextureSize(16, 32);
-        this.backpackRightBottom.addBox(3, 0, 0, 3, 4, 5, scale);
+        this.backpackRightBottom.addBox(2, 0, 0, 3, 4, 5, scale);
         this.backpackRightBottom.setRotationPoint(0, 14, 2);
 
         this.backpackLeftTop = new ModelRenderer(this, 0, 7);
         this.backpackLeftTop.setTextureSize(16, 32);
-        this.backpackLeftTop.addBox(-5, -2, 0, 2, 2, 5, scale);
+        this.backpackLeftTop.addBox(-6, -2, 0, 2, 2, 5, scale);
         this.backpackLeftTop.setRotationPoint(0, 14, 2);
         this.backpackLeftTop.mirror = true;
 
         this.backpackLeftBottom = new ModelRenderer(this, 0, 23);
         this.backpackLeftBottom.setTextureSize(16, 32);
-        this.backpackLeftBottom.addBox(-6, 0, 0, 3, 4, 5, scale);
+        this.backpackLeftBottom.addBox(-7, 0, 0, 3, 4, 5, scale);
         this.backpackLeftBottom.setRotationPoint(0, 14, 2);
         this.backpackLeftBottom.mirror = true;
 
@@ -87,21 +88,22 @@ public class ModelWolfBackpack extends ModelBase {
                        float ageInTicks,
                        float netHeadYaw,
                        float headPitch,
-                       float scale) {
+                       float scale)
+    {
         super.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
 
         if(this.isChild) {
-            GlStateManager.pushMatrix();
+            GL11.glPushMatrix();
             {
-                GlStateManager.scale(0.5F, 0.5F, 0.5F);
-                GlStateManager.translate(0, 24 * scale, 0);
+                GL11.glScalef(0.5F, 0.5F, 0.5F);
+                GL11.glTranslatef(0, 24 * scale, 0);
                 this.backpackRightTop.renderWithRotation(scale);
                 this.backpackRightBottom.renderWithRotation(scale);
                 this.backpackLeftTop.renderWithRotation(scale);
                 this.backpackLeftBottom.renderWithRotation(scale);
             }
-            GlStateManager.popMatrix();
+            GL11.glPopMatrix();
         }
         else {
             this.backpackRightTop.renderWithRotation(scale);
@@ -123,7 +125,7 @@ public class ModelWolfBackpack extends ModelBase {
                                     float limbSwing,
                                     float limbSwingAmount,
                                     float partialTickTime) {
-        if(entity instanceof EntityWolfArmored) {
+        if (entity instanceof EntityWolfArmored) {
             EntityWolfArmored entityWolfArmored = (EntityWolfArmored) entity;
 
             float rotationPointY = 14;
@@ -147,7 +149,8 @@ public class ModelWolfBackpack extends ModelBase {
                     0,
                     entityWolfArmored.getShakeAngle(partialTickTime, -0.16F) - INITIAL_Z_ROTATION + MathHelper.cos(limbSwing * 1.2F) * 0.15F * limbSwingAmount);
             setRotation(backpackRightBottom,
-                    rotateAngleX, 0,
+                    rotateAngleX,
+                    0,
                     entityWolfArmored.getShakeAngle(partialTickTime, -0.16F) - INITIAL_Z_ROTATION + MathHelper.cos(limbSwing * 1.2F) * 0.15F * limbSwingAmount);
             setRotation(backpackLeftTop,
                     rotateAngleX,

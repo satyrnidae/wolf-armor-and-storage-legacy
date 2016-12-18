@@ -1,11 +1,11 @@
 package com.attributestudios.wolfarmor;
 
 import com.attributestudios.wolfarmor.common.CommonProxy;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 import javax.annotation.Nonnull;
 
@@ -22,13 +22,13 @@ public class WolfArmorMod {
 
     public static final String MOD_NAME = "Wolf Armor and Storage";
     public static final String MOD_ID = "wolfarmor";
-    public static final String MOD_VERSION = "1.3.2";
+    public static final String MOD_VERSION = "1.3.0";
 
-    @Mod.Instance(WolfArmorMod.MOD_ID)
+    @Mod.Instance(value = WolfArmorMod.MOD_ID)
     public static WolfArmorMod instance;
 
     @SidedProxy(clientSide = "com.attributestudios.wolfarmor.client.ClientProxy",
-            serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
+                serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
     public static CommonProxy proxy;
 
     private static LogHelper logger;

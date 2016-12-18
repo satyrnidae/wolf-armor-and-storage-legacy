@@ -1,19 +1,16 @@
 package com.attributestudios.wolfarmor.event;
 
 import com.attributestudios.wolfarmor.item.ItemWolfArmor;
+import cpw.mods.fml.common.eventhandler.Event;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCauldron;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
-
-import static net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 
 /**
  * Contains all forge subscribed events for players.
@@ -26,14 +23,17 @@ public class WolfArmorPlayerEventHandler {
      * @param event The PlayerInteractEvent that should be handled.
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-    public void onPlayerInteract(@Nonnull RightClickBlock event)
+    public void onPlayerInteract(@Nonnull PlayerInteractEvent event)
     {
-        Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
+        switch(event.action)
+        {
+            case RIGHT_CLICK_BLOCK:
+                Block block = event.world.getBlock(event.x, event.y, event.z);
 
-        if(block == Blocks.CAULDRON) {
-            ItemStack stack = event.getItemStack();
-
-            this.handleCauldronRightClick(event, stack);
+                if(block == Blocks.cauldron) {
+                    this.handleCauldronRightClick(event);
+                }
+                break;
         }
     }
 
@@ -44,16 +44,17 @@ public class WolfArmorPlayerEventHandler {
     /**
      * Handles right click on cauldron block
      * @param event The RightClickEvent that was handled.
-     * @param stack The item stack
      */
-    private void handleCauldronRightClick(@Nonnull RightClickBlock event, @Nonnull ItemStack stack)
+    private void handleCauldronRightClick(@Nonnull PlayerInteractEvent event)
     {
-        if(!event.getWorld().isRemote)
+        if(!event.world.isRemote)
         {
-            if(!stack.func_190926_b())
+            ItemStack stack = event.entityPlayer.inventory.getCurrentItem();
+
+            if(stack != null)
             {
-                IBlockState blockCauldronState = event.getWorld().getBlockState(event.getPos());
-                int fillLevel = blockCauldronState.getValue(BlockCauldron.LEVEL);
+                int metadata = event.world.getBlockMetadata(event.x, event.y, event.z);
+                int fillLevel = BlockCauldron.func_150027_b(metadata);
 
                 if(fillLevel > 0 && stack.getItem() instanceof ItemWolfArmor)
                 {
@@ -62,7 +63,8 @@ public class WolfArmorPlayerEventHandler {
                     if(itemWolfArmor.getMaterial().getIsDyeable())
                     {
                         itemWolfArmor.removeColor(stack);
-                        Blocks.CAULDRON.setWaterLevel(event.getWorld(), event.getPos(), blockCauldronState, fillLevel - 1);
+                        event.world.setBlockMetadataWithNotify(event.x, event.y, event.z, fillLevel - 1, 2);
+                        event.world.func_147453_f(event.x, event.y, event.z, Blocks.cauldron);
                         event.setResult(Event.Result.ALLOW);
                         event.setCanceled(true);
                     }

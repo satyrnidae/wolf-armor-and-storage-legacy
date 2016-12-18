@@ -1,21 +1,22 @@
 package com.attributestudios.wolfarmor.item;
 
+import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockDispenser;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IIcon;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,23 +30,22 @@ public class ItemWolfArmor extends Item {
 
     private static final String NBT_TAG_DISPLAY = "display";
     private static final String NBT_TAG_COLOR = "color";
+
     private static final IBehaviorDispenseItem DISPENSE_ITEM = new BehaviorDefaultDispenseItem() {
-        /**
-         * Handles dispense of specified stack
-         * @param source The source block
-         * @param stack The stack
-         * @return The stack to dispense
-         */
         @Override
-        @Nonnull
-        protected ItemStack dispenseStack(@Nonnull IBlockSource source, @Nonnull ItemStack stack)
-        {
+        @Nullable
+        public ItemStack dispenseStack(@Nonnull IBlockSource source, @Nonnull ItemStack stack) {
             ItemStack itemStack = ItemWolfArmor.dispenseWolfArmor(source, stack);
-            return !itemStack.func_190926_b() ? itemStack : super.dispenseStack(source, stack);
+            return itemStack != null ? itemStack : super.dispenseStack(source, stack);
         }
     };
 
     private final WolfArmorMaterial material;
+
+    @SideOnly(Side.CLIENT)
+    private static final String TEXTURE_LEATHER_ARMOR_OVERLAY = "leather_wolf_armor_overlay";
+    @SideOnly(Side.CLIENT)
+    private IIcon overlayIcon;
 
     //endregion Fields
 
@@ -64,8 +64,8 @@ public class ItemWolfArmor extends Item {
         this.canRepair = true;
         this.setMaxDamage(material.getDurability());
 
-        this.setCreativeTab(CreativeTabs.MISC);
-        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, DISPENSE_ITEM);
+        this.setCreativeTab(CreativeTabs.tabMisc);
+        BlockDispenser.dispenseBehaviorRegistry.putObject(this, DISPENSE_ITEM);
     }
 
     //endregion Constructors
@@ -73,14 +73,40 @@ public class ItemWolfArmor extends Item {
     //region Public / Protected Methods
 
     /**
+     * Registers icons for this object
+     * @param register The icon register
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(@Nonnull IIconRegister register)
+    {
+        super.registerIcons(register);
+
+        if(this.material == WolfArmorMaterial.CLOTH)
+        {
+            this.overlayIcon = register.registerIcon(WolfArmorMod.MOD_ID + ":" + TEXTURE_LEATHER_ARMOR_OVERLAY);
+        }
+    }
+
+    /**
+     * Used to determine whether or not multiple render passes are required for this item
+     * @return True if the material is CLOTH
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean requiresMultipleRenderPasses() {
+        return this.material == WolfArmorMaterial.CLOTH;
+    }
+
+    /**
      * Removes color data from the given stack
      * @param stack The item stack
      */
-    public void removeColor(@Nonnull ItemStack stack) {
-        if(!stack.func_190926_b() && this.material.getIsDyeable()) {
+    public void removeColor(@Nullable ItemStack stack) {
+        if(stack != null && this.material.getIsDyeable()) {
             if(this.getHasColor(stack)) {
                 NBTTagCompound stackCompound = stack.getTagCompound();
-                if (stackCompound != null) {
+                if(stackCompound != null) {
                     stackCompound.getCompoundTag(NBT_TAG_DISPLAY).removeTag(NBT_TAG_COLOR);
                 }
             }
@@ -97,37 +123,77 @@ public class ItemWolfArmor extends Item {
      * @param stack The dispensing stack
      * @return An item stack to dispense, or null if default dispense should occur.
      */
-    @Nonnull
+    @Nullable
     private static ItemStack dispenseWolfArmor(@Nonnull IBlockSource source, @Nonnull ItemStack stack) {
-        BlockPos blockPos = source.getBlockPos().offset(source.getBlockState().getValue(BlockDispenser.FACING));
-        List<EntityWolfArmored> wolves = source.getWorld().getEntitiesWithinAABB(EntityWolfArmored.class, new AxisAlignedBB(blockPos));
+        EnumFacing direction = BlockDispenser.func_149937_b(source.getBlockMetadata());
+        int xDispenseLoc = source.getXInt() + direction.getFrontOffsetX();
+        int yDispenseLoc = source.getYInt() + direction.getFrontOffsetY();
+        int zDispenseLoc = source.getZInt() + direction.getFrontOffsetZ();
+        AxisAlignedBB boundingBox = AxisAlignedBB.getBoundingBox(xDispenseLoc, yDispenseLoc, zDispenseLoc, xDispenseLoc + 1, yDispenseLoc + 1, zDispenseLoc + 1);
+
+        List wolves = source.getWorld().getEntitiesWithinAABB(EntityWolfArmored.class, boundingBox);
         if(!wolves.isEmpty()) {
             EntityWolfArmored wolf = null;
 
-            for(EntityWolfArmored entity : wolves) {
-                if(entity.isTamed() && !entity.isChild()) {
-                    wolf = entity;
-                    break;
+            for(Object obj : wolves) {
+                if(obj instanceof EntityWolfArmored) {
+                    EntityWolfArmored entity = (EntityWolfArmored)obj;
+                    if(entity.isTamed() && !entity.isChild()) {
+                        wolf = entity;
+                        break;
+                    }
                 }
             }
 
             if(wolf != null) {
                 ItemStack copyStack = stack.copy();
-                copyStack.func_190920_e(1);
+                copyStack.stackSize = 1;
                 if (!wolf.equipArmor(copyStack)) {
-                    return ItemStack.field_190927_a;
+                    return null;
                 }
 
-                stack.func_190918_g(1);
+                stack.stackSize--;
             }
         }
-
         return stack;
     }
 
     //endregion Private Methods
 
     //region Accessors / Mutators
+
+    /**
+     * Gets the color of the item stack for rendering
+     * @param stack The item stack
+     * @param renderPass The render pass
+     * @return The color of the stack to apply as a multiplier for this pass
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getColorFromItemStack(@Nullable ItemStack stack, int renderPass) {
+        if(renderPass > 0) {
+            return -1;
+        }
+        else {
+            int color = this.getColor(stack);
+
+            return color < 0 ? -1 : color;
+        }
+    }
+
+    /**
+     * Gets the icon for this render pass
+     * @param damage The item damage
+     * @param renderPass The render pass
+     * @return The icon
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    @Nonnull
+    public IIcon getIconFromDamageForRenderPass(int damage, int renderPass)
+    {
+        return renderPass == 1 ? this.overlayIcon : super.getIconFromDamageForRenderPass(damage, renderPass);
+    }
 
     /**
      * Gets the item enchantability from the item's armor material
@@ -154,7 +220,7 @@ public class ItemWolfArmor extends Item {
      * @param stack The stack to check for an overlay
      * @return Whether or not the wolf armor has an overlay layer
      */
-    public boolean getHasOverlay(@Nonnull ItemStack stack) {
+    public boolean getHasOverlay(@Nullable ItemStack stack) {
         return this.getMaterial().getHasOverlay() || this.getColor(stack) != -1;
     }
 
@@ -163,8 +229,8 @@ public class ItemWolfArmor extends Item {
      * @param stack The item stack
      * @return A boolean representing whether or not the stack has a color applied
      */
-    public boolean getHasColor(@Nonnull ItemStack stack) {
-        if(!stack.func_190926_b() && this.getMaterial().getIsDyeable()) {
+    public boolean getHasColor(@Nullable ItemStack stack) {
+        if(stack != null && this.getMaterial().getIsDyeable()) {
             if(stack.hasTagCompound()) {
                 NBTTagCompound tagCompound = stack.getTagCompound();
 
@@ -184,8 +250,8 @@ public class ItemWolfArmor extends Item {
      * @param stack The item stack
      * @return The integer value of the color
      */
-    public int getColor(@Nonnull ItemStack stack) {
-        if(!this.getMaterial().getIsDyeable() || stack.func_190926_b()) {
+    public int getColor(@Nullable ItemStack stack) {
+        if(!this.material.getIsDyeable() || stack == null) {
             return -1;
         }
 
@@ -193,7 +259,7 @@ public class ItemWolfArmor extends Item {
 
         if(tagCompound != null) {
             NBTTagCompound display = tagCompound.getCompoundTag(NBT_TAG_DISPLAY);
-            if(display.hasKey(NBT_TAG_COLOR)) {
+            if(display != null && display.hasKey(NBT_TAG_COLOR)) {
                 return display.getInteger(NBT_TAG_COLOR);
             }
         }
@@ -206,11 +272,11 @@ public class ItemWolfArmor extends Item {
      * @param stack The item stack
      * @param color The integer value of the color
      */
-    public void setColor(@Nonnull ItemStack stack, int color) {
+    public void setColor(@Nullable ItemStack stack, int color) {
         if(!this.getMaterial().getIsDyeable()) {
             throw new UnsupportedOperationException("Wolf armor material is not dyeable!");
         }
-        else if(!stack.func_190926_b()) {
+        else if(stack != null) {
             NBTTagCompound tagCompound = stack.getTagCompound();
 
             if(tagCompound == null) {
@@ -237,7 +303,7 @@ public class ItemWolfArmor extends Item {
     }
 
     /**
-     * Gets the damage reduction amount.
+     * Gets the damage reduction amount
      * @return The damage reduction amount
      */
     public int getDamageReductionAmount() {
@@ -254,11 +320,11 @@ public class ItemWolfArmor extends Item {
     public enum WolfArmorMaterial {
         //region Fields
 
-        CLOTH("leather", 80, 6, 15, true, 0xA06540, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, true),
-        CHAINMAIL("chain", 240, 12, 12, false, 0xFFFFFF, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN, false),
-        IRON("iron", 240, 15, 9, false, 0xFFFFFF, SoundEvents.ITEM_ARMOR_EQUIP_IRON, false),
-        GOLD("gold", 112, 12, 25, false, 0xFFFFFF, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, false),
-        DIAMOND("diamond", 528, 20, 10, false, 0xFFFFFF, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, false);
+        CLOTH("leather", 80, 6, 15, true, 0xA06540, true),
+        CHAINMAIL("chain", 240, 12, 12, false, 0xFFFFFF, false),
+        IRON("iron", 240, 15, 9, false, 0xFFFFFF, false),
+        GOLD("gold", 112, 12, 25, false, 0xFFFFFF, false),
+        DIAMOND("diamond", 528, 20, 10, false, 0xFFFFFF, false);
 
         private final String name;
         private final int defaultColor;
@@ -267,7 +333,6 @@ public class ItemWolfArmor extends Item {
         private final int enchantability;
         private final boolean isDyeable;
         private final boolean hasOverlay;
-        private final SoundEvent equipSound;
 
         //endregion Fields
 
@@ -279,7 +344,6 @@ public class ItemWolfArmor extends Item {
                           int enchantability,
                           boolean isDyeable,
                           int defaultColor,
-                          @Nonnull SoundEvent equipSound,
                           boolean hasOverlay) {
             this.name = name;
             this.durability = durability;
@@ -287,7 +351,6 @@ public class ItemWolfArmor extends Item {
             this.enchantability = enchantability;
             this.isDyeable = isDyeable;
             this.defaultColor = defaultColor;
-            this.equipSound = equipSound;
             this.hasOverlay = hasOverlay;
         }
 
@@ -296,11 +359,6 @@ public class ItemWolfArmor extends Item {
         //region Accessors
 
         public int getDefaultColor() { return this.defaultColor; }
-
-        @Nonnull
-        public SoundEvent getEquipSound() {
-            return equipSound;
-        }
 
         /**
          * Gets the armor durability
@@ -380,14 +438,14 @@ public class ItemWolfArmor extends Item {
         public Item getRepairItem() {
             switch(this) {
                 case CLOTH:
-                    return Items.LEATHER;
+                    return Items.leather;
                 case CHAINMAIL:
                 case IRON:
-                    return Items.IRON_INGOT;
+                    return Items.iron_ingot;
                 case GOLD:
-                    return Items.GOLD_INGOT;
+                    return Items.gold_ingot;
                 case DIAMOND:
-                    return Items.DIAMOND;
+                    return Items.diamond;
             }
 
             return null;

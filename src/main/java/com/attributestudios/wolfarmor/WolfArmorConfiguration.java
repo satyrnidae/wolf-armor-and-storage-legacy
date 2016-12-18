@@ -1,13 +1,13 @@
 package com.attributestudios.wolfarmor;
 
+import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -34,6 +34,8 @@ public final class WolfArmorConfiguration {
     //endregion Common Config Settings
 
     //region Client-Side Config Settings
+
+    private static final String CATEGORY_CLIENT = "client";
 
     private static final String SETTING_WOLF_ARMOR_RENDER_ENABLED = "Enable Wolf Armor Render Layer";
     private static final String SETTING_WOLF_CHEST_RENDER_ENABLED = "Enable Wolf Chest Render Layer";
@@ -78,7 +80,7 @@ public final class WolfArmorConfiguration {
      */
     @SubscribeEvent
     public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-        if(eventArgs.getModID().equals(WolfArmorMod.MOD_ID)) {
+        if(eventArgs.modID.equals(WolfArmorMod.MOD_ID)) {
             syncConfig(FMLCommonHandler.instance().getSide() == Side.CLIENT);
         }
     }
@@ -231,7 +233,7 @@ public final class WolfArmorConfiguration {
      */
     @Nonnull
     public Property getSettingWolfArmorRenderEnabled() {
-        return config.get(Configuration.CATEGORY_CLIENT,
+        return config.get(CATEGORY_CLIENT,
                 SETTING_WOLF_ARMOR_RENDER_ENABLED,
                 DEFAULT_WOLF_ARMOR_RENDER_ENABLED,
                 "Enables or disables rendering of wolf armor.");
@@ -243,7 +245,7 @@ public final class WolfArmorConfiguration {
      */
     @Nonnull
     public Property getSettingWolfChestRenderEnabled() {
-        return config.get(Configuration.CATEGORY_CLIENT,
+        return config.get(CATEGORY_CLIENT,
                 SETTING_WOLF_CHEST_RENDER_ENABLED,
                 DEFAULT_WOLF_CHEST_RENDER_ENABLED,
                 "Enables or disables rendering of wolf backpacks.");
@@ -255,7 +257,7 @@ public final class WolfArmorConfiguration {
      */
     @Nonnull
     public Property getSettingWolfArmorDisplayEnabled() {
-        return config.get(Configuration.CATEGORY_CLIENT,
+        return config.get(CATEGORY_CLIENT,
                 SETTING_WOLF_ARMOR_DISPLAY_ENABLED,
                 DEFAULT_WOLF_ARMOR_DISPLAY_ENABLED,
                 "Enables or disables displaying a wolf's armor value in the wolf inventory screen.");
@@ -267,7 +269,7 @@ public final class WolfArmorConfiguration {
      */
     @Nonnull
     public Property getSettingWolfHealthDisplayEnabled() {
-        return config.get(Configuration.CATEGORY_CLIENT,
+        return config.get(CATEGORY_CLIENT,
                 SETTING_WOLF_HEALTH_DISPLAY_ENABLED,
                 DEFAULT_WOLF_HEALTH_DISPLAY_ENABLED,
                 "Enables or disables displaying a wolf's health value in the wolf inventory screen.");

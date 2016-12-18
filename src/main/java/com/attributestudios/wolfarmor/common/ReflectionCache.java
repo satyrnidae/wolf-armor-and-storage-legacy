@@ -2,7 +2,7 @@ package com.attributestudios.wolfarmor.common;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.google.common.collect.Maps;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,11 +14,20 @@ import java.util.Map;
  * Caches reflection calls
  */
 public final class ReflectionCache {
+    //region Fields
 
     private static Map<String, Field> CACHED_REFLECTION_FIELDS = Maps.newHashMap();
     private static Map<String, Method> CACHED_REFLECTION_METHODS = Maps.newHashMap();
 
+    //endregion Fields
+
+    //region Constructors
+
     private ReflectionCache() {}
+
+    //endregion Constructors
+
+    //region Accessors / Mutators
 
     /**
      * Finds and caches a field.
@@ -66,6 +75,7 @@ public final class ReflectionCache {
      * @param <E> The instance or class type
      * @return The method
      */
+    @SuppressWarnings("unused")
     @Nullable
     public static <E> Method getMethod(@Nonnull Class<? super E> clazz,
                                        @Nullable E instance,
@@ -108,4 +118,6 @@ public final class ReflectionCache {
         }
         throw new IllegalArgumentException("Must specify at least one method name.");
     }
+
+    //endregion Accessors / Mutators
 }

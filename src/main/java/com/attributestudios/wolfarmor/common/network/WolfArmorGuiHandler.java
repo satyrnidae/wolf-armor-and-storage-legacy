@@ -3,10 +3,10 @@ package com.attributestudios.wolfarmor.common.network;
 import com.attributestudios.wolfarmor.client.gui.GuiWolfInventory;
 import com.attributestudios.wolfarmor.common.inventory.ContainerWolfInventory;
 import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
-import net.minecraft.entity.Entity;
+import cpw.mods.fml.common.network.IGuiHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.IGuiHandler;
+import net.minecraft.entity.Entity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,7 +40,7 @@ public class WolfArmorGuiHandler implements IGuiHandler {
 
         if(entity != null && entity instanceof EntityWolfArmored) {
             EntityWolfArmored wolfArmored = (EntityWolfArmored)entity;
-            return new ContainerWolfInventory(player.inventory, wolfArmored.getInventory(), wolfArmored, player);
+            return new ContainerWolfInventory(player.inventory, wolfArmored.getInventory(), wolfArmored);
         }
 
         return null;
@@ -71,7 +71,7 @@ public class WolfArmorGuiHandler implements IGuiHandler {
 
         if(entity != null && entity instanceof EntityWolfArmored) {
             EntityWolfArmored wolfArmored = (EntityWolfArmored)entity;
-            return new GuiWolfInventory(player.inventory, wolfArmored.getInventory(), wolfArmored, player);
+            return new GuiWolfInventory(player.inventory, wolfArmored.getInventory(), wolfArmored);
         }
 
         return null;

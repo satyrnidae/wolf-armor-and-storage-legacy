@@ -4,12 +4,9 @@ import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.client.model.ModelWolfBackpack;
 import com.attributestudios.wolfarmor.client.renderer.entity.RenderWolfArmored;
 import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,7 +14,6 @@ import javax.annotation.Nullable;
 /**
  * A layer renderer for wolf backpacks.
  */
-@SideOnly(Side.CLIENT)
 public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
     //region Fields
 
@@ -71,25 +67,25 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
 
                 if (entityWolfArmored.getHasChest()) {
 
-                    this.modelWolfBackpack.setModelAttributes(renderer.getMainModel());
+                    this.renderer.setupModelAttributes(entityWolfArmored, partialTicks, this.modelWolfBackpack);
                     this.modelWolfBackpack.setLivingAnimations(entityWolfArmored, limbSwing, limbSwingAmount, partialTicks);
 
                     this.renderer.bindTexture(TEXTURE_WOLF_BACKPACK);
 
-                    GlStateManager.color(1, 1, 1, 1);
+                    GL11.glColor4f(1, 1, 1, 1);
 
                     if (!entityWolfArmored.isInvisible()) {
                         this.modelWolfBackpack.render(entityWolfArmored, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
                     } else {
-                        GlStateManager.pushMatrix();
+                        GL11.glPushMatrix();
                         {
-                            GlStateManager.color(1, 1, 1, 0.15F);
-                            GlStateManager.depthMask(false);
+                            GL11.glColor4f(1, 1, 1, 0.15F);
+                            GL11.glDepthMask(false);
                             {
-                                GlStateManager.enableBlend();
+                                GL11.glEnable(GL11.GL_BLEND);
                                 {
-                                    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
-                                            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA,
+                                            GL11.GL_ONE_MINUS_SRC_ALPHA);
 
                                     this.modelWolfBackpack.render(entityWolfArmored,
                                             limbSwing,
@@ -98,13 +94,12 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
                                             netHeadYaw,
                                             headPitch,
                                             scale);
-
                                 }
-                                GlStateManager.disableBlend();
+                                GL11.glDisable(GL11.GL_BLEND);
                             }
-                            GlStateManager.depthMask(true);
+                            GL11.glDepthMask(true);
                         }
-                        GlStateManager.popMatrix();
+                        GL11.glPopMatrix();
                     }
                 }
             }
@@ -112,17 +107,4 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
     }
 
     //endregion Public / Protected Methods
-
-    //region Accessors / Mutators
-
-    /**
-     * Whether or not textures should be combined.
-     * @return false.
-     */
-    @Override
-    public boolean shouldCombineTextures() {
-        return false;
-    }
-
-    //endregion Accessors / Mutators
 }

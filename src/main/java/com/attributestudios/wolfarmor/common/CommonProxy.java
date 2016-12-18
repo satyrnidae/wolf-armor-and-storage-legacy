@@ -9,13 +9,13 @@ import com.attributestudios.wolfarmor.item.WolfArmorItems;
 import com.attributestudios.wolfarmor.item.crafting.RecipeWolfArmorDyes;
 import com.attributestudios.wolfarmor.item.crafting.WolfArmorRecipes;
 import com.google.common.collect.Maps;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.EntityRegistry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.oredict.RecipeSorter;
 
 import javax.annotation.Nonnull;
@@ -28,7 +28,6 @@ public class CommonProxy {
     //region Fields
 
     private static final Map<String, ResourceLocation> CACHED_RESOURCE_LOCATIONS = Maps.newHashMap();
-    private static final ResourceLocation ENTITY_WOLF_ARMORED = new ResourceLocation(WolfArmorMod.MOD_ID, "Wolf");
 
     //endregion Fields
 
@@ -44,7 +43,6 @@ public class CommonProxy {
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
         registerEntityRenderingHandlers(preInitializationEvent);
         registerItems(preInitializationEvent);
-        registerItemRenderers(preInitializationEvent);
     }
 
     /**
@@ -63,14 +61,6 @@ public class CommonProxy {
         WolfArmorItems.init();
     }
 
-    /**
-     * Registers all item renderers for this mod
-     * @param preInitializationEvent the initialization event
-     */
-    protected void registerItemRenderers(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
-
-    }
-
     //endregion Pre-Initialization
 
     //region Initialization
@@ -81,17 +71,9 @@ public class CommonProxy {
      * @param initializationEvent The initialization event
      */
     public void init(@Nonnull FMLInitializationEvent initializationEvent) {
-        this.registerItemColorHandlers(initializationEvent);
         this.registerRecipes(initializationEvent);
         this.registerEventListeners(initializationEvent);
         this.registerEntities(initializationEvent);
-    }
-
-    /**
-     * Registers item colorization handlers
-     * @param initializationEvent The initialization event
-     */
-    protected void registerItemColorHandlers(@Nonnull FMLInitializationEvent initializationEvent) {
     }
 
     /**
@@ -100,7 +82,6 @@ public class CommonProxy {
      */
     @SuppressWarnings("WeakerAccess")
     protected void registerRecipes(@SuppressWarnings("unused") @Nonnull FMLInitializationEvent initializationEvent) {
-
         WolfArmorRecipes.init();
         RecipeSorter.register(WolfArmorMod.MOD_ID + ":WolfArmorDyes", RecipeWolfArmorDyes.class, RecipeSorter.Category.SHAPELESS, "");
     }
@@ -121,7 +102,7 @@ public class CommonProxy {
      */
     @SuppressWarnings("WeakerAccess")
     protected void registerEntities(@SuppressWarnings("unused") @Nonnull FMLInitializationEvent initializationEvent) {
-        EntityRegistry.registerModEntity(ENTITY_WOLF_ARMORED, EntityWolfArmored.class, "Wolf", 0, WolfArmorMod.instance, 80, 3, false);
+        EntityRegistry.registerModEntity(EntityWolfArmored.class, "Wolf", 0, WolfArmorMod.instance, 80, 3, false);
     }
 
     //endregion Initialization
@@ -177,5 +158,4 @@ public class CommonProxy {
     }
 
     //endregion Accessors / Mutators
-
 }

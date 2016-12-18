@@ -1,8 +1,8 @@
 package com.attributestudios.wolfarmor.item.crafting;
 
 import com.attributestudios.wolfarmor.item.WolfArmorItems;
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.init.Items;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 /**
@@ -16,45 +16,45 @@ public class WolfArmorRecipes {
         //TODO: Enable / disable crafting in configuration
 
         GameRegistry.addRecipe(
-                new ShapedOreRecipe(WolfArmorItems.LEATHER_WOLF_ARMOR,
-                        "IHI",
-                        "ILI",
-                        "ILI",
-                        'I', "leather",
-                        'H', Items.LEATHER_HELMET,
-                        'L', Items.LEATHER_BOOTS));
+            new ShapedOreRecipe(WolfArmorItems.LEATHER_WOLF_ARMOR,
+                                "IHI",
+                                "ILI",
+                                "ILI",
+                                'I', Items.leather,
+                                'H', Items.leather_helmet,
+                                'L', Items.leather_boots));
         GameRegistry.addRecipe(
-                new ShapedOreRecipe(WolfArmorItems.CHAINMAIL_WOLF_ARMOR,
-                        "IHI",
-                        "ILI",
-                        "ILI",
-                        'I', "ingotIron",
-                        'H', Items.CHAINMAIL_HELMET,
-                        'L', Items.CHAINMAIL_BOOTS));
+            new ShapedOreRecipe(WolfArmorItems.CHAINMAIL_WOLF_ARMOR,
+                                "IHI",
+                                "ILI",
+                                "ILI",
+                                'I', "ingotIron",
+                                'H', Items.chainmail_helmet,
+                                'L', Items.chainmail_boots));
         GameRegistry.addRecipe(
-                new ShapedOreRecipe(WolfArmorItems.IRON_WOLF_ARMOR,
-                        "IHI",
-                        "ILI",
-                        "ILI",
-                        'I', "ingotIron",
-                        'H', Items.IRON_HELMET,
-                        'L', Items.IRON_BOOTS));
+            new ShapedOreRecipe(WolfArmorItems.IRON_WOLF_ARMOR,
+                                "IHI",
+                                "ILI",
+                                "ILI",
+                                'I', "ingotIron",
+                                'H', Items.iron_helmet,
+                                'L', Items.iron_boots));
         GameRegistry.addRecipe(
-                new ShapedOreRecipe(WolfArmorItems.GOLDEN_WOLF_ARMOR,
-                        "IHI",
-                        "ILI",
-                        "ILI",
-                        'I', "ingotGold",
-                        'H', Items.GOLDEN_HELMET,
-                        'L', Items.GOLDEN_BOOTS));
+            new ShapedOreRecipe(WolfArmorItems.GOLDEN_WOLF_ARMOR,
+                                "IHI",
+                                "ILI",
+                                "ILI",
+                                'I', "ingotGold",
+                                'H', Items.golden_helmet,
+                                'L', Items.golden_boots));
         GameRegistry.addRecipe(
-                new ShapedOreRecipe(WolfArmorItems.DIAMOND_WOLF_ARMOR,
-                        "IHI",
-                        "ILI",
-                        "ILI",
-                        'I', "gemDiamond",
-                        'H', Items.DIAMOND_HELMET,
-                        'L', Items.DIAMOND_BOOTS));
+            new ShapedOreRecipe(WolfArmorItems.DIAMOND_WOLF_ARMOR,
+                                "IHI",
+                                "ILI",
+                                "ILI",
+                                'I', "gemDiamond",
+                                'H', Items.diamond_helmet,
+                                'L', Items.diamond_boots));
 
         GameRegistry.addRecipe(new RecipeWolfArmorDyes());
     }

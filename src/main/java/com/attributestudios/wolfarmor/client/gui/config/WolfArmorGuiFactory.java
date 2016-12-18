@@ -1,10 +1,10 @@
 package com.attributestudios.wolfarmor.client.gui.config;
 
+import cpw.mods.fml.client.IModGuiFactory;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.client.IModGuiFactory;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,6 +13,7 @@ import java.util.Set;
 /**
  * GUI Factory for the WolfArmor Mod
  */
+@SuppressWarnings("unused")
 @SideOnly(Side.CLIENT)
 public class WolfArmorGuiFactory implements IModGuiFactory {
     //region Public / Protected Methods
@@ -90,7 +91,6 @@ public class WolfArmorGuiFactory implements IModGuiFactory {
      *
      * @return The Handler for painting it
      */
-    @SuppressWarnings("deprecation")
     @Override
     @Nullable
     public RuntimeOptionGuiHandler getHandlerFor(@Nullable RuntimeOptionCategoryElement element) {
