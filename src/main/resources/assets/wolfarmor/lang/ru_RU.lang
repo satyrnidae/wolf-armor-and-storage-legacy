@@ -1,0 +1,12 @@
+item.wolfarmor.leatherWolfArmor.name=Кожаная волчья броня
+item.wolfarmor.chainWolfArmor.name=Кольчужная волчья броня
+item.wolfarmor.ironWolfArmor.name=Железная волчья броня
+item.wolfarmor.goldWolfArmor.name=Золотая волчья броня
+item.wolfarmor.diamondWolfArmor.name=Алмазная волчья броня
+
+container.wolfarmor.wolf=%1$s
+
+gui.wolfarmor.config=Мод "Wolf Armor"
+gui.wolfarmor.configSubtitle=Конфигурационные параметры
+
+entity.wolfarmor.Wolf.name=Волк

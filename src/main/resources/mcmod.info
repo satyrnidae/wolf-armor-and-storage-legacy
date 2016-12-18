@@ -1,0 +1,16 @@
+[
+{
+  "modid": "wolfarmor",
+  "name": "Wolf Armor and Storage",
+  "description": "Adds armors and storage for wolves!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "www.attributestudios.com/mcModWolfArmor.php",
+  "updateUrl": "",
+  "authorList": ["CenturionFox"],
+  "credits": "Copyright (C) 2015-2016 Attribute Studios.\r\nRussian language files by xMrVizzy.",
+  "logoFile": "assets/wolfarmor/logo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]

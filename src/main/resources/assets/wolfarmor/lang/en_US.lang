@@ -1,0 +1,12 @@
+item.wolfarmor.leatherWolfArmor.name=Leather Wolf Armor
+item.wolfarmor.chainWolfArmor.name=Chain Wolf Armor
+item.wolfarmor.ironWolfArmor.name=Iron Wolf Armor
+item.wolfarmor.goldWolfArmor.name=Gold Wolf Armor
+item.wolfarmor.diamondWolfArmor.name=Diamond Wolf Armor
+
+container.wolfarmor.wolf=%1$s
+
+gui.wolfarmor.config=Wolf Armor Mod
+gui.wolfarmor.configSubtitle=Configuration Settings
+
+entity.wolfarmor.Wolf.name=Wolf

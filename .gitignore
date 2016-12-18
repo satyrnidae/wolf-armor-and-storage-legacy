@@ -10,3 +10,25 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# Team Foundation Server
+$tf
+
+# Gradle Wrapper
+.gradle/
+gradle/
+gradlew*
+gradle.properties
+
+# Build Output / Temp Directories
+build/
+run/
+out/
+eclipse/
+temp/
+
+# IntelliJ
+wolfarmor-*.iws
+
+# Misc
+.settings/

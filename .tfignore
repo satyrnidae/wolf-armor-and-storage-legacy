@@ -1,0 +1,34 @@
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs
+hs_err_pid*
+
+# Git
+.git
+
+# Gradle wrapper
+.gradle
+gradle
+gradlew*
+gradle.properties
+
+# Build Output / Temp Directories
+build
+run
+out
+eclipse
+temp
+
+# IntelliJ
+wolfarmor-*.iws
+
+# Misc
+.settings
