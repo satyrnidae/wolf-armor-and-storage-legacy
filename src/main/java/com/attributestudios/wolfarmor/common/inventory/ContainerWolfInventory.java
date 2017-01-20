@@ -57,7 +57,7 @@ public class ContainerWolfInventory extends Container {
              */
             @Override
             public boolean isItemValid(@Nonnull ItemStack stack) {
-                return stack.func_190926_b() || (super.isItemValid(stack) && EntityWolfArmored.getIsValidWolfArmorItem(stack.getItem()));
+                return stack.isEmpty() || (super.isItemValid(stack) && EntityWolfArmored.getIsValidWolfArmorItem(stack.getItem()));
             }
         });
 
@@ -95,31 +95,31 @@ public class ContainerWolfInventory extends Container {
     @Override
     @Nonnull
     public ItemStack transferStackInSlot(@Nonnull EntityPlayer player, int slot) {
-        ItemStack stack = ItemStack.field_190927_a;
+        ItemStack stack = ItemStack.EMPTY;
         Slot inventorySlot = this.inventorySlots.get(slot);
 
         if(inventorySlot != null && inventorySlot.getHasStack()) {
             ItemStack stackInSlot = inventorySlot.getStack();
 
-            if (!stackInSlot.func_190926_b()) {
+            if (!stackInSlot.isEmpty()) {
                 stack = stackInSlot.copy();
 
                 if(slot < this.wolfInventory.getSizeInventory()) {
                     if(!this.mergeItemStack(stackInSlot, this.wolfInventory.getSizeInventory(), this.inventorySlots.size(), true)) {
-                        return ItemStack.field_190927_a;
+                        return ItemStack.EMPTY;
                     }
                 }
                 else if(this.getSlot(0).isItemValid(stackInSlot) && !this.getSlot(0).getHasStack()) {
                     if(!this.mergeItemStack(stackInSlot, 0, 2, false)) {
-                        return ItemStack.field_190927_a;
+                        return ItemStack.EMPTY;
                     }
                 }
                 else if(this.wolfInventory.getSizeInventory() <= 1 || !this.mergeItemStack(stackInSlot, 1, this.wolfInventory.getSizeInventory(), false)) {
-                    return ItemStack.field_190927_a;
+                    return ItemStack.EMPTY;
                 }
 
-                if(stackInSlot.func_190916_E() == 0) {
-                    inventorySlot.putStack(ItemStack.field_190927_a);
+                if(stackInSlot.getCount() == 0) {
+                    inventorySlot.putStack(ItemStack.EMPTY);
                 }
                 else {
                     inventorySlot.onSlotChanged();
@@ -141,7 +141,7 @@ public class ContainerWolfInventory extends Container {
      */
     @Override
     public boolean canInteractWith(@Nonnull EntityPlayer player) {
-        return this.wolfInventory.isUseableByPlayer(player) &&
+        return this.wolfInventory.isUsableByPlayer(player) &&
                 !this.theWolf.isDead &&
                 this.theWolf.getDistanceToEntity(player) < 8;
     }

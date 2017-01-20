@@ -32,17 +32,17 @@ public class RecipeWolfArmorDyes implements IRecipe {
      */
     @Override
     public boolean matches(@Nonnull InventoryCrafting inventoryCrafting, @Nonnull World world) {
-        ItemStack armorItem = ItemStack.field_190927_a;
+        ItemStack armorItem = ItemStack.EMPTY;
         ArrayList<ItemStack> dyes = new ArrayList<ItemStack>();
 
         for(int slotIndex = 0; slotIndex < inventoryCrafting.getSizeInventory(); slotIndex++) {
             ItemStack stackInSlot = inventoryCrafting.getStackInSlot(slotIndex);
 
-            if(!stackInSlot.func_190926_b()) {
+            if(!stackInSlot.isEmpty()) {
                 if(stackInSlot.getItem() instanceof ItemWolfArmor) {
                     ItemWolfArmor wolfArmorItem = (ItemWolfArmor)stackInSlot.getItem();
 
-                    if(!wolfArmorItem.getMaterial().getIsDyeable() || !armorItem.func_190926_b()) {
+                    if(!wolfArmorItem.getMaterial().getIsDyeable() || !armorItem.isEmpty()) {
                         return false;
                     }
 
@@ -58,7 +58,7 @@ public class RecipeWolfArmorDyes implements IRecipe {
             }
         }
 
-        return !armorItem.func_190926_b() && !dyes.isEmpty();
+        return !armorItem.isEmpty() && !dyes.isEmpty();
     }
 
     //endregion Public / Protected Methods
@@ -73,7 +73,7 @@ public class RecipeWolfArmorDyes implements IRecipe {
     private int getDyeEquivalent(@Nonnull ItemStack stack) {
         int dyeEquivalent = -1;
 
-        if(!stack.func_190926_b()) {
+        if(!stack.isEmpty()) {
             int[] oreIds = OreDictionary.getOreIDs(stack);
 
             for (int oreId : oreIds) {
@@ -82,7 +82,7 @@ public class RecipeWolfArmorDyes implements IRecipe {
                 List<ItemStack> ores = OreDictionary.getOres(oreName);
 
                 for (ItemStack oreStack : ores) {
-                    if(!oreStack.func_190926_b()) {
+                    if(!oreStack.isEmpty()) {
                         if (oreStack.getItem() == Items.DYE && oreStack.getItemDamage() != Short.MAX_VALUE) { // a dye but not just any dye
                             dyeEquivalent = oreStack.getItemDamage();
                             break;
@@ -107,7 +107,7 @@ public class RecipeWolfArmorDyes implements IRecipe {
     @Override
     @Nonnull
     public ItemStack getCraftingResult(@Nonnull InventoryCrafting inventoryCrafting) {
-        ItemStack stack = ItemStack.field_190927_a;
+        ItemStack stack = ItemStack.EMPTY;
         int[] color = new int[3];
         int rgb;
         int rgbMax = 0;
@@ -118,16 +118,16 @@ public class RecipeWolfArmorDyes implements IRecipe {
         for(int slotIndex = 0; slotIndex < inventoryCrafting.getSizeInventory(); slotIndex++) {
             ItemStack stackInSlot = inventoryCrafting.getStackInSlot(slotIndex);
 
-            if(!stackInSlot.func_190926_b()) {
+            if(!stackInSlot.isEmpty()) {
                 if(stackInSlot.getItem() instanceof ItemWolfArmor) {
                     itemArmor = (ItemWolfArmor)stackInSlot.getItem();
 
-                    if(!itemArmor.getMaterial().getIsDyeable() || !stack.func_190926_b()) {
-                        return ItemStack.field_190927_a;
+                    if(!itemArmor.getMaterial().getIsDyeable() || !stack.isEmpty()) {
+                        return ItemStack.EMPTY;
                     }
 
                     stack = stackInSlot.copy();
-                    stack.func_190920_e(1);
+                    stack.shrink(1);
 
                     if(itemArmor.getHasColor(stackInSlot)) {
                         rgb = itemArmor.getColor(stackInSlot);
@@ -147,7 +147,7 @@ public class RecipeWolfArmorDyes implements IRecipe {
                     int dyeEquivalent = getDyeEquivalent(stackInSlot);
 
                     if(dyeEquivalent < 0) {
-                        return ItemStack.field_190927_a;
+                        return ItemStack.EMPTY;
                     }
 
                     float[] fleeceColor = EntitySheep.getDyeRgb(EnumDyeColor.byDyeDamage(dyeEquivalent));
@@ -166,7 +166,7 @@ public class RecipeWolfArmorDyes implements IRecipe {
         }
 
         if(itemArmor == null) {
-            return ItemStack.field_190927_a;
+            return ItemStack.EMPTY;
         }
 
         int redAvg = color[0] / count;
@@ -200,7 +200,7 @@ public class RecipeWolfArmorDyes implements IRecipe {
     @Override
     @Nonnull
     public ItemStack getRecipeOutput() {
-        return ItemStack.field_190927_a;
+        return ItemStack.EMPTY;
     }
 
     /**

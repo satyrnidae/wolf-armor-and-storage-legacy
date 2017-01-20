@@ -81,7 +81,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
 
                 ItemStack itemStack = entityWolfArmored.getArmorItemStack();
 
-                if (!itemStack.func_190926_b() && itemStack.getItem() instanceof ItemWolfArmor) {
+                if (!itemStack.isEmpty() && itemStack.getItem() instanceof ItemWolfArmor) {
                     ItemWolfArmor armorItem = (ItemWolfArmor) itemStack.getItem();
 
                     for (int layer = 0; layer < modelWolfArmors.length; layer++) {

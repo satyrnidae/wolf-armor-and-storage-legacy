@@ -3,6 +3,7 @@ package com.attributestudios.wolfarmor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LoggingException;
+import scala.reflect.internal.Trees;
 
 import javax.annotation.Nonnull;
 
@@ -42,7 +43,7 @@ public class LogHelper {
      * @param ex    The exception to log
      */
     @SuppressWarnings("WeakerAccess")
-    public void log(@Nonnull Level level, @Nonnull Exception ex) {
+    public void log(@Nonnull Level level, @Nonnull Throwable ex) {
         log(level, ex, level);
     }
 
@@ -54,7 +55,7 @@ public class LogHelper {
      * @param stackTraceLevel The logging level to log the stack trace at
      */
     @SuppressWarnings("WeakerAccess")
-    public void log(@Nonnull Level level, @Nonnull Exception ex, @Nonnull Level stackTraceLevel) {
+    public void log(@Nonnull Level level, @Nonnull Throwable ex, @Nonnull Level stackTraceLevel) {
         log(level, ex.getMessage());
 
         for (StackTraceElement stackTraceElement : ex.getStackTrace()) {
@@ -137,7 +138,7 @@ public class LogHelper {
      *
      * @param ex The exception to log
      */
-    public void fatal(@Nonnull Exception ex) {
+    public void fatal(@Nonnull Throwable ex) {
         log(Level.FATAL, ex);
     }
 

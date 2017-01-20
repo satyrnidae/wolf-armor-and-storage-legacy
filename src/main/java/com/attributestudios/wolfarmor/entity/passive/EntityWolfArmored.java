@@ -125,7 +125,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
             for (int slotIndex = 0; slotIndex < numberOfItemsExisting; slotIndex++) {
                 ItemStack stackInSlot = inventoryExisting.getStackInSlot(slotIndex);
 
-                if (!stackInSlot.func_190926_b()) {
+                if (!stackInSlot.isEmpty()) {
                     this.inventory.setInventorySlotContents(slotIndex, stackInSlot.copy());
                 }
             }
@@ -143,7 +143,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
     protected void entityInit() {
         super.entityInit();
         this.dataManager.register(HAS_CHEST, (byte) 0);
-        this.dataManager.register(ARMOR_ITEM, ItemStack.field_190927_a);
+        this.dataManager.register(ARMOR_ITEM, ItemStack.EMPTY);
     }
 
     /**
@@ -167,7 +167,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
                  slotIndex++) {
                 ItemStack stackInSlot = this.getInventory().getStackInSlot(slotIndex);
 
-                if (!stackInSlot.func_190926_b()) {
+                if (!stackInSlot.isEmpty()) {
                     NBTTagCompound slotTag = new NBTTagCompound();
 
                     slotTag.setByte(NBT_TAG_SLOT, slotIndex);
@@ -184,7 +184,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
         {
             ItemStack armorItem = getArmorItemStack();
 
-            if(!armorItem.func_190926_b()) {
+            if(!armorItem.isEmpty()) {
                 tags.setTag(NBT_TAG_ARMOR_ITEM, armorItem.writeToNBT(new NBTTagCompound()));
             }
             else {
@@ -261,7 +261,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
         {
             ItemStack armorItemStack = this.getArmorItemStack();
 
-            if(!armorItemStack.func_190926_b() && getIsValidWolfArmorItem(armorItemStack.getItem()))
+            if(!armorItemStack.isEmpty() && getIsValidWolfArmorItem(armorItemStack.getItem()))
             {
                 totalArmor += ((ItemWolfArmor)armorItemStack.getItem()).getDamageReductionAmount();
             }
@@ -280,9 +280,9 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
         if(this.getHasArmor()) {
             ItemStack armorItem = this.getArmorItemStack();
 
-            if(!armorItem.func_190926_b()) {
+            if(!armorItem.isEmpty()) {
                 this.entityDropItem(armorItem, 0);
-                this.inventory.setInventorySlotContents(0, ItemStack.field_190927_a);
+                this.inventory.setInventorySlotContents(0, ItemStack.EMPTY);
             }
         }
 
@@ -291,9 +291,9 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
             for(int slotIndex = 1; slotIndex < getMaxSizeInventory(); slotIndex++) {
                 ItemStack stack = this.inventory.getStackInSlot(slotIndex);
 
-                if(!stack.func_190926_b()) {
+                if(!stack.isEmpty()) {
                     this.entityDropItem(stack, 0);
-                    this.inventory.setInventorySlotContents(slotIndex, ItemStack.field_190927_a);
+                    this.inventory.setInventorySlotContents(slotIndex, ItemStack.EMPTY);
                 }
             }
         }
@@ -312,7 +312,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
             case MAIN_HAND:
                 return this.getArmorItemStack();
             default:
-                return ItemStack.field_190927_a;
+                return ItemStack.EMPTY;
         }
     }
 
@@ -326,8 +326,8 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
     public boolean processInteract(@Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
 
-        if(!stack.func_190926_b() && stack.getItem() == Items.SPAWN_EGG) {
-            if (!worldObj.isRemote) {
+        if(!stack.isEmpty() && stack.getItem() == Items.SPAWN_EGG) {
+            if (!world.isRemote) {
                 return spawnEggInteract(player, stack) || super.processInteract(player, hand);
             }
             return super.processInteract(player, hand);
@@ -340,7 +340,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
                 return true;
             }
             else {
-                if(!stack.func_190926_b()) {
+                if(!stack.isEmpty()) {
                     if(WolfArmorMod.getConfiguration().getIsWolfChestEnabled()
                        && Block.getBlockFromItem(stack.getItem()) == Blocks.CHEST
                        && !this.getHasChest()) {
@@ -348,7 +348,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
                         this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1, (this.getRNG().nextFloat() - this.getRNG().nextFloat()) * 0.2F + 1);
                         this.inventoryInit();
                         if (!player.capabilities.isCreativeMode) {
-                            stack.func_190918_g(1);
+                            stack.shrink(1);
                         }
 
                         return true;
@@ -371,7 +371,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
      */
     @Override
     public void playEquipSound(@Nonnull ItemStack stack) {
-        if(!stack.func_190926_b() && stack.getItem() instanceof ItemWolfArmor) {
+        if(!stack.isEmpty() && stack.getItem() instanceof ItemWolfArmor) {
             ItemWolfArmor armorItem = (ItemWolfArmor)stack.getItem();
             SoundEvent sound = armorItem.getMaterial().getEquipSound();
 
@@ -390,7 +390,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
     @Nonnull
     public ItemStack getPickedResult(@Nonnull RayTraceResult rayTraceResult) {
 
-        ResourceLocation name = EntityList.func_191306_a(EntityWolf.class);
+        ResourceLocation name = EntityList.getKey(EntityWolf.class);
         if(name != null && EntityList.ENTITY_EGGS.containsKey(name)) {
             ItemStack stack = new ItemStack(Items.SPAWN_EGG);
             ItemMonsterPlacer.applyEntityIdToItemStack(stack, name);
@@ -398,7 +398,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
             return stack;
         }
 
-        return ItemStack.field_190927_a;
+        return ItemStack.EMPTY;
     }
 
     /**
@@ -410,12 +410,12 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
         if (this.getHasArmor()) {
             ItemStack armorStack = this.inventory.getStackInSlot(0);
 
-            if (!armorStack.func_190926_b() && getIsValidWolfArmorItem(armorStack)) {
+            if (!armorStack.isEmpty() && getIsValidWolfArmorItem(armorStack)) {
                 armorStack.damageItem((int) Math.ceil(damage), this);
 
-                if (armorStack.func_190926_b())
+                if (armorStack.isEmpty())
                 {
-                    this.equipArmor(ItemStack.field_190927_a);
+                    this.equipArmor(ItemStack.EMPTY);
                 }
             }
         }
@@ -427,7 +427,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
      * @return <tt>true</tt> if successful, <tt>false</tt> otherwise
      */
     public boolean equipArmor(@Nonnull ItemStack armorItemStack) {
-        if(!getIsValidWolfArmorItem(armorItemStack) || (this.getHasArmor() && !armorItemStack.func_190926_b())) {
+        if(!getIsValidWolfArmorItem(armorItemStack) || (this.getHasArmor() && !armorItemStack.isEmpty())) {
             return false;
         }
 
@@ -452,7 +452,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
      */
     @SuppressWarnings("WeakerAccess")
     public static boolean getIsValidWolfArmorItem(@Nonnull ItemStack item) {
-        return item.func_190926_b() || getIsValidWolfArmorItem(item.getItem());
+        return item.isEmpty() || getIsValidWolfArmorItem(item.getItem());
     }
 
 
@@ -465,14 +465,14 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
      * @param player The player
      */
     private void openWolfGui(@Nonnull EntityPlayer player) {
-        if(!this.worldObj.isRemote) {
+        if(!this.world.isRemote) {
             this.aiSit.setSitting(true);
             player.openGui(WolfArmorMod.instance,
                            this.getEntityId(),
-                           this.worldObj,
-                           MathHelper.floor_double(this.posX),
-                           MathHelper.floor_double(this.posY),
-                           MathHelper.floor_double(this.posZ));
+                           this.world,
+                           MathHelper.floor(this.posX),
+                           MathHelper.floor(this.posY),
+                           MathHelper.floor(this.posZ));
         }
     }
 
@@ -483,7 +483,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
      * @return <tt>true</tt> if the player successfully interacted with this entity, <tt>false</tt> if not
      */
     private boolean spawnEggInteract(@Nonnull EntityPlayer player, @Nonnull ItemStack stack) {
-        ResourceLocation entityName = ItemMonsterPlacer.func_190908_h(stack);
+        ResourceLocation entityName = ItemMonsterPlacer.getNamedIdFrom(stack);
 
         if(entityName != null) {
             Class<? extends Entity> clazz = EntityList.getClass(entityName);
@@ -493,13 +493,13 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
                 if (child != null) {
                     child.setGrowingAge(-24000);
                     child.setLocationAndAngles(posX, posY, posZ, 0, 0);
-                    worldObj.spawnEntityInWorld(child);
+                    world.spawnEntity(child);
 
                     if (stack.hasDisplayName()) {
                         child.setCustomNameTag(stack.getDisplayName());
                     }
                     if (!player.capabilities.isCreativeMode) {
-                        stack.func_190918_g(1);
+                        stack.shrink(1);
                     }
 
                     return true;
@@ -548,7 +548,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
      * @return A boolean value indicating whether or not the entity is currently armored.
      */
     public boolean getHasArmor() {
-        return !this.getArmorItemStack().func_190926_b();
+        return !this.getArmorItemStack().isEmpty();
     }
 
     /**
@@ -570,17 +570,17 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
     public ItemStack getArmorItemStack() {
         ItemStack itemStack = this.dataManager.get(ARMOR_ITEM);
 
-        if(!itemStack.func_190926_b()) {
+        if(!itemStack.isEmpty()) {
 
             if(!getIsValidWolfArmorItem(itemStack)) {
-                this.dataManager.set(ARMOR_ITEM, ItemStack.field_190927_a);
-                return ItemStack.field_190927_a;
+                this.dataManager.set(ARMOR_ITEM, ItemStack.EMPTY);
+                return ItemStack.EMPTY;
             }
 
             return itemStack;
         }
 
-        return ItemStack.field_190927_a;
+        return ItemStack.EMPTY;
     }
 
     /**

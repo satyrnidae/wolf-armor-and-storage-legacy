@@ -41,7 +41,7 @@ public class ItemWolfArmor extends Item {
         protected ItemStack dispenseStack(@Nonnull IBlockSource source, @Nonnull ItemStack stack)
         {
             ItemStack itemStack = ItemWolfArmor.dispenseWolfArmor(source, stack);
-            return !itemStack.func_190926_b() ? itemStack : super.dispenseStack(source, stack);
+            return !itemStack.isEmpty() ? itemStack : super.dispenseStack(source, stack);
         }
     };
 
@@ -77,7 +77,7 @@ public class ItemWolfArmor extends Item {
      * @param stack The item stack
      */
     public void removeColor(@Nonnull ItemStack stack) {
-        if(!stack.func_190926_b() && this.material.getIsDyeable()) {
+        if(!stack.isEmpty() && this.material.getIsDyeable()) {
             if(this.getHasColor(stack)) {
                 NBTTagCompound stackCompound = stack.getTagCompound();
                 if (stackCompound != null) {
@@ -113,12 +113,12 @@ public class ItemWolfArmor extends Item {
 
             if(wolf != null) {
                 ItemStack copyStack = stack.copy();
-                copyStack.func_190920_e(1);
+                copyStack.setCount(1);
                 if (!wolf.equipArmor(copyStack)) {
-                    return ItemStack.field_190927_a;
+                    return ItemStack.EMPTY;
                 }
 
-                stack.func_190918_g(1);
+                stack.shrink(1);
             }
         }
 
@@ -164,7 +164,7 @@ public class ItemWolfArmor extends Item {
      * @return A boolean representing whether or not the stack has a color applied
      */
     public boolean getHasColor(@Nonnull ItemStack stack) {
-        if(!stack.func_190926_b() && this.getMaterial().getIsDyeable()) {
+        if(!stack.isEmpty() && this.getMaterial().getIsDyeable()) {
             if(stack.hasTagCompound()) {
                 NBTTagCompound tagCompound = stack.getTagCompound();
 
@@ -185,7 +185,7 @@ public class ItemWolfArmor extends Item {
      * @return The integer value of the color
      */
     public int getColor(@Nonnull ItemStack stack) {
-        if(!this.getMaterial().getIsDyeable() || stack.func_190926_b()) {
+        if(!this.getMaterial().getIsDyeable() || stack.isEmpty()) {
             return -1;
         }
 
@@ -210,7 +210,7 @@ public class ItemWolfArmor extends Item {
         if(!this.getMaterial().getIsDyeable()) {
             throw new UnsupportedOperationException("Wolf armor material is not dyeable!");
         }
-        else if(!stack.func_190926_b()) {
+        else if(!stack.isEmpty()) {
             NBTTagCompound tagCompound = stack.getTagCompound();
 
             if(tagCompound == null) {

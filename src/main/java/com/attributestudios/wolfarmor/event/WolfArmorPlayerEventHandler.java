@@ -50,7 +50,7 @@ public class WolfArmorPlayerEventHandler {
     {
         if(!event.getWorld().isRemote)
         {
-            if(!stack.func_190926_b())
+            if(!stack.isEmpty())
             {
                 IBlockState blockCauldronState = event.getWorld().getBlockState(event.getPos());
                 int fillLevel = blockCauldronState.getValue(BlockCauldron.LEVEL);

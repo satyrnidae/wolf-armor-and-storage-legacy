@@ -5,6 +5,8 @@ import com.attributestudios.wolfarmor.common.ReflectionCache;
 import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -17,12 +19,6 @@ import java.lang.reflect.Method;
  * Contains all forge subscribed events for entities
  */
 public class WolfArmorEntityEventHandler {
-    //region Fields
-
-    private static final String COPY_DATA_FROM_OLD_SRG = "func_180432_n";
-
-    //endregion Fields
-
     //region Public / Protected Methods
 
     /**
@@ -32,27 +28,34 @@ public class WolfArmorEntityEventHandler {
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntityJoinWorld(@Nonnull EntityJoinWorldEvent event) {
-        if (!event.getWorld().isRemote) {
-            if (event.getEntity().getClass() == EntityWolf.class) {
-                EntityWolfArmored replaceEntity = new EntityWolfArmored(event.getWorld());
+        World world = event.getWorld();
+        if (!world.isRemote) {
+            Entity entity = event.getEntity();
+
+            if (entity.getClass() == EntityWolf.class) {
+                EntityWolfArmored entityWolfArmored = new EntityWolfArmored(world);
 
                 try {
-                    Method copyDataFromOld = ReflectionCache.getMethod(Entity.class, replaceEntity, new String[] {COPY_DATA_FROM_OLD_SRG, "copyDataFromOld"}, Entity.class);
+                    entityWolfArmored.copyLocationAndAnglesFrom(entity);
 
-                    if(copyDataFromOld != null) {
-                        copyDataFromOld.invoke(replaceEntity, event.getEntity());
+                    Method writeEntityToNBT = ReflectionCache.getMethod(Entity.class, entity, new String[] {"func_70014_b", "writeEntityToNBT"}, NBTTagCompound.class);
+
+                    if(writeEntityToNBT != null) {
+                        try {
+                            NBTTagCompound compound = new NBTTagCompound();
+                            writeEntityToNBT.invoke(entity, compound);
+                            entityWolfArmored.readEntityFromNBT(compound);
+                        } catch(InvocationTargetException ex) {
+                            WolfArmorMod.getLogger().warning("NBT data for spawned wolf has been lost! InvocationTargetException: " + ex.getMessage());
+                        }
                     }
                 } catch (IllegalAccessException ex) {
                     WolfArmorMod.getLogger().fatal(ex);
-                    throw new RuntimeException("Reflection failed in WolfArmorEntityEventHandler: invoke failed with IllegalAccessException", ex);
-                }
-                catch (InvocationTargetException ex) {
-                    WolfArmorMod.getLogger().fatal(ex);
-                    throw new RuntimeException("Reflection failed in WolfArmorEntityEventHandler: invoke failed with InvocationTargetException", ex);
+                    throw new RuntimeException("Reflection failed in WolfArmorEntityEventHandler: invoke failed (" + ex.getMessage() +")", ex);
                 }
 
-                event.getWorld().spawnEntityInWorld(replaceEntity);
-                event.getEntity().setDead();
+                world.spawnEntity(entityWolfArmored);
+                entity.setDead();
                 event.setCanceled(true);
             }
         }
