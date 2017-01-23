@@ -1,14 +1,16 @@
 package com.attributestudios.wolfarmor.client.gui;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import com.attributestudios.wolfarmor.common.capabilities.IWolfArmor;
 import com.attributestudios.wolfarmor.common.inventory.ContainerWolfInventory;
-import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor.WolfArmorMaterial;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
@@ -29,10 +31,12 @@ public class GuiWolfInventory extends GuiContainer {
     private IInventory wolfInventory;
     private IInventory playerInventory;
 
-    private EntityWolfArmored theWolf;
+    private EntityWolf theWolf;
 
     private float screenPositionX;
     private float screenPositionY;
+    
+    private final IWolfArmor wolfArmor;
 
     //endregion Fields
 
@@ -46,9 +50,10 @@ public class GuiWolfInventory extends GuiContainer {
      */
     public GuiWolfInventory(@Nonnull IInventory playerInventory,
                             @Nonnull IInventory wolfInventory,
-                            @Nonnull EntityWolfArmored theWolf,
+                            @Nonnull EntityWolf theWolf,
                             @Nonnull EntityPlayer player) {
         super(new ContainerWolfInventory(playerInventory, wolfInventory, theWolf, player));
+        this.wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLFARMMOR, null);
         this.wolfInventory = wolfInventory;
         this.playerInventory = playerInventory;
         this.theWolf = theWolf;
@@ -110,11 +115,11 @@ public class GuiWolfInventory extends GuiContainer {
             int positionY = (this.height - this.ySize) / 2;
             this.drawTexturedModalRect(positionX, positionY, 0, 0, this.xSize, this.ySize);
 
-            if (this.theWolf.getHasArmor()) {
+            if (this.wolfArmor.getHasArmor()) {
                 this.drawTexturedModalRect(positionX + 7, positionY + 17, this.xSize, 36, 18, 18);
             }
 
-            if (this.theWolf.getHasChest()) {
+            if (this.wolfArmor.getHasChest()) {
                 this.drawTexturedModalRect(positionX + 97, positionY + 17, this.xSize, 0, 54, 36);
             }
 
@@ -147,7 +152,7 @@ public class GuiWolfInventory extends GuiContainer {
 
                 int yPosition = 56;
 
-                if (!WolfArmorMod.getConfiguration().getIsWolfArmorDisplayEnabled() || !this.theWolf.getHasArmor()) {
+                if (!WolfArmorMod.getConfiguration().getIsWolfArmorDisplayEnabled() || !this.wolfArmor.getHasArmor()) {
                     yPosition += 5;
                 }
 
@@ -171,7 +176,7 @@ public class GuiWolfInventory extends GuiContainer {
                 }
             }
 
-            if (WolfArmorMod.getConfiguration().getIsWolfArmorDisplayEnabled() && this.theWolf.getHasArmor()) {
+            if (WolfArmorMod.getConfiguration().getIsWolfArmorDisplayEnabled() && this.wolfArmor.getHasArmor()) {
                 int yPosition = 66;
 
                 if (!WolfArmorMod.getConfiguration().getIsWolfHealthDisplayEnabled()) {
