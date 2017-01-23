@@ -36,7 +36,6 @@ public class ClientProxy extends CommonProxy {
 
     /**
      * Registers entity renderers for this mod.
-     * @param preInitializationEvent The pre-initialization event
      */
     @Override
     protected void registerEntityRenderingHandlers() {    	
