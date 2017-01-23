@@ -1,11 +1,12 @@
 package com.attributestudios.wolfarmor.item;
 
-import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
@@ -19,6 +20,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import com.attributestudios.wolfarmor.common.capabilities.IWolfArmor;
+
 import java.util.List;
 
 /**
@@ -99,12 +104,12 @@ public class ItemWolfArmor extends Item {
      */
     @Nullable
     private static ItemStack dispenseWolfArmor(@Nonnull IBlockSource source, @Nonnull ItemStack stack) {
-        BlockPos blockPos = source.getBlockPos().offset(source.func_189992_e().getValue(BlockDispenser.FACING));
-        List<EntityWolfArmored> wolves = source.getWorld().getEntitiesWithinAABB(EntityWolfArmored.class, new AxisAlignedBB(blockPos));
+        BlockPos blockPos = source.getBlockPos().offset(source.getBlockState().getValue(BlockDispenser.FACING));
+        List<EntityWolf> wolves = source.getWorld().getEntitiesWithinAABB(EntityWolf.class, new AxisAlignedBB(blockPos));
         if (!wolves.isEmpty()) {
-            EntityWolfArmored wolf = null;
+        	EntityWolf wolf = null;
 
-            for (EntityWolfArmored entity : wolves) {
+            for (EntityWolf entity : wolves) {
                 if (entity.isTamed() && !entity.isChild()) {
                     wolf = entity;
                     break;
@@ -114,7 +119,9 @@ public class ItemWolfArmor extends Item {
             if (wolf != null) {
                 ItemStack copyStack = stack.copy();
                 copyStack.stackSize = 1;
-                if (!wolf.equipArmor(copyStack)) {
+                IWolfArmor wolfArmor = wolf.getCapability(CapabilityWolfArmor.WOLFARMMOR, null);
+
+                if (!wolfArmor.equipArmor(copyStack)) {
                     return null;
                 }
 
@@ -268,6 +275,8 @@ public class ItemWolfArmor extends Item {
         private final boolean isDyeable;
         private final boolean hasOverlay;
         private final SoundEvent equipSound;
+        
+        public final AttributeModifier armorAttr;
 
         //endregion Fields
 
@@ -289,6 +298,7 @@ public class ItemWolfArmor extends Item {
             this.defaultColor = defaultColor;
             this.equipSound = equipSound;
             this.hasOverlay = hasOverlay;
+            this.armorAttr = new AttributeModifier(name, (double)damageReductionAmount, 0);
         }
 
         //endregion Constructors
