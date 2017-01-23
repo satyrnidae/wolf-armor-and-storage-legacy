@@ -2,7 +2,6 @@ package com.attributestudios.wolfarmor.common;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.common.network.WolfArmorGuiHandler;
-import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import com.attributestudios.wolfarmor.event.WolfArmorEntityEventHandler;
 import com.attributestudios.wolfarmor.event.WolfArmorPlayerEventHandler;
 import com.attributestudios.wolfarmor.item.WolfArmorItems;
@@ -14,6 +13,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.oredict.RecipeSorter;
@@ -41,7 +41,6 @@ public class CommonProxy {
      * @param preInitializationEvent The pre-initialization event
      */
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
-        registerEntityRenderingHandlers(preInitializationEvent);
         registerItems(preInitializationEvent);
         registerItemRenderers(preInitializationEvent);
     }
@@ -50,7 +49,7 @@ public class CommonProxy {
      * Registers entity renderers.  This should not do anything in a common proxy.
      * @param preInitializationEvent The pre-initialization event
      */
-    protected void registerEntityRenderingHandlers(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
+    protected void registerEntityRenderingHandlers() {
         // does nothing server-side
     }
 
@@ -82,7 +81,11 @@ public class CommonProxy {
         this.registerItemColorHandlers(initializationEvent);
         this.registerRecipes(initializationEvent);
         this.registerEventListeners(initializationEvent);
-        this.registerEntities(initializationEvent);
+        //Actually there are no need to register a new entity to storage the ammo data.
+        //It will make the compatibility to another mods much more harder.
+        //Instead you should using the forge capability system to override the wolf's data by attaching data to entity object.
+        //And more information at: https://mcforge.readthedocs.io/en/latest/datastorage/capabilities/
+        //this.registerEntities(event);
     }
 
     /**
@@ -112,15 +115,6 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.register(new WolfArmorPlayerEventHandler());
     }
 
-    /**
-     * Registers all custom mod entities.
-     * @param initializationEvent The initialization event
-     */
-    @SuppressWarnings("WeakerAccess")
-    protected void registerEntities(@SuppressWarnings("unused") @Nonnull FMLInitializationEvent initializationEvent) {
-        EntityRegistry.registerModEntity(EntityWolfArmored.class, "Wolf", 0, WolfArmorMod.instance, 80, 3, false);
-    }
-
     //endregion Initialization
 
     //region Post-Initialization
@@ -132,7 +126,14 @@ public class CommonProxy {
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
         this.registerGuiHandlers(postInitializationEvent);
     }
+    
+    private boolean IsRenderSetted = false;
 
+    public void serverAboutToStart(@Nonnull FMLServerAboutToStartEvent event) {
+    	if (!IsRenderSetted) {
+    		IsRenderSetted = true; this.registerEntityRenderingHandlers();
+    	}
+    }
     /**
      * Registers all GUI handlers for the mod.
      * @param postInitializationEvent The post-initialization event.
