@@ -2,9 +2,11 @@ package com.attributestudios.wolfarmor.client.renderer.entity.layer;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.client.model.ModelWolfBackpack;
-import com.attributestudios.wolfarmor.client.renderer.entity.RenderWolfArmored;
-import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
+import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import com.attributestudios.wolfarmor.common.capabilities.IWolfArmor;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.entity.RenderWolf;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.util.ResourceLocation;
@@ -22,7 +24,7 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
     //region Fields
 
     private ModelWolfBackpack modelWolfBackpack;
-    private RenderWolfArmored renderer;
+    private final RenderLiving<? extends EntityWolf> renderer;
 
     private static final ResourceLocation TEXTURE_WOLF_BACKPACK = new ResourceLocation(WolfArmorMod.MOD_ID, "textures/models/wolf_pack.png");
 
@@ -34,7 +36,7 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
      * Creates a new layer renderer for armored wolf backpacks.
      * @param renderer The parent renderer.
      */
-    public LayerWolfBackpack(@Nonnull RenderWolfArmored renderer) {
+    public LayerWolfBackpack(@Nonnull RenderLiving<? extends EntityWolf> renderer) {
         this.renderer = renderer;
 
         this.modelWolfBackpack = new ModelWolfBackpack(0.0F);
@@ -66,49 +68,47 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
                               float scale) {
 
         if(WolfArmorMod.getConfiguration().getIsWolfChestRenderEnabled()) {
-            if (entityWolf instanceof EntityWolfArmored) {
-                EntityWolfArmored entityWolfArmored = (EntityWolfArmored) entityWolf;
+        	IWolfArmor wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLFARMMOR, null); 
+            if (wolfArmor.getHasChest()) {
 
-                if (entityWolfArmored.getHasChest()) {
+                this.modelWolfBackpack.setModelAttributes(renderer.getMainModel());
+                this.modelWolfBackpack.setLivingAnimations(entityWolf, limbSwing, limbSwingAmount, partialTicks);
 
-                    this.modelWolfBackpack.setModelAttributes(renderer.getMainModel());
-                    this.modelWolfBackpack.setLivingAnimations(entityWolfArmored, limbSwing, limbSwingAmount, partialTicks);
+                this.renderer.bindTexture(TEXTURE_WOLF_BACKPACK);
 
-                    this.renderer.bindTexture(TEXTURE_WOLF_BACKPACK);
+                GlStateManager.color(1, 1, 1, 1);
 
-                    GlStateManager.color(1, 1, 1, 1);
-
-                    if (!entityWolfArmored.isInvisible()) {
-                        this.modelWolfBackpack.render(entityWolfArmored, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-                    } else {
-                        GlStateManager.pushMatrix();
+                if (!entityWolf.isInvisible()) {
+                    this.modelWolfBackpack.render(entityWolf, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+                } else {
+                    GlStateManager.pushMatrix();
+                    {
+                        GlStateManager.color(1, 1, 1, 0.15F);
+                        GlStateManager.depthMask(false);
                         {
-                            GlStateManager.color(1, 1, 1, 0.15F);
-                            GlStateManager.depthMask(false);
+                            GlStateManager.enableBlend();
                             {
-                                GlStateManager.enableBlend();
-                                {
-                                    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
-                                            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                                GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+                                        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-                                    this.modelWolfBackpack.render(entityWolfArmored,
-                                            limbSwing,
-                                            limbSwingAmount,
-                                            ageInTicks,
-                                            netHeadYaw,
-                                            headPitch,
-                                            scale);
+                                this.modelWolfBackpack.render(entityWolf,
+                                        limbSwing,
+                                        limbSwingAmount,
+                                        ageInTicks,
+                                        netHeadYaw,
+                                        headPitch,
+                                        scale);
 
-                                }
-                                GlStateManager.disableBlend();
                             }
-                            GlStateManager.depthMask(true);
+                            GlStateManager.disableBlend();
                         }
-                        GlStateManager.popMatrix();
+                        GlStateManager.depthMask(true);
                     }
+                    GlStateManager.popMatrix();
                 }
             }
         }
+        
     }
 
     //endregion Public / Protected Methods

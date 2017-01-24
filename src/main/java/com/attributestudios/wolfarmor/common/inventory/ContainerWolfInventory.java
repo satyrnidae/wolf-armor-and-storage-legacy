@@ -1,6 +1,6 @@
 package com.attributestudios.wolfarmor.common.inventory;
 
-import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -10,6 +10,9 @@ import net.minecraft.item.ItemStack;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import com.attributestudios.wolfarmor.common.capabilities.IWolfArmor;
+
 /**
  * Models a container for a wolf's inventory.
  */
@@ -17,7 +20,7 @@ public class ContainerWolfInventory extends Container {
     //region Fields
 
     private IInventory wolfInventory;
-    private EntityWolfArmored theWolf;
+    private EntityWolf theWolf;
 
     //endregion Fields
 
@@ -31,7 +34,7 @@ public class ContainerWolfInventory extends Container {
      */
     public ContainerWolfInventory(@Nonnull IInventory playerInventory,
                                   @Nonnull final IInventory wolfInventory,
-                                  @Nonnull final EntityWolfArmored theWolf,
+                                  @Nonnull final EntityWolf theWolf,
                                   @Nonnull EntityPlayer player) {
         this.wolfInventory = wolfInventory;
         this.theWolf = theWolf;
@@ -57,13 +60,15 @@ public class ContainerWolfInventory extends Container {
              */
             @Override
             public boolean isItemValid(@Nullable ItemStack stack) {
-                return stack == null || (super.isItemValid(stack) && EntityWolfArmored.getIsValidWolfArmorItem(stack.getItem()));
+                return stack == null || (super.isItemValid(stack) && CapabilityWolfArmor.getIsValidWolfArmorItem(stack.getItem()));
             }
         });
+        
+        IWolfArmor wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLFARMMOR, null);
 
         int x;
         int y;
-        if(theWolf.getHasChest()) {
+        if(wolfArmor.getHasChest()) {
             for(y = 0; y < 2; y++) {
                 for(x = 0; x < 3; x++) {
                     this.addSlotToContainer(new Slot(wolfInventory, 1 + x + y * 3, 98 + x * 18, 18 + y * 18));

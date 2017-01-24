@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 
 import javax.annotation.Nonnull;
 
@@ -16,7 +17,8 @@ import javax.annotation.Nonnull;
 @Mod(modid = WolfArmorMod.MOD_ID,
      name = WolfArmorMod.MOD_NAME,
      version = WolfArmorMod.MOD_VERSION,
-     guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory")
+     guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory",
+     dependencies = "after: SophisticatedWolves")
 public class WolfArmorMod {
     //region Fields
 
@@ -67,6 +69,11 @@ public class WolfArmorMod {
     @Mod.EventHandler
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
         proxy.postInit(postInitializationEvent);
+    }
+    
+    @Mod.EventHandler 
+    public void ServerAboutToStart(FMLServerAboutToStartEvent event) {
+    	proxy.serverAboutToStart(event);
     }
 
     //endregion Public / Protected Methods

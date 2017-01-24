@@ -1,11 +1,11 @@
 package com.attributestudios.wolfarmor.client.model;
 
-import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -123,8 +123,8 @@ public class ModelWolfBackpack extends ModelBase {
                                     float limbSwing,
                                     float limbSwingAmount,
                                     float partialTickTime) {
-        if(entity instanceof EntityWolfArmored) {
-            EntityWolfArmored entityWolfArmored = (EntityWolfArmored) entity;
+        if(entity instanceof EntityWolf) {
+        	EntityWolf entityWolfArmored = (EntityWolf) entity;
 
             float rotationPointY = 14;
             float rotationPointZ = 2;
