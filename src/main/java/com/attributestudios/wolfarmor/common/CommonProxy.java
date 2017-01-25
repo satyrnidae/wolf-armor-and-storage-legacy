@@ -2,6 +2,7 @@ package com.attributestudios.wolfarmor.common;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.common.network.WolfArmorGuiHandler;
+import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import com.attributestudios.wolfarmor.event.WolfArmorEntityEventHandler;
 import com.attributestudios.wolfarmor.event.WolfArmorPlayerEventHandler;
 import com.attributestudios.wolfarmor.item.WolfArmorItems;
@@ -41,13 +42,12 @@ public class CommonProxy {
      * @param preInitializationEvent The pre-initialization event
      */
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
-        registerItems(preInitializationEvent);
+        registerItems();
         registerItemRenderers(preInitializationEvent);
     }
 
     /**
      * Registers entity renderers.  This should not do anything in a common proxy.
-     * @param preInitializationEvent The pre-initialization event
      */
     protected void registerEntityRenderingHandlers() {
         // does nothing server-side
@@ -56,7 +56,8 @@ public class CommonProxy {
     /**
      * Registers all items for this mod
      */
-    protected void registerItems(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
+    @SuppressWarnings("WeakerAccess")
+    protected void registerItems() {
         WolfArmorItems.init();
     }
 
@@ -81,11 +82,8 @@ public class CommonProxy {
         this.registerItemColorHandlers(initializationEvent);
         this.registerRecipes(initializationEvent);
         this.registerEventListeners(initializationEvent);
-        //Actually there are no need to register a new entity to storage the ammo data.
-        //It will make the compatibility to another mods much more harder.
-        //Instead you should using the forge capability system to override the wolf's data by attaching data to entity object.
-        //And more information at: https://mcforge.readthedocs.io/en/latest/datastorage/capabilities/
-        //this.registerEntities(event);
+        // include for world upgrade
+        this.registerEntities();
     }
 
     /**
@@ -93,6 +91,15 @@ public class CommonProxy {
      * @param initializationEvent The initialization event
      */
     protected void registerItemColorHandlers(@Nonnull FMLInitializationEvent initializationEvent) {
+    }
+
+    /**
+     * Registers all custom mod entities.
+     */
+    @SuppressWarnings({"WeakerAccess", "DeprecatedIsStillUsed"})
+    @Deprecated
+    protected void registerEntities() {
+        EntityRegistry.registerModEntity(EntityWolfArmored.class, "Wolf", 0, WolfArmorMod.instance, 80, 3, false);
     }
 
     /**

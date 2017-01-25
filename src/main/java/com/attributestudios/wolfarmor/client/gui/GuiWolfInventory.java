@@ -53,7 +53,7 @@ public class GuiWolfInventory extends GuiContainer {
                             @Nonnull EntityWolf theWolf,
                             @Nonnull EntityPlayer player) {
         super(new ContainerWolfInventory(playerInventory, wolfInventory, theWolf, player));
-        this.wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLFARMMOR, null);
+        this.wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
         this.wolfInventory = wolfInventory;
         this.playerInventory = playerInventory;
         this.theWolf = theWolf;

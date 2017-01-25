@@ -1,13 +1,14 @@
 package com.attributestudios.wolfarmor.event;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.common.ReflectionCache;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.common.capabilities.IWolfArmor;
 
+import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -27,91 +28,107 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import javax.annotation.Nullable;
 
 /**
  * Contains all forge subscribed events for entities
  */
 public class WolfArmorEntityEventHandler {
     //region Public / Protected Methods
-    
+
+    /**
+     * Converts old EntityWolfArmored back to EntityWolf to leverage capabilities system
+     * @param event The event data
+     */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onEntityJoinWorld(@Nonnull EntityJoinWorldEvent event) {
+        World world = event.getWorld();
+        if (!world.isRemote) {
+            Entity entity = event.getEntity();
+
+            if (entity.getClass() == EntityWolfArmored.class) {
+                WolfArmorMod.getLogger().warning("Replacing EntityWolfArmored with new capable wolf");
+
+                EntityWolfArmored entityWolfArmored = (EntityWolfArmored)entity;
+                EntityWolf entityWolf = new EntityWolf(world);
+                @SuppressWarnings("ConstantConditions") IWolfArmor wolfArmorCapability = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
+
+                IInventory wolfInventory = entityWolfArmored.getInventory();
+                IInventory capabilityInventory = wolfArmorCapability.getInventory();
+                for(int i = 0; i < wolfInventory.getSizeInventory(); i++) {
+                    ItemStack stack = wolfInventory.getStackInSlot(i);
+
+                    capabilityInventory.setInventorySlotContents(i, stack);
+                }
+
+                if(entityWolfArmored.getHasArmor()) {
+                    wolfArmorCapability.setArmorItemStack(entityWolfArmored.getArmorItemStack());
+                }
+
+                if(entityWolfArmored.getHasChest()) {
+                    wolfArmorCapability.setHasChest(true);
+                }
+
+                NBTTagCompound compound = new NBTTagCompound();
+                entityWolfArmored.writeToNBT(compound);
+
+                entityWolf.copyLocationAndAnglesFrom(entityWolfArmored);
+                entityWolf.readEntityFromNBT(compound);
+
+                world.spawnEntityInWorld(entityWolf);
+                entityWolfArmored.setDead();
+                event.setCanceled(true);
+            }
+        }
+    }
+
     //attach the armor capability to the wolf entity
     @SubscribeEvent
     public void onAttachCapability(AttachCapabilitiesEvent<Entity> event) {
-    	if (event.getObject() instanceof EntityWolf) 
-    		//Now, attach the armor ability here
-    		event.addCapability(new ResourceLocation("Wolf_armor"), new WolfArmorAttachment((EntityWolf)event.getObject()));
-    		
-    }
-    
-    private class WolfArmorAttachment implements ICapabilitySerializable<NBTTagCompound> {
-    	
-		private final CapabilityWolfArmor wolfArmor;
-		
-		public WolfArmorAttachment(EntityWolf wolf) {
-			this.wolfArmor = new CapabilityWolfArmor(wolf);
-		}
-		@Override
-		public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-			return capability == CapabilityWolfArmor.WOLFARMMOR;
-		}
+        Entity eventObject = event.getObject();
+        if (eventObject instanceof EntityWolf &&
+                !(eventObject instanceof EntityWolfArmored)) {
+            //Now, attach the armor ability here
+            event.addCapability(new ResourceLocation(WolfArmorMod.MOD_ID, "wolf_armor"), new CapabilityWolfArmor((EntityWolf) eventObject));
+        }
 
-		@Override
-		public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-			if (capability == CapabilityWolfArmor.WOLFARMMOR)
-				return (T)wolfArmor;
-			
-			return null;
-		}
+    }
 
-		@Override
-		public NBTTagCompound serializeNBT() {
-			return wolfArmor.writeNBT();
-		}
+    @SuppressWarnings("ConstantConditions")
+    @SubscribeEvent
+    public void onWolfHurt(LivingHurtEvent event) {
+        if (event.getEntity() instanceof EntityWolf) {
+            @Nullable IWolfArmor wolfArmor = event.getEntity().getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
+            if(wolfArmor != null) {
+                wolfArmor.damageArmor(event.getAmount());
+            }
+        }
+    }
 
-		@Override
-		public void deserializeNBT(NBTTagCompound nbt) {
-			wolfArmor.readNBT(nbt);		
-		}
-    }
-    
     @SubscribeEvent
-    public void WolfHurtEvent(LivingHurtEvent event) {
-    	if (event.getEntity() instanceof EntityWolf) {
-    		IWolfArmor wolfArmmor = event.getEntity().getCapability(CapabilityWolfArmor.WOLFARMMOR, null);
-    		if (wolfArmmor != null) 
-    			wolfArmmor.damageArmor(event.getAmount());
-    	}
+    public void onWolfDropItems(LivingDropsEvent event) {
+        if (event.getEntity() instanceof EntityWolf) {
+            IWolfArmor wolfArmor = event.getEntity().getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
+            DamageSource Source = event.getSource();
+            wolfArmor.dropEquipment(Source != null && Source.getEntity() instanceof EntityPlayer, event.getLootingLevel());
+        }
     }
-    
+
     @SubscribeEvent
-    public void WolfDropEvent(LivingDropsEvent event) {
-    	if (event.getEntity() instanceof EntityWolf) {
-    		IWolfArmor wolfArmmor = event.getEntity().getCapability(CapabilityWolfArmor.WOLFARMMOR, null);
-    		if (wolfArmmor != null) {
-    			DamageSource Source = event.getSource();
-    			wolfArmmor.dropEquipment(Source != null && Source.getEntity() instanceof EntityPlayer, event.getLootingLevel());
-    		}
-    	}
-    }
-    
-    @SubscribeEvent
-    public void PlayerIntractEvent(PlayerInteractEvent.EntityInteract event) {
-   
-    	if (event.getTarget() instanceof EntityWolf) {
-    		IWolfArmor wolfArmmor = event.getTarget().getCapability(CapabilityWolfArmor.WOLFARMMOR, null);
-    		if (wolfArmmor != null) {
-    			EntityPlayer player = event.getEntityPlayer();
-    			EnumHand hand = EnumHand.MAIN_HAND;
-    			ItemStack stack = player.getHeldItemMainhand();
-    			if (stack == null && (stack = player.getHeldItemOffhand()) != null) 
-    				hand = EnumHand.OFF_HAND;
-    			//use for open gui
-    			if (wolfArmmor.processInteract(player, hand, stack))
-    				event.setResult(Result.DENY);
-    		}
-    	}
+    public void onPlayerInteractWithWolf(PlayerInteractEvent.EntityInteract event) {
+        if (event.getTarget() instanceof EntityWolf) {
+            IWolfArmor wolfArmor = event.getTarget().getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
+            EntityPlayer player = event.getEntityPlayer();
+            EnumHand hand = EnumHand.MAIN_HAND;
+            ItemStack stack = player.getHeldItemMainhand();
+            if (stack == null && (stack = player.getHeldItemOffhand()) != null) {
+                hand = EnumHand.OFF_HAND;
+            }
+            //use for open gui
+            if (wolfArmor.processInteract(player, hand, stack)) {
+                event.setCanceled(true);
+            }
+        }
     }
     //endregion Public / Protected Methods
 }

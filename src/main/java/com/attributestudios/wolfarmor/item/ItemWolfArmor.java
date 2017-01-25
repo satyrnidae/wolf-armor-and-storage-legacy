@@ -119,7 +119,7 @@ public class ItemWolfArmor extends Item {
             if (wolf != null) {
                 ItemStack copyStack = stack.copy();
                 copyStack.stackSize = 1;
-                IWolfArmor wolfArmor = wolf.getCapability(CapabilityWolfArmor.WOLFARMMOR, null);
+                @SuppressWarnings("ConstantConditions") IWolfArmor wolfArmor = wolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
 
                 if (!wolfArmor.equipArmor(copyStack)) {
                     return null;
