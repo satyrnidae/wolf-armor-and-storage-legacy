@@ -64,7 +64,7 @@ public class ContainerWolfInventory extends Container {
             }
         });
         
-        IWolfArmor wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLFARMMOR, null);
+        IWolfArmor wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
 
         int x;
         int y;

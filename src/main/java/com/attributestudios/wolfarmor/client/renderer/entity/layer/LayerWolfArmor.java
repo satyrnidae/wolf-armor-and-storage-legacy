@@ -8,7 +8,6 @@ import com.attributestudios.wolfarmor.item.ItemWolfArmor;
 import com.google.common.collect.Maps;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderWolf;
 import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.passive.EntityWolf;
@@ -78,7 +77,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
                               float headPitch,
                               float scale) {
         if (WolfArmorMod.getConfiguration().getIsWolfArmorRenderEnabled()) {        	
-        	IWolfArmor wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLFARMMOR, null);
+        	IWolfArmor wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
 
             ItemStack itemStack = wolfArmor.getArmorItemStack();
 
