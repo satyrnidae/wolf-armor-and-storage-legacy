@@ -39,10 +39,10 @@ public class WolfArmorGuiHandler implements IGuiHandler {
                                       int y,
                                       int z) {
         Entity entity = world.getEntityByID(ID);
-             
-        if(entity != null && entity.hasCapability(CapabilityWolfArmor.WOLF_ARMOR, null)) {
-        	IWolfArmor wolfArmor = entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
-            return new ContainerWolfInventory(player.inventory, wolfArmor.getInventory(),(EntityWolf) entity, player);
+
+        if (entity != null && entity.hasCapability(CapabilityWolfArmor.WOLF_ARMOR, null)) {
+            IWolfArmor wolfArmor = entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
+            return new ContainerWolfInventory(player.inventory, wolfArmor.getInventory(), (EntityWolf) entity, player);
         }
 
         return null;
@@ -71,9 +71,9 @@ public class WolfArmorGuiHandler implements IGuiHandler {
                                       int z) {
         Entity entity = world.getEntityByID(ID);
 
-        if(entity != null && entity.hasCapability(CapabilityWolfArmor.WOLF_ARMOR, null)) {
-        	IWolfArmor wolfArmor = entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
-            return new GuiWolfInventory(player.inventory, wolfArmor.getInventory(), (EntityWolf)entity, player);
+        if (entity != null && entity.hasCapability(CapabilityWolfArmor.WOLF_ARMOR, null)) {
+            IWolfArmor wolfArmor = entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
+            return new GuiWolfInventory(player.inventory, wolfArmor.getInventory(), (EntityWolf) entity, player);
         }
 
         return null;

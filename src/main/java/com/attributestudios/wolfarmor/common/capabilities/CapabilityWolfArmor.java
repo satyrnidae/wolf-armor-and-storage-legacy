@@ -75,7 +75,7 @@ public class CapabilityWolfArmor implements ICapabilitySerializable<NBTTagCompou
 
     //private boolean
 
-    public CapabilityWolfArmor(EntityWolf wolf) {
+    public CapabilityWolfArmor(@Nonnull EntityWolf wolf) {
         this.wolf = wolf;
         dataManager = wolf.getDataManager();
         dataManager.register(HAS_CHEST, (byte) 0);
@@ -84,6 +84,7 @@ public class CapabilityWolfArmor implements ICapabilitySerializable<NBTTagCompou
     }
 
     @Override
+    @Nonnull
     public NBTTagCompound serializeNBT() {
         NBTTagCompound tags = new NBTTagCompound();
 
@@ -127,7 +128,7 @@ public class CapabilityWolfArmor implements ICapabilitySerializable<NBTTagCompou
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound tags) {
+    public void deserializeNBT(@Nonnull NBTTagCompound tags) {
         boolean entityHasChest = tags.hasKey(NBT_TAG_HAS_CHEST, 1) && tags.getBoolean(NBT_TAG_HAS_CHEST);
 
         this.setHasChest(entityHasChest);
@@ -184,6 +185,7 @@ public class CapabilityWolfArmor implements ICapabilitySerializable<NBTTagCompou
     }
 
     @Override
+    @Nullable
     public ItemStack getArmorItemStack() {
         Optional<ItemStack> itemStackOptional = this.dataManager.get(ARMOR_ITEM);
 
@@ -213,7 +215,7 @@ public class CapabilityWolfArmor implements ICapabilitySerializable<NBTTagCompou
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public void setArmorItemStack(ItemStack armorItemStack) {
+    public void setArmorItemStack(@Nullable ItemStack armorItemStack) {
         ItemStack previousItemStack = getArmorItemStack();
 
         if (armorItemStack != null && (previousItemStack == null || previousItemStack.getItem() != armorItemStack.getItem())) {
@@ -228,7 +230,7 @@ public class CapabilityWolfArmor implements ICapabilitySerializable<NBTTagCompou
 
         //update armor attribute
         @Nullable IAttributeInstance armorAttribute = wolf.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-        if(armorAttribute != null) {
+        if (armorAttribute != null) {
             armorAttribute.removeAllModifiers();
             if (armorItemStack != null)
                 armorAttribute.applyModifier(((ItemWolfArmor) armorItemStack.getItem()).getMaterial().armorAttr);
@@ -241,7 +243,7 @@ public class CapabilityWolfArmor implements ICapabilitySerializable<NBTTagCompou
     }
 
     @Override
-    public boolean equipArmor(ItemStack armorItemStack) {
+    public boolean equipArmor(@Nullable ItemStack armorItemStack) {
         if (!getIsValidWolfArmorItem(armorItemStack) || (this.getHasArmor() && armorItemStack != null)) {
             return false;
         }
@@ -264,7 +266,7 @@ public class CapabilityWolfArmor implements ICapabilitySerializable<NBTTagCompou
     }
 
     @Override
-    public boolean processInteract(@Nonnull EntityPlayer player, @Nonnull EnumHand hand, ItemStack stack) {
+    public boolean processInteract(@Nonnull EntityPlayer player, @Nonnull EnumHand hand, @Nullable ItemStack stack) {
         if (wolf.isTamed() && wolf.isOwner(player) && !wolf.isChild()) {
             if (player.isSneaking()) {
                 openWolfGui(player);
@@ -370,14 +372,15 @@ public class CapabilityWolfArmor implements ICapabilitySerializable<NBTTagCompou
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
         return capability == WOLF_ARMOR;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+    @Nullable
+    public <T> T getCapability(@Nullable Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityWolfArmor.WOLF_ARMOR) {
-            //noinspection unchecked
             return (T) this;
         }
 

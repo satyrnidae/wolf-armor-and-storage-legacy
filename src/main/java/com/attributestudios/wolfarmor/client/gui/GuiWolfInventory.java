@@ -35,7 +35,7 @@ public class GuiWolfInventory extends GuiContainer {
 
     private float screenPositionX;
     private float screenPositionY;
-    
+
     private final IWolfArmor wolfArmor;
 
     //endregion Fields
@@ -44,10 +44,12 @@ public class GuiWolfInventory extends GuiContainer {
 
     /**
      * Initializes a new wolf inventory GUI
+     *
      * @param playerInventory The player's inventory. Used to display player's current items
-     * @param wolfInventory The wolf's inventory
-     * @param theWolf The wolf in question
+     * @param wolfInventory   The wolf's inventory
+     * @param theWolf         The wolf in question
      */
+    @SuppressWarnings("ConstantConditions")
     public GuiWolfInventory(@Nonnull IInventory playerInventory,
                             @Nonnull IInventory wolfInventory,
                             @Nonnull EntityWolf theWolf,
@@ -66,6 +68,7 @@ public class GuiWolfInventory extends GuiContainer {
 
     /**
      * Draws the foreground layer of the GUI
+     *
      * @param mouseX The X position of the mouse
      * @param mouseY The Y position of the mouse
      */
@@ -87,8 +90,9 @@ public class GuiWolfInventory extends GuiContainer {
 
     /**
      * Draws the screen and all components in it.
-     * @param mouseX The X position of the mouse
-     * @param mouseY The Y position of the mouse
+     *
+     * @param mouseX       The X position of the mouse
+     * @param mouseY       The Y position of the mouse
      * @param partialTicks The tick state of the client.
      */
     @Override
@@ -100,13 +104,15 @@ public class GuiWolfInventory extends GuiContainer {
 
     /**
      * Draws the background layer of the inventory.
+     *
      * @param partialTicks The tick state of the client
-     * @param mouseX The X position of the mouse
-     * @param mouseY The Y position of the mouse
+     * @param mouseX       The X position of the mouse
+     * @param mouseY       The Y position of the mouse
      */
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix(); {
+        GlStateManager.pushMatrix();
+        {
             GlStateManager.color(1, 1, 1, 1);
 
             this.mc.getTextureManager().bindTexture(TEXTURE_GUI_WOLF_INVENTORY);
@@ -124,9 +130,10 @@ public class GuiWolfInventory extends GuiContainer {
             }
 
             GuiInventory.drawEntityOnScreen(positionX + 51, positionY + 60, 30, (float) (positionX + 51) - this.screenPositionX,
-                                            (float) (positionY - 50) - this.screenPositionY, this.theWolf);
+                    (float) (positionY - 50) - this.screenPositionY, this.theWolf);
 
-        } GlStateManager.popMatrix();
+        }
+        GlStateManager.popMatrix();
     }
 
     //endregion Public / Protected Methods

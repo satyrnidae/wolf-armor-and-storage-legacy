@@ -23,14 +23,14 @@ public class WolfArmorPlayerEventHandler {
 
     /**
      * Handles player interaction events.
+     *
      * @param event The RightClickBlock event that should be handled.
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-    public void onPlayerInteract(@Nonnull RightClickBlock event)
-    {
+    public void onPlayerInteract(@Nonnull RightClickBlock event) {
         Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
 
-        if(block == Blocks.CAULDRON) {
+        if (block == Blocks.CAULDRON) {
             ItemStack stack = event.getItemStack();
 
             this.handleCauldronRightClick(event, stack);
@@ -43,24 +43,20 @@ public class WolfArmorPlayerEventHandler {
 
     /**
      * Handles right click on cauldron block
+     *
      * @param event The RightClickEvent that was handled.
      * @param stack The item stack
      */
-    private void handleCauldronRightClick(@Nonnull RightClickBlock event, @Nullable ItemStack stack)
-    {
-        if(!event.getWorld().isRemote)
-        {
-            if(stack != null)
-            {
+    private void handleCauldronRightClick(@Nonnull RightClickBlock event, @Nullable ItemStack stack) {
+        if (!event.getWorld().isRemote) {
+            if (stack != null) {
                 IBlockState blockCauldronState = event.getWorld().getBlockState(event.getPos());
                 int fillLevel = blockCauldronState.getValue(BlockCauldron.LEVEL);
 
-                if(fillLevel > 0 && stack.getItem() instanceof ItemWolfArmor)
-                {
-                    ItemWolfArmor itemWolfArmor = (ItemWolfArmor)stack.getItem();
+                if (fillLevel > 0 && stack.getItem() instanceof ItemWolfArmor) {
+                    ItemWolfArmor itemWolfArmor = (ItemWolfArmor) stack.getItem();
 
-                    if(itemWolfArmor.getMaterial().getIsDyeable())
-                    {
+                    if (itemWolfArmor.getMaterial().getIsDyeable()) {
                         itemWolfArmor.removeColor(stack);
                         Blocks.CAULDRON.setWaterLevel(event.getWorld(), event.getPos(), blockCauldronState, fillLevel - 1);
                         event.setResult(Event.Result.ALLOW);

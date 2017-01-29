@@ -33,6 +33,7 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
 
     /**
      * Creates a new layer renderer for armored wolf backpacks.
+     *
      * @param renderer The parent renderer.
      */
     public LayerWolfBackpack(@Nonnull RenderLiving<? extends EntityWolf> renderer) {
@@ -47,17 +48,19 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
 
     /**
      * Renders the layer.
-     * @param entityWolf The wolf to render.  If it is not am EntityWolfArmored, the layer will not render.
-     * @param limbSwing The entity's limb swing progress.
+     *
+     * @param entityWolf      The wolf to render.  If it is not am EntityWolfArmored, the layer will not render.
+     * @param limbSwing       The entity's limb swing progress.
      * @param limbSwingAmount The entity's limb swing progress amount.
-     * @param partialTicks The current game tick.
-     * @param ageInTicks The entity's age.
-     * @param netHeadYaw The yaw of the entity's head.
-     * @param headPitch The pitch of the entity's head.
-     * @param scale The scale at which to render the layer.
+     * @param partialTicks    The current game tick.
+     * @param ageInTicks      The entity's age.
+     * @param netHeadYaw      The yaw of the entity's head.
+     * @param headPitch       The pitch of the entity's head.
+     * @param scale           The scale at which to render the layer.
      */
+    @SuppressWarnings("ConstantConditions")
     @Override
-    public void doRenderLayer(@Nullable EntityWolf entityWolf,
+    public void doRenderLayer(@Nonnull EntityWolf entityWolf,
                               float limbSwing,
                               float limbSwingAmount,
                               float partialTicks,
@@ -66,8 +69,8 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
                               float headPitch,
                               float scale) {
 
-        if(WolfArmorMod.getConfiguration().getIsWolfChestRenderEnabled()) {
-        	IWolfArmor wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
+        if (WolfArmorMod.getConfiguration().getIsWolfChestRenderEnabled()) {
+            IWolfArmor wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
             if (wolfArmor.getHasChest()) {
 
                 this.modelWolfBackpack.setModelAttributes(renderer.getMainModel());
@@ -107,7 +110,7 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
                 }
             }
         }
-        
+
     }
 
     //endregion Public / Protected Methods
@@ -116,6 +119,7 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
 
     /**
      * Whether or not textures should be combined.
+     *
      * @return false.
      */
     @Override

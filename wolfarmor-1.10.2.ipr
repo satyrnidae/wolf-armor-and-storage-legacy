@@ -46,8 +46,9 @@
     </bytecodeTargetLevel>
   </component>
   <component name="EntryPointsManager">
-    <list size="1">
-      <item index="0" class="java.lang.String" itemvalue="net.minecraftforge.fml.common.eventhandler.SubscribeEvent" />
+    <list size="2">
+      <item index="0" class="java.lang.String" itemvalue="net.minecraftforge.fml.common.Mod.EventHandler" />
+      <item index="1" class="java.lang.String" itemvalue="net.minecraftforge.fml.common.eventhandler.SubscribeEvent" />
     </list>
   </component>
   <component name="GradleLocalSettings">

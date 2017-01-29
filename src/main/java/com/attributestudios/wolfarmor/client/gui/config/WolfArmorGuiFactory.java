@@ -24,7 +24,8 @@ public class WolfArmorGuiFactory implements IModGuiFactory {
      * @param minecraftInstance the instance
      */
     @Override
-    public void initialize(@Nonnull Minecraft minecraftInstance) {}
+    public void initialize(@Nonnull Minecraft minecraftInstance) {
+    }
 
     /**
      * Return the name of a class extending {@link GuiScreen}. This class will
@@ -88,7 +89,6 @@ public class WolfArmorGuiFactory implements IModGuiFactory {
      * right hand side option screen for the specified {@link RuntimeOptionCategoryElement}.
      *
      * @param element The element we wish to paint for
-     *
      * @return The Handler for painting it
      */
     @SuppressWarnings("deprecation")
