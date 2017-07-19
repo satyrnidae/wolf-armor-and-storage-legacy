@@ -34,6 +34,10 @@ wolfarmor*.iws
 #Visual Studio
 .vs/
 
+#vscode
+.vscode/
+bin/
+
 # Misc
 .settings/
 CREDITS-fml.txt
