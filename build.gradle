@@ -7,6 +7,7 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
+
 apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the nessasary things for Forge to be setup.
 
@@ -37,16 +38,16 @@ build {
 			throw new GradleException("Could not read version.properties!")
 		}
 	}
-
+	
 	gradle.taskGraph.whenReady {taskGraph ->
 		if(taskGraph.hasTask(compileJava) &&
-				taskGraph.hasTask(assemble) &&
-				taskGraph.hasTask(build)) {
+           taskGraph.hasTask(assemble) &&
+           taskGraph.hasTask(build)) {
 			autoIncrementBuildNumber()
 		}
 	}
 
-	return 0
+    return 0
 }
 
 version = major + "." + minor + "." + revision + "." + buildNum
@@ -98,8 +99,7 @@ dependencies {
 
 }
 
-processResources
-{
+processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
@@ -122,4 +122,3 @@ processResources
         include 'LICENSE'
     }
 }
-

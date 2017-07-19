@@ -5,7 +5,7 @@
   "description": "Adds armors and storage for wolves!",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "www.attributestudios.com/mcModWolfArmor.php",
+  "url": "https://minecraft.curseforge.com/projects/wolf-armor-and-storage",
   "updateUrl": "",
   "authorList": ["CenturionFox"],
   "credits": "Copyright (C) 2015-2016 Attribute Studios.",

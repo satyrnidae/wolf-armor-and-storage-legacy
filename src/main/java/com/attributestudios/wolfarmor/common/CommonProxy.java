@@ -28,7 +28,6 @@ public class CommonProxy {
     //region Fields
 
     private static final Map<String, ResourceLocation> CACHED_RESOURCE_LOCATIONS = Maps.newHashMap();
-    private static final ResourceLocation ENTITY_WOLF_ARMORED = new ResourceLocation(WolfArmorMod.MOD_ID, "Wolf");
 
     //endregion Fields
 
@@ -42,16 +41,14 @@ public class CommonProxy {
      * @param preInitializationEvent The pre-initialization event
      */
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
-        registerEntityRenderingHandlers(preInitializationEvent);
-        registerItems(preInitializationEvent);
+        registerItems();
         registerItemRenderers(preInitializationEvent);
     }
 
     /**
      * Registers entity renderers.  This should not do anything in a common proxy.
-     * @param preInitializationEvent The pre-initialization event
      */
-    protected void registerEntityRenderingHandlers(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
+    protected void registerEntityRenderingHandlers() {
         // does nothing server-side
     }
 
@@ -59,12 +56,13 @@ public class CommonProxy {
      * Registers all items for this mod
      */
     @SuppressWarnings("WeakerAccess")
-    protected void registerItems(@SuppressWarnings("unused") @Nonnull FMLPreInitializationEvent preInitializationEvent) {
+    protected void registerItems() {
         WolfArmorItems.init();
     }
 
     /**
      * Registers all item renderers for this mod
+     *
      * @param preInitializationEvent the initialization event
      */
     protected void registerItemRenderers(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
@@ -80,48 +78,48 @@ public class CommonProxy {
      *
      * @param initializationEvent The initialization event
      */
+    @SuppressWarnings("deprecation")
     public void init(@Nonnull FMLInitializationEvent initializationEvent) {
         this.registerItemColorHandlers(initializationEvent);
-        this.registerRecipes(initializationEvent);
-        this.registerEventListeners(initializationEvent);
-        this.registerEntities(initializationEvent);
+        this.registerRecipes();
+        this.registerEventListeners();
+        // include for world upgrade
+        this.registerEntities();
     }
 
     /**
      * Registers item colorization handlers
+     *
      * @param initializationEvent The initialization event
      */
     protected void registerItemColorHandlers(@Nonnull FMLInitializationEvent initializationEvent) {
     }
 
     /**
+     * Registers all custom mod entities.
+     */
+    @SuppressWarnings({"WeakerAccess", "DeprecatedIsStillUsed", "deprecation"})
+    @Deprecated
+    protected void registerEntities() {
+        EntityRegistry.registerModEntity(EntityWolfArmored.class, "Wolf", 0, WolfArmorMod.instance, 80, 3, false);
+    }
+
+    /**
      * Registers all crafting recipes for this mod
-     * @param initializationEvent The initialization event
      */
     @SuppressWarnings("WeakerAccess")
-    protected void registerRecipes(@SuppressWarnings("unused") @Nonnull FMLInitializationEvent initializationEvent) {
-
+    protected void registerRecipes() {
         WolfArmorRecipes.init();
         RecipeSorter.register(WolfArmorMod.MOD_ID + ":WolfArmorDyes", RecipeWolfArmorDyes.class, RecipeSorter.Category.SHAPELESS, "");
     }
 
     /**
      * Registers all event listeners for this mod.
-     * @param initializationEvent The initialization event
      */
     @SuppressWarnings("WeakerAccess")
-    protected void registerEventListeners(@SuppressWarnings("unused") @Nonnull FMLInitializationEvent initializationEvent) {
+    protected void registerEventListeners() {
         MinecraftForge.EVENT_BUS.register(new WolfArmorEntityEventHandler());
         MinecraftForge.EVENT_BUS.register(new WolfArmorPlayerEventHandler());
-    }
-
-    /**
-     * Registers all custom mod entities.
-     * @param initializationEvent The initialization event
-     */
-    @SuppressWarnings("WeakerAccess")
-    protected void registerEntities(@SuppressWarnings("unused") @Nonnull FMLInitializationEvent initializationEvent) {
-        EntityRegistry.registerModEntity(ENTITY_WOLF_ARMORED, EntityWolfArmored.class, "Wolf", 0, WolfArmorMod.instance, 80, 3, false);
     }
 
     //endregion Initialization
@@ -130,14 +128,25 @@ public class CommonProxy {
 
     /**
      * Handles post-initialization tasks
+     *
      * @param postInitializationEvent The post-initialization event.
      */
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
         this.registerGuiHandlers(postInitializationEvent);
     }
 
+    private boolean IsRenderSetted = false;
+
+    public void serverAboutToStart() {
+        if (!IsRenderSetted) {
+            IsRenderSetted = true;
+            this.registerEntityRenderingHandlers();
+        }
+    }
+
     /**
      * Registers all GUI handlers for the mod.
+     *
      * @param postInitializationEvent The post-initialization event.
      */
     private void registerGuiHandlers(@SuppressWarnings("unused") @Nonnull FMLPostInitializationEvent postInitializationEvent) {
@@ -151,8 +160,10 @@ public class CommonProxy {
     //region Accessors / Mutators
 
     //TODO: Common lib / api implementation
+
     /**
      * Gets or creates and caches a resource location for the given path.
+     *
      * @param path The path
      * @return A resource location for the path
      */
@@ -160,11 +171,11 @@ public class CommonProxy {
     public ResourceLocation getResourceLocation(String path) {
         ResourceLocation resourceLocation = CACHED_RESOURCE_LOCATIONS.get(path);
 
-        if(resourceLocation == null) {
+        if (resourceLocation == null) {
             int index = path.indexOf(':');
             String domain = WolfArmorMod.MOD_ID;
 
-            if(index > -1) {
+            if (index > -1) {
                 domain = path.substring(0, index);
                 path = path.substring(index);
             }

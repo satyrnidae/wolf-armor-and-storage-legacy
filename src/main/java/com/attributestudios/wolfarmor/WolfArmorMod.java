@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 
 import javax.annotation.Nonnull;
 
@@ -14,15 +15,16 @@ import javax.annotation.Nonnull;
  */
 @SuppressWarnings("WeakerAccess")
 @Mod(modid = WolfArmorMod.MOD_ID,
-     name = WolfArmorMod.MOD_NAME,
-     version = WolfArmorMod.MOD_VERSION,
-     guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory")
+        name = WolfArmorMod.MOD_NAME,
+        version = WolfArmorMod.MOD_VERSION,
+        guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory",
+        dependencies = "after: SophisticatedWolves")
 public class WolfArmorMod {
     //region Fields
 
     public static final String MOD_NAME = "Wolf Armor and Storage";
     public static final String MOD_ID = "wolfarmor";
-    public static final String MOD_VERSION = "1.3.2";
+    public static final String MOD_VERSION = "1.3.1";
 
     @Mod.Instance(WolfArmorMod.MOD_ID)
     public static WolfArmorMod instance;
@@ -41,6 +43,7 @@ public class WolfArmorMod {
 
     /**
      * Handles pre-initialization tasks
+     *
      * @param preInitializationEvent The pre-initialization event
      */
     @Mod.EventHandler
@@ -53,6 +56,7 @@ public class WolfArmorMod {
 
     /**
      * Handles initialization tasks
+     *
      * @param initializationEvent The initialization event
      */
     @Mod.EventHandler
@@ -62,11 +66,17 @@ public class WolfArmorMod {
 
     /**
      * Handles post-initialization events
+     *
      * @param postInitializationEvent The post initialization event
      */
     @Mod.EventHandler
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
         proxy.postInit(postInitializationEvent);
+    }
+
+    @Mod.EventHandler
+    public void serverAboutToStart(@Nonnull FMLServerAboutToStartEvent serverAboutToStartEvent) {
+        proxy.serverAboutToStart();
     }
 
     //endregion Public / Protected Methods
@@ -75,6 +85,7 @@ public class WolfArmorMod {
 
     /**
      * Gets the mod logger
+     *
      * @return The logger
      */
     @Nonnull
@@ -84,6 +95,7 @@ public class WolfArmorMod {
 
     /**
      * Gets the configuration settings
+     *
      * @return The configuration settings
      */
     @Nonnull

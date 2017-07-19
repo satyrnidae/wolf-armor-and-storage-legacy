@@ -30,7 +30,8 @@ public final class WolfArmorItems {
     /**
      * Cannot instantiate a utility class
      */
-    private WolfArmorItems() {}
+    private WolfArmorItems() {
+    }
 
     //endregion Constructors
 
@@ -49,13 +50,14 @@ public final class WolfArmorItems {
 
     /**
      * Registers item models with the model loader
-     * @param item The item
+     *
+     * @param item     The item
      * @param metadata The item metadata
      */
     @SuppressWarnings("SameParameterValue")
     @SideOnly(Side.CLIENT)
     public static void registerItemModel(@Nullable Item item, int metadata) {
-        if(item != null) {
+        if (item != null) {
             ModelLoader.setCustomModelResourceLocation(item, metadata, new ModelResourceLocation(item.getRegistryName(), "inventory"));
         }
     }

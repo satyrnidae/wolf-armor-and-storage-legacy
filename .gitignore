@@ -26,6 +26,7 @@ run/
 out/
 eclipse/
 temp/
+bin/
 
 # IntelliJ
 wolfarmor*.iws
@@ -37,6 +38,7 @@ wolfarmor*.iws
 #vscode
 .vscode/
 bin/
+.project
 
 # Misc
 .settings/
