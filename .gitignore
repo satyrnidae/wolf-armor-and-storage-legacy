@@ -28,7 +28,11 @@ eclipse/
 temp/
 
 # IntelliJ
-wolfarmor-*.iws
+wolfarmor*.iws
+.idea/
+
+#Visual Studio
+.vs/
 
 # Misc
 .settings/
