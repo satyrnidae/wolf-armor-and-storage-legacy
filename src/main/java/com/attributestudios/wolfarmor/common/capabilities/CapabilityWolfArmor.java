@@ -20,6 +20,7 @@ import net.minecraft.inventory.IInventoryChangedListener;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
@@ -31,12 +32,28 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
 public class CapabilityWolfArmor implements ICapabilitySerializable<NBTTagCompound>, IWolfArmor, IInventoryChangedListener {
 
     @CapabilityInject(IWolfArmor.class)
     public static Capability<IWolfArmor> WOLF_ARMOR = null;
+    
+    public static void RegisterCapability() {
+    	CapabilityManager.INSTANCE.register(IWolfArmor.class, new Capability.IStorage<IWolfArmor>() {
+
+			@Override
+			public NBTBase writeNBT(Capability<IWolfArmor> capability, IWolfArmor instance, EnumFacing side) {
+				return null;
+			}
+
+			@Override
+			public void readNBT(Capability<IWolfArmor> capability, IWolfArmor instance, EnumFacing side, NBTBase nbt) {
+				
+			}
+		}, CapabilityWolfArmor.class);
+    }
 
     /**
      * Used to determine whether or not the item is a valid wolf armor item.W

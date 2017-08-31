@@ -1,6 +1,7 @@
 package com.attributestudios.wolfarmor.common;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.common.network.WolfArmorGuiHandler;
 import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import com.attributestudios.wolfarmor.event.WolfArmorEntityEventHandler;
@@ -85,6 +86,8 @@ public class CommonProxy {
         this.registerEventListeners();
         // include for world upgrade
         this.registerEntities();
+        // Register capability correctly to avoid WOLF_ARMOR be null
+        CapabilityWolfArmor.RegisterCapability();
     }
 
     /**
