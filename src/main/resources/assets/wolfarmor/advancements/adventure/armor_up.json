@@ -1,0 +1,31 @@
+{
+  "display": {
+    "icon": {
+      "item": "wolfarmor:leather_wolf_armor"
+    },
+    "title": {
+      "translate": "advancements.adventure.armor_up.title"
+    },
+    "description": {
+      "translate": "advancements.adventure.armor_up.description"
+    }
+  },
+  "parent": "minecraft:adventure/root",
+  "criteria": {
+    "wolf_equipped":{
+      "trigger": "wolfarmor:equip_wolf_armor",
+      "conditions": {
+        "entities": [
+          {
+            "entity": "minecraft:wolf"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "wolf_equipped"
+    ]
+  ]
+}

@@ -2,6 +2,7 @@ package com.attributestudios.wolfarmor.client.gui.config;
 
 import com.attributestudios.wolfarmor.WolfArmorConfiguration;
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.api.util.DynamicallyUsed;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.config.*;
@@ -18,6 +19,7 @@ import java.util.List;
  * Configuration GUI for the Wolf Armor mod.
  */
 @SideOnly(Side.CLIENT)
+@DynamicallyUsed
 public class WolfArmorGuiConfig extends GuiConfig {
     //region Constructors
 
@@ -26,6 +28,8 @@ public class WolfArmorGuiConfig extends GuiConfig {
      *
      * @param parent The parent screen.
      */
+    @SuppressWarnings("WeakerAccess")
+    @DynamicallyUsed
     public WolfArmorGuiConfig(@Nonnull GuiScreen parent) {
         super(parent,
                 getConfigurationElements(),
@@ -57,13 +61,16 @@ public class WolfArmorGuiConfig extends GuiConfig {
             wolfChestsEnabled.setRequiresWorldRestart(true);
             wolfChestsEnabled.setComment(I18n.format(wolfChestsEnabled.getName() + ".comment"));
             general.put(wolfChestsEnabled.getName(), wolfChestsEnabled);
-        }
 
-        ConfigCategory behavior = new ConfigCategory(I18n.format("gui.wolfarmor.config.category.behavior"));
-        {
             Property howlingUntamedWolvesEnabled = configuration.getSettingHowlingUntamedWolvesEnabled();
+            howlingUntamedWolvesEnabled.setRequiresWorldRestart(false);
             howlingUntamedWolvesEnabled.setComment(I18n.format(howlingUntamedWolvesEnabled.getName() + ".comment"));
-            behavior.put(howlingUntamedWolvesEnabled.getName(), howlingUntamedWolvesEnabled);
+            general.put(howlingUntamedWolvesEnabled.getName(), howlingUntamedWolvesEnabled);
+
+            Property wolvesEatFoodInInventory = configuration.getSettingWolvesEatWhenDamaged();
+            wolvesEatFoodInInventory.setRequiresWorldRestart(false);
+            wolvesEatFoodInInventory.setComment(I18n.format(wolfChestsEnabled.getName() + ".comment"));
+            general.put(wolvesEatFoodInInventory.getName(), wolvesEatFoodInInventory);
         }
 
         ConfigCategory client = new ConfigCategory(I18n.format("gui.wolfarmor.config.category.client"));
@@ -90,14 +97,8 @@ public class WolfArmorGuiConfig extends GuiConfig {
                 gui.put(wolfHealthDisplayEnabled.getName(), wolfHealthDisplayEnabled);
             }
         }
-
-        // requires world restart
         list.add(new ConfigElement(general));
-
-        // does not require world restart
-        list.add(new ConfigElement(behavior));
         list.add(new ConfigElement(client));
-
 
         return list;
     }

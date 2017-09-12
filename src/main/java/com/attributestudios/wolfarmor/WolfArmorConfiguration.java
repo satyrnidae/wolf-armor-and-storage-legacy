@@ -25,6 +25,7 @@ public final class WolfArmorConfiguration {
     private boolean isWolfHealthDisplayEnabled = DEFAULT_WOLF_HEALTH_DISPLAY_ENABLED;
     private boolean isWolfArmorDisplayEnabled = DEFAULT_WOLF_ARMOR_DISPLAY_ENABLED;
     private boolean areHowlingUntamedWolvesEnabled = DEFAULT_HOWLING_UNTAMED_WOLVES_ENABLED;
+    private boolean shouldWolvesEatWhenDamaged = DEFAULT_WOLVES_EAT_FOOD_IN_INVENTORY;
 
     //region Common Config Settings
 
@@ -50,11 +51,13 @@ public final class WolfArmorConfiguration {
 
     //region Behavioral Config Settings
 
-    public static final String CATEGORY_BEHAVIOR = "behavior";
+    private static final String CATEGORY_BEHAVIOR = "behavior";
 
     private static final String SETTING_HOWLING_UNTAMED_WOLVES_ENABLED = "config.wolfarmor.behavior.enableHowlingUntamedWolves";
+    private static final String SETTING_WOLVES_EAT_FOOD_IN_INVENTORY = "config.wolfarmor.behavior.shouldWolvesEatWhenDamaged";
 
     private static final boolean DEFAULT_HOWLING_UNTAMED_WOLVES_ENABLED = false;
+    private static final boolean DEFAULT_WOLVES_EAT_FOOD_IN_INVENTORY = true;
 
     //endregion Behavioral Config Settings
 
@@ -127,6 +130,10 @@ public final class WolfArmorConfiguration {
         areHowlingUntamedWolvesEnabled = getSettingHowlingUntamedWolvesEnabled().getBoolean();
     }
 
+    private void syncShouldWolvesEatWhenDamaged() {
+        shouldWolvesEatWhenDamaged = getSettingWolvesEatWhenDamaged().getBoolean();
+    }
+
     /**
      * Synchronizes config values.
      *
@@ -143,6 +150,7 @@ public final class WolfArmorConfiguration {
         }
 
         syncAreHowlingUntamedWolvesEnabled();
+        syncShouldWolvesEatWhenDamaged();
 
         if (config.hasChanged()) {
             WolfArmorMod.getLogger().debug("Saving configuration...");
@@ -207,6 +215,8 @@ public final class WolfArmorConfiguration {
         return areHowlingUntamedWolvesEnabled;
     }
 
+    public boolean getShouldWolvesEatWhenDamaged() { return shouldWolvesEatWhenDamaged; }
+
     //endregion Generic Accessors
 
     //region Property Accessors
@@ -253,10 +263,18 @@ public final class WolfArmorConfiguration {
 
     @Nonnull
     public Property getSettingHowlingUntamedWolvesEnabled() {
-        return config.get(Configuration.CATEGORY_CLIENT,
+        return config.get(CATEGORY_BEHAVIOR,
                 SETTING_HOWLING_UNTAMED_WOLVES_ENABLED,
                 DEFAULT_HOWLING_UNTAMED_WOLVES_ENABLED,
                 "Enables or disables untamed wolves howling at the full moon.");
+    }
+
+    @Nonnull
+    public Property getSettingWolvesEatWhenDamaged() {
+        return config.get(CATEGORY_BEHAVIOR,
+                SETTING_WOLVES_EAT_FOOD_IN_INVENTORY,
+                DEFAULT_WOLVES_EAT_FOOD_IN_INVENTORY,
+                "Enables or disables wolves eating food in their inventories when their health is low.");
     }
 
     //endregion Property Accessors

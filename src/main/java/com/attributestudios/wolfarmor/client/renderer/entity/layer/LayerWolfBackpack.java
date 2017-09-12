@@ -3,7 +3,7 @@ package com.attributestudios.wolfarmor.client.renderer.entity.layer;
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.client.model.ModelWolfBackpack;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
-import com.attributestudios.wolfarmor.common.capabilities.IWolfArmor;
+import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
@@ -13,7 +13,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * A layer renderer for wolf backpacks.
@@ -23,7 +22,7 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
     //region Fields
 
     private ModelWolfBackpack modelWolfBackpack;
-    private final RenderLiving<? extends EntityWolf> renderer;
+    private final RenderLiving renderer;
 
     private static final ResourceLocation TEXTURE_WOLF_BACKPACK = new ResourceLocation(WolfArmorMod.MOD_ID, "textures/models/wolf_pack.png");
 
@@ -36,7 +35,7 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
      *
      * @param renderer The parent renderer.
      */
-    public LayerWolfBackpack(@Nonnull RenderLiving<? extends EntityWolf> renderer) {
+    public LayerWolfBackpack(@Nonnull RenderLiving renderer) {
         this.renderer = renderer;
 
         this.modelWolfBackpack = new ModelWolfBackpack(0.0F);
@@ -70,7 +69,7 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
                               float scale) {
 
         if (WolfArmorMod.getConfiguration().getIsWolfChestRenderEnabled()) {
-            IWolfArmor wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
+            IWolfArmorCapability wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
             if (wolfArmor.getHasChest()) {
 
                 this.modelWolfBackpack.setModelAttributes(renderer.getMainModel());

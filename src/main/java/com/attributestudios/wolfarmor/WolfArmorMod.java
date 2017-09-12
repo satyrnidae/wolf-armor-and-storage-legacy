@@ -1,6 +1,8 @@
 package com.attributestudios.wolfarmor;
 
-import com.attributestudios.wolfarmor.common.CommonProxy;
+import com.attributestudios.wolfarmor.api.IProxy;
+import com.attributestudios.wolfarmor.api.definitions.Resources;
+import com.attributestudios.wolfarmor.item.ItemWolfArmor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -24,14 +26,14 @@ public class WolfArmorMod {
 
     public static final String MOD_NAME = "Wolf Armor and Storage";
     public static final String MOD_ID = "wolfarmor";
-    public static final String MOD_VERSION = "1.3.1";
+    public static final String MOD_VERSION = "1.12.1-2.0.0.X-ALPHA";
 
     @Mod.Instance(WolfArmorMod.MOD_ID)
     public static WolfArmorMod instance;
 
     @SidedProxy(clientSide = "com.attributestudios.wolfarmor.client.ClientProxy",
-            serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
-    public static CommonProxy proxy;
+                serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
+    public static IProxy proxy;
 
     private static LogHelper logger;
 
@@ -76,7 +78,7 @@ public class WolfArmorMod {
 
     @Mod.EventHandler
     public void serverAboutToStart(@Nonnull FMLServerAboutToStartEvent serverAboutToStartEvent) {
-        proxy.serverAboutToStart();
+        proxy.serverAboutToStart(serverAboutToStartEvent);
     }
 
     //endregion Public / Protected Methods

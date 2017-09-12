@@ -1,10 +1,9 @@
 package com.attributestudios.wolfarmor.client.renderer.entity.layer;
 
-import com.attributestudios.wolfarmor.WolfArmorConfiguration;
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.client.model.ModelWolfArmor;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
-import com.attributestudios.wolfarmor.common.capabilities.IWolfArmor;
+import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor;
 import com.google.common.collect.Maps;
 import net.minecraft.client.renderer.GlStateManager;
@@ -14,7 +13,6 @@ import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -30,7 +28,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
     //region Fields
 
     private ModelWolfArmor[] modelWolfArmors;
-    private final RenderLiving<? extends EntityWolf> renderer;
+    private final RenderLiving renderer;
 
     private static final Map<String, ResourceLocation> WOLF_ARMOR_TEXTURE_MAP = Maps.newHashMap();
 
@@ -49,7 +47,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      *
      * @param renderer The parent renderer.
      */
-    public LayerWolfArmor(@Nonnull RenderLiving<? extends EntityWolf> renderer) {
+    public LayerWolfArmor(@Nonnull RenderLiving renderer) {
         this.renderer = renderer;
         this.initArmor();
     }
@@ -70,7 +68,6 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      * @param headPitch       The pitch of the entity's head.
      * @param scale           The scale at which to render the layer.
      */
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void doRenderLayer(@Nonnull EntityWolf entityWolf,
                               float limbSwing,
@@ -81,7 +78,10 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
                               float headPitch,
                               float scale) {
         if (WolfArmorMod.getConfiguration().getIsWolfArmorRenderEnabled()) {
-            IWolfArmor wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
+            IWolfArmorCapability wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+            if(wolfArmor == null) {
+                return;
+            }
 
             ItemStack itemStack = wolfArmor.getArmorItemStack();
 
@@ -153,9 +153,8 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      * @param model             The default model.
      * @return The default model.
      */
-    @SuppressWarnings({"WeakerAccess", "UnusedParameters"})
     @Nonnull
-    protected ModelWolfArmor getArmorModelForLayer(@Nonnull EntityWolf entityWolfArmored,
+    private ModelWolfArmor getArmorModelForLayer(@Nonnull EntityWolf entityWolfArmored,
                                                    @Nonnull ItemStack itemStack,
                                                    int layer,
                                                    @Nonnull ModelWolfArmor model) {
@@ -166,15 +165,14 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
     /**
      * Gets the resource location for the armor item.
      *
-     * @param entityWolfArmored The armored wolf entity.
-     * @param itemStack         The item stack in the armor slot.
-     * @param layer             The current layer.
-     * @param type              The texture variant. May be null or overlay.
+     * @param entityWolf The armored wolf entity.
+     * @param itemStack  The item stack in the armor slot.
+     * @param layer      The current layer.
+     * @param type       The texture variant. May be null or overlay.
      * @return A new or cached resource location corresponding to the generated / api path.
      */
-    @SuppressWarnings({"WeakerAccess", "UnusedParameters"})
     @Nonnull
-    protected ResourceLocation getArmorResource(@Nonnull EntityWolf entityWolfArmored,
+    private ResourceLocation getArmorResource(@Nonnull EntityWolf entityWolf,
                                                 @Nonnull ItemStack itemStack,
                                                 int layer,
                                                 @Nullable String type) {
@@ -206,8 +204,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      *
      * @return 1.0F
      */
-    @SuppressWarnings("WeakerAccess")
-    protected float getColorRed() {
+    private float getColorRed() {
         return colorRed;
     }
 
@@ -216,8 +213,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      *
      * @return 1.0F
      */
-    @SuppressWarnings("WeakerAccess")
-    protected float getColorGreen() {
+    private float getColorGreen() {
         return colorGreen;
     }
 
@@ -226,8 +222,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      *
      * @return 1.0F
      */
-    @SuppressWarnings("WeakerAccess")
-    protected float getColorBlue() {
+    private float getColorBlue() {
         return colorBlue;
     }
 
@@ -236,8 +231,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      *
      * @return 1.0F
      */
-    @SuppressWarnings("WeakerAccess")
-    protected float getAlpha() {
+    private float getAlpha() {
         return alpha;
     }
 

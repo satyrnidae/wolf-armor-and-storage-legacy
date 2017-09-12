@@ -18,7 +18,7 @@ import static net.minecraftforge.event.entity.player.PlayerInteractEvent.RightCl
 /**
  * Contains all forge subscribed events for players.
  */
-public class WolfArmorPlayerEventHandler {
+public class PlayerEventHandler {
     //region Public / Protected Methods
 
     /**

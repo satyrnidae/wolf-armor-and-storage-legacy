@@ -1,6 +1,7 @@
 package com.attributestudios.wolfarmor.common;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.api.util.Future;
 import com.google.common.collect.Maps;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
@@ -18,6 +19,8 @@ public final class ReflectionCache {
 
     private static Map<String, Field> CACHED_REFLECTION_FIELDS = Maps.newHashMap();
     private static Map<String, Method> CACHED_REFLECTION_METHODS = Maps.newHashMap();
+
+    private static Exception _lastError;
 
     //endregion Fields
 
@@ -37,7 +40,7 @@ public final class ReflectionCache {
      * @param fieldNames The instance
      * @return The field
      */
-    @Nonnull
+    @Nullable
     public static Field getField(@Nonnull Class clazz,
                                  @Nonnull String... fieldNames) {
         if (fieldNames.length > 0) {
@@ -59,11 +62,10 @@ public final class ReflectionCache {
                         CACHED_REFLECTION_FIELDS.put(key, field);
                     } catch (ReflectionHelper.UnableToFindFieldException ex) {
                         WolfArmorMod.getLogger().error(ex);
+                        _lastError = ex;
                     }
                 }
             }
-
-            if (field == null) throw new UnsupportedOperationException("Failed to find field.");
 
             return field;
         }
@@ -73,59 +75,56 @@ public final class ReflectionCache {
     /**
      * Finds and caches a method.
      *
-     * @param clazz       The class
-     * @param instance    The instance
-     * @param methodNames The possible method names
-     * @param params      The method parameter types
-     * @param <E>         The instance or class type
+     * @param clazz         The class
+     * @param methodName    The deobf method name
+     * @param methodObfName The obf method name
+     * @param params        The method parameter types
+     * @param <E>           The instance or class type
      * @return The method
      */
-    @SuppressWarnings("unused")
-    @Nonnull
+    @Future
+    @Nullable
     public static <E> Method getMethod(@Nonnull Class<? super E> clazz,
-                                       @Nullable E instance,
-                                       @Nonnull String[] methodNames,
-                                       @Nonnull Class<?>... params) {
-        if (methodNames.length > 0) {
-            Method method = null;
+                                       @Nonnull String methodName,
+                                       @Nullable String methodObfName,
+                                       @Nullable Class<?>... params) {
+        Method method = null;
 
-            String keyParams = "(";
+        StringBuilder keyParams = new StringBuilder("(");
 
+        if(params != null) {
             for (int i = 0; i < params.length; i++) {
                 if (i > 0) {
-                    keyParams += ", ";
+                    keyParams.append(", ");
                 }
-                keyParams += params[i].getName();
+                keyParams.append(params[i].getName());
             }
-
-            keyParams += ")";
-
-            for (String s : methodNames) {
-                String key = clazz.getName() + "." + s + keyParams;
-                if (CACHED_REFLECTION_METHODS.containsKey(key)) {
-                    method = CACHED_REFLECTION_METHODS.get(key);
-                    break;
-                }
-            }
-
-            if (method == null) {
-                for (String s : methodNames) {
-                    String key = clazz.getName() + "." + s + keyParams;
-                    try {
-                        method = ReflectionHelper.findMethod(clazz, instance, methodNames, params);
-                        CACHED_REFLECTION_METHODS.put(key, method);
-                    } catch (ReflectionHelper.UnableToFindMethodException ex) {
-                        WolfArmorMod.getLogger().error(ex);
-                    }
-                }
-            }
-
-            if (method == null) throw new UnsupportedOperationException("Method could not be found.");
-
-            return method;
         }
-        throw new IllegalArgumentException("Must specify at least one method name.");
-    }
 
+        keyParams.append(")");
+
+        String key = clazz.getName() + "." + methodName + keyParams;
+        if (CACHED_REFLECTION_METHODS.containsKey(key)) {
+            method = CACHED_REFLECTION_METHODS.get(key);
+        }
+
+        if (method == null) {
+            try {
+                method = ReflectionHelper.findMethod(clazz, methodName, methodObfName, params);
+                CACHED_REFLECTION_METHODS.put(key, method);
+            } catch (ReflectionHelper.UnableToFindMethodException ex) {
+                WolfArmorMod.getLogger().error(ex);
+                _lastError = ex;
+            }
+        }
+
+        return method;
+    }
     //endregion Accessors / Mutators
+
+    @Future
+    @Nullable
+    public static Exception getLastError() {
+        return _lastError;
+    }
 }

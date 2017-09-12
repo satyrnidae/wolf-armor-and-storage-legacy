@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
-import com.attributestudios.wolfarmor.common.capabilities.IWolfArmor;
+import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 
 import java.util.List;
 
@@ -104,7 +104,7 @@ public class ItemWolfArmor extends Item {
      * @param stack  The dispensing stack
      * @return An item stack to dispense, or null if default dispense should occur.
      */
-    @Nullable
+    @Nonnull
     private static ItemStack dispenseWolfArmor(@Nonnull IBlockSource source, @Nonnull ItemStack stack) {
         BlockPos blockPos = source.getBlockPos().offset(source.getBlockState().getValue(BlockDispenser.FACING));
         List<EntityWolf> wolves = source.getWorld().getEntitiesWithinAABB(EntityWolf.class, new AxisAlignedBB(blockPos));
@@ -121,11 +121,11 @@ public class ItemWolfArmor extends Item {
             if (wolf != null) {
                 ItemStack copyStack = stack.copy();
                 copyStack.setCount(1);
-                @SuppressWarnings("ConstantConditions") IWolfArmor wolfArmor = wolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
-                if (!wolfArmor.equipArmor(copyStack)) {
-                    return ItemStack.EMPTY;
+                IWolfArmorCapability wolfArmor = wolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+                if (wolfArmor == null || !wolfArmor.canEquipItem(copyStack)) {
+                    return stack;
                 }
-
+                wolfArmor.equipArmor(copyStack);
                 stack.shrink(1);
             }
         }
@@ -165,7 +165,7 @@ public class ItemWolfArmor extends Item {
      * @param stack The stack to check for an overlay
      * @return Whether or not the wolf armor has an overlay layer
      */
-    public boolean getHasOverlay(@Nullable ItemStack stack) {
+    public boolean getHasOverlay(@Nonnull ItemStack stack) {
         return this.getMaterial().getHasOverlay() || this.getColor(stack) != -1;
     }
 
@@ -198,7 +198,7 @@ public class ItemWolfArmor extends Item {
      * @return The integer value of the color
      */
     public int getColor(@Nonnull ItemStack stack) {
-        if(!this.getMaterial().getIsDyeable() || stack.isEmpty()) {
+        if (!this.getMaterial().getIsDyeable() || stack.isEmpty()) {
             return -1;
         }
 
@@ -220,7 +220,7 @@ public class ItemWolfArmor extends Item {
      * @param stack The item stack
      * @param color The integer value of the color
      */
-    public void setColor(@Nullable ItemStack stack, int color) {
+    public void setColor(@Nonnull ItemStack stack, int color) {
         if (!this.material.getIsDyeable()) {
             throw new UnsupportedOperationException("Wolf armor material is not dyeable!");
         }
@@ -256,7 +256,8 @@ public class ItemWolfArmor extends Item {
      *
      * @return The damage reduction amount
      */
-    public int getDamageReductionAmount() {
+    @Deprecated
+    public double getDamageReductionAmount() {
         return getMaterial().getDamageReductionAmount();
     }
 
@@ -279,13 +280,12 @@ public class ItemWolfArmor extends Item {
         private final String name;
         private final int defaultColor;
         private final int durability;
-        private final int damageReductionAmount;
+        private final double damageReductionAmount;
         private final int enchantability;
         private final boolean isDyeable;
         private final boolean hasOverlay;
         private final SoundEvent equipSound;
-
-        public final AttributeModifier armorAttr;
+        private final AttributeModifier armorAttribute;
 
         //endregion Fields
 
@@ -293,7 +293,7 @@ public class ItemWolfArmor extends Item {
 
         WolfArmorMaterial(@Nonnull String name,
                           int durability,
-                          int damageReductionAmount,
+                          double damageReductionAmount,
                           int enchantability,
                           boolean isDyeable,
                           int defaultColor,
@@ -307,7 +307,7 @@ public class ItemWolfArmor extends Item {
             this.defaultColor = defaultColor;
             this.equipSound = equipSound;
             this.hasOverlay = hasOverlay;
-            this.armorAttr = new AttributeModifier(name, (double) damageReductionAmount, 0);
+            this.armorAttribute = new AttributeModifier(name, damageReductionAmount, 0);
         }
 
         //endregion Constructors
@@ -324,6 +324,14 @@ public class ItemWolfArmor extends Item {
         }
 
         /**
+         * Gets the armor attribute modifier.
+         * @return The armor attribute modifier.
+         */
+        public AttributeModifier getArmorAttribute() {
+            return armorAttribute;
+        }
+
+        /**
          * Gets the armor durability
          *
          * @return The durability
@@ -337,7 +345,8 @@ public class ItemWolfArmor extends Item {
          *
          * @return The damage reduction amount
          */
-        public int getDamageReductionAmount() {
+        @Deprecated
+        public double getDamageReductionAmount() {
             return this.damageReductionAmount;
         }
 
@@ -385,8 +394,8 @@ public class ItemWolfArmor extends Item {
          *
          * @return The maximum armor value for the armor material.
          */
-        public static int getMaxArmorValue() {
-            int damageReduce = 0;
+        public static double getMaxArmorValue() {
+            double damageReduce = 0;
 
             for (WolfArmorMaterial wolfArmorMaterial : values()) {
                 damageReduce = Math.max(damageReduce, wolfArmorMaterial.damageReductionAmount);
