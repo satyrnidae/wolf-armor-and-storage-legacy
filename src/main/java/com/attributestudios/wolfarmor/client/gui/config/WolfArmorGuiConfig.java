@@ -2,7 +2,8 @@ package com.attributestudios.wolfarmor.client.gui.config;
 
 import com.attributestudios.wolfarmor.WolfArmorConfiguration;
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.api.util.DynamicallyUsed;
+import com.attributestudios.wolfarmor.api.util.Definitions;
+import com.attributestudios.wolfarmor.api.util.annotation.DynamicallyUsed;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.config.*;
@@ -33,7 +34,7 @@ public class WolfArmorGuiConfig extends GuiConfig {
     public WolfArmorGuiConfig(@Nonnull GuiScreen parent) {
         super(parent,
                 getConfigurationElements(),
-                WolfArmorMod.MOD_ID,
+                Definitions.MOD_ID,
                 false,
                 false,
                 I18n.format("gui.wolfarmor.config"),

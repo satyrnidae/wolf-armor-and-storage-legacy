@@ -1,6 +1,5 @@
-package com.attributestudios.wolfarmor.api;
+package com.attributestudios.wolfarmor.api.util;
 
-import com.attributestudios.wolfarmor.api.util.Workaround;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -19,6 +18,7 @@ public interface IProxy {
     void registerGuiHandlers();
     void registerCapabilities();
     void registerPackets();
+    void registerLootTables();
     void registerItemRenders(@Nonnull FMLInitializationEvent initializationEvent);
     void registerItemColorHandlers(@Nonnull FMLInitializationEvent initializationEvent);
 
@@ -26,9 +26,5 @@ public interface IProxy {
      * Registers criteria triggers.
      */
     @Deprecated
-    @Workaround("Will be removed when Forge adds native ICriterionTrigger support")
     void registerCriteriaTriggers();
-
-    @Deprecated
-    void registerRecipes();
 }

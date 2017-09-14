@@ -40,7 +40,7 @@ public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> imple
             }
             if(stackInSlot.getItem() instanceof ItemWolfArmor) {
                 @Nullable ItemWolfArmor armorItem = (ItemWolfArmor)stackInSlot.getItem();
-                if(!armorItem.getMaterial().getIsDyeable() || !armorItemStack.isEmpty()) {
+                if(!armorItem.getMaterial().getCanBeDyed() || !armorItemStack.isEmpty()) {
                     return false;
                 }
                 armorItemStack = stackInSlot;
@@ -74,7 +74,7 @@ public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> imple
             // Get current armor color and mult into rgbColor array
             if(stackInSlot.getItem() instanceof ItemWolfArmor) {
                 armorItem = (ItemWolfArmor)stackInSlot.getItem();
-                if(!armorItem.getMaterial().getIsDyeable() || !result.isEmpty()) {
+                if(!armorItem.getMaterial().getCanBeDyed() || !result.isEmpty()) {
                     return ItemStack.EMPTY;
                 }
                 result = stackInSlot.copy();

@@ -11,7 +11,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import static net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 
@@ -49,6 +48,7 @@ public class PlayerEventHandler {
      */
     private void handleCauldronRightClick(@Nonnull RightClickBlock event, @Nonnull ItemStack stack)
     {
+        //TODO: Water sploosh sound event
         if(!event.getWorld().isRemote)
         {
             if(!stack.isEmpty())
@@ -59,7 +59,7 @@ public class PlayerEventHandler {
                 if (fillLevel > 0 && stack.getItem() instanceof ItemWolfArmor) {
                     ItemWolfArmor itemWolfArmor = (ItemWolfArmor) stack.getItem();
 
-                    if (itemWolfArmor.getMaterial().getIsDyeable()) {
+                    if (itemWolfArmor.getMaterial().getCanBeDyed()) {
                         itemWolfArmor.removeColor(stack);
                         Blocks.CAULDRON.setWaterLevel(event.getWorld(), event.getPos(), blockCauldronState, fillLevel - 1);
                         event.setResult(Event.Result.ALLOW);

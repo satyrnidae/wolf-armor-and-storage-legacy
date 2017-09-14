@@ -29,6 +29,17 @@ if(versioningFile.canRead()) {
     patch = versionProperties['PATCH'].toInteger()
     extended = versionProperties['EXTENDED'].toString()
 }
+sourceSets.api {
+    java {
+        srcDirs 'src/main/api'
+    }
+}
+sourceSets.main {
+    java {
+        srcDirs 'src/main/api'
+        srcDirs 'src/main/java'
+    }
+}
 
 build {
 	ext.autoIncrementBuildNumber = {

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="wolfarmor" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$" external.system.id="GRADLE" external.system.module.group="com.attributestudios.wolfarmor" external.system.module.version="1.12.1-2.0.0.3-ALPHA" type="JAVA_MODULE" version="4">
+<module external.linked.project.id="wolfarmor" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$" external.system.id="GRADLE" external.system.module.group="com.attributestudios.wolfarmor" external.system.module.version="1.12.1-2.1.0.8-ALPHA" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/api/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/api" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/api/resources" type="java-resource" />

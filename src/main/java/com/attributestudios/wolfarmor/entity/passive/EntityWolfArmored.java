@@ -1,11 +1,8 @@
 package com.attributestudios.wolfarmor.entity.passive;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
-import com.attributestudios.wolfarmor.item.ItemWolfArmor;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerHorseChest;
@@ -39,7 +36,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
 
     private static final int MAX_SIZE_INVENTORY = 7;
 
-    private static final DataParameter<Byte>      HAS_CHEST  = EntityDataManager.createKey(EntityWolfArmored.class, DataSerializers.BYTE);
+    private static final DataParameter<Boolean>   HAS_CHEST  = EntityDataManager.createKey(EntityWolfArmored.class, DataSerializers.BOOLEAN);
     private static final DataParameter<ItemStack> ARMOR_ITEM = EntityDataManager.createKey(EntityWolfArmored.class, DataSerializers.ITEM_STACK);
 
     //endregion Fields
@@ -97,7 +94,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataManager.register(HAS_CHEST, (byte) 0);
+        this.dataManager.register(HAS_CHEST, false);
         this.dataManager.register(ARMOR_ITEM, ItemStack.EMPTY);
     }
 
@@ -233,6 +230,9 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
         super.damageArmor(damage);
     }
 
+    @Override
+    public void dropInventoryContents() { }
+
     //endregion Public / Protected Methods
 
     //region Accessors / Mutators
@@ -244,7 +244,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
      */
     @Override
     public boolean getHasChest() {
-        return WolfArmorMod.getConfiguration().getIsWolfChestEnabled() && (this.dataManager.get(HAS_CHEST) & 0x2) != 0;
+        return WolfArmorMod.getConfiguration().getIsWolfChestEnabled() && this.dataManager.get(HAS_CHEST);
     }
 
     /**
@@ -254,16 +254,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
      */
     @Override
     public void setHasChest(boolean value) {
-        byte hasChest = this.dataManager.get(HAS_CHEST);
-
-        if(value)
-        {
-            this.dataManager.set(HAS_CHEST, (byte)(hasChest | 2));
-        }
-        else
-        {
-            this.dataManager.set(HAS_CHEST, (byte)(hasChest & -3));
-        }
+       this.dataManager.set(HAS_CHEST, value);
     }
 
     /**
@@ -319,13 +310,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
             return;
         }
 
-        this.playEquipSound(itemStack);
         this.dataManager.set(ARMOR_ITEM, itemStack);
-
-        ItemWolfArmor wolfArmor = (ItemWolfArmor)itemStack.getItem();
-        IAttributeInstance armorAttribute = this.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-        armorAttribute.removeAllModifiers();
-        armorAttribute.applyModifier(wolfArmor.getMaterial().getArmorAttribute());
     }
 
     @Override

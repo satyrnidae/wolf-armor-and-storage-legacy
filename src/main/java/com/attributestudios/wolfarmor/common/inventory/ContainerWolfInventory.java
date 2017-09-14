@@ -1,6 +1,6 @@
 package com.attributestudios.wolfarmor.common.inventory;
 
-import com.attributestudios.wolfarmor.api.definitions.CriteriaTriggers;
+import com.attributestudios.wolfarmor.advancements.CriteriaTriggers;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

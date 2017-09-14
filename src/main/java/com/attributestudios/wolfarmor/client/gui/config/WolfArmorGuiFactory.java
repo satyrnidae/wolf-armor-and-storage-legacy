@@ -1,6 +1,6 @@
 package com.attributestudios.wolfarmor.client.gui.config;
 
-import com.attributestudios.wolfarmor.api.util.DynamicallyUsed;
+import com.attributestudios.wolfarmor.api.util.annotation.DynamicallyUsed;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.IModGuiFactory;

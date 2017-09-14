@@ -69,13 +69,13 @@ public class ModelWolfArmor extends ModelWolf {
         wolfTail.setRotationPoint(-1, 12, 8);
 
         try {
-            Field wolfTailField = ReflectionCache.getField(ModelWolf.class, "field_78180_g", "wolfTail");
+            Field wolfTailField = ReflectionCache.getField(ModelWolf.class, "wolfTail", "field_78180_g");
             if (wolfTailField == null) {
                 throw new RuntimeException("[MODEL INIT] Field wolfTail / field_78180_g not found", ReflectionCache.getLastError());
             }
             wolfTailField.set(this, wolfTail);
 
-            Field wolfManeField = ReflectionCache.getField(ModelWolf.class, "field_78186_h", "wolfMane");
+            Field wolfManeField = ReflectionCache.getField(ModelWolf.class, "wolfMane", "field_78186_h");
             if(wolfManeField == null) {
                 throw new RuntimeException("[MODEL INIT] Field wolfMane / field_78186_h not found", ReflectionCache.getLastError());
             }

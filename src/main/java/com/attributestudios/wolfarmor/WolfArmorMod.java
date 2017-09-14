@@ -1,8 +1,7 @@
 package com.attributestudios.wolfarmor;
 
-import com.attributestudios.wolfarmor.api.IProxy;
-import com.attributestudios.wolfarmor.api.definitions.Resources;
-import com.attributestudios.wolfarmor.item.ItemWolfArmor;
+import com.attributestudios.wolfarmor.api.util.Definitions;
+import com.attributestudios.wolfarmor.api.util.IProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -16,19 +15,15 @@ import javax.annotation.Nonnull;
  * WolfArmorMod main class
  */
 @SuppressWarnings("WeakerAccess")
-@Mod(modid = WolfArmorMod.MOD_ID,
-        name = WolfArmorMod.MOD_NAME,
-        version = WolfArmorMod.MOD_VERSION,
+@Mod(modid = Definitions.MOD_ID,
+        name = Definitions.MOD_NAME,
+        version = Definitions.MOD_VERSION,
         guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory",
         dependencies = "after: SophisticatedWolves")
 public class WolfArmorMod {
     //region Fields
 
-    public static final String MOD_NAME = "Wolf Armor and Storage";
-    public static final String MOD_ID = "wolfarmor";
-    public static final String MOD_VERSION = "1.12.1-2.0.0.X-ALPHA";
-
-    @Mod.Instance(WolfArmorMod.MOD_ID)
+    @Mod.Instance(Definitions.MOD_ID)
     public static WolfArmorMod instance;
 
     @SidedProxy(clientSide = "com.attributestudios.wolfarmor.client.ClientProxy",

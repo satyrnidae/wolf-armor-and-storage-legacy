@@ -18,12 +18,13 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Comparator;
 
 public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChangedListener {
     private final EntityWolf entity;
     private IWolfArmorCapability capability;
 
-    private NonNullList<ItemStack> favoriteFoods = NonNullList.create();
+    private NonNullList<ItemStack> inventoryContents = NonNullList.create();
     private ItemStack eatingFood = ItemStack.EMPTY;
 
     private int eatCooldown;
@@ -33,7 +34,17 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
     public EntityAIWolfAutoEat(@Nonnull EntityWolf entity) {
         this.entity = entity;
         this.capability = this.entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+        this.inventoryInit();
     }
+
+    private void inventoryInit() {
+        if(capability != null) {
+            capability.getInventory().removeInventoryChangeListener(this);
+            capability.getInventory().addInventoryChangeListener(this);
+            refreshInventoryContents(capability.getInventory());
+        }
+    }
+
 
     @Override
     public boolean shouldExecute() {
@@ -45,10 +56,11 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
             this.capability = this.entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
             return false;
         }
-        capability.getInventory().removeInventoryChangeListener(this);
-        capability.getInventory().addInventoryChangeListener(this);
 
-        return capability.getHasChest() && WolfArmorMod.getConfiguration().getShouldWolvesEatWhenDamaged() && entity.getHealth() < entity.getMaxHealth();
+        return capability.getHasChest() &&
+                !entity.getIsInvulnerable() &&
+                entity.hurtTime == 0 &&
+                (entity.getMaxHealth() - entity.getHealth()) >= 1.0F;
     }
 
     @Override
@@ -109,41 +121,36 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
         foodEatTime = 0;
         hasHealedSinceLastReset = false;
         eatingFood = ItemStack.EMPTY;
+
+        inventoryInit();
     }
 
     @Override
     public void onInventoryChanged(@Nonnull IInventory invBasic) {
-        this.favoriteFoods = NonNullList.create();
+        this.refreshInventoryContents(invBasic);
+    }
+
+    private void refreshInventoryContents(IInventory invBasic) {
+        this.inventoryContents.clear();
         for(int slotIndex = CapabilityWolfArmor.INVENTORY_SLOT_CHEST_START;
             slotIndex < CapabilityWolfArmor.INVENTORY_SLOT_CHEST_START + CapabilityWolfArmor.INVENTORY_SLOT_CHEST_LENGTH;
             ++slotIndex) {
-            @Nonnull ItemStack stackInSlot = invBasic.getStackInSlot(slotIndex);
-            if(this.entity.isBreedingItem(stackInSlot)) {
-                favoriteFoods.add(stackInSlot);
-            }
+            this.inventoryContents.add(invBasic.getStackInSlot(slotIndex));
         }
     }
 
+    @Nonnull
     private ItemStack getMostEfficientFood() {
-        float healthDiff = this.entity.getMaxHealth() - this.entity.getHealth();
+        final float healthDiff = this.entity.getMaxHealth() - this.entity.getHealth();
 
-        float healDiff = Float.MAX_VALUE;
-        @Nonnull ItemStack mostEfficient = ItemStack.EMPTY;
-        for(@Nonnull ItemStack stack : this.favoriteFoods) {
-            if(!(stack.getItem() instanceof ItemFood)) {
-                continue;
-            }
-            ItemFood foodItem = (ItemFood) stack.getItem();
-            float foodHealAmount = Math.abs(healthDiff - foodItem.getHealAmount(stack));
-            if(foodHealAmount < healDiff) {
-                healDiff = foodHealAmount;
-                mostEfficient = stack;
-            }
-            if(Math.abs(healDiff) < 0.01F) {
-                break;
-            }
-        }
-
-        return mostEfficient;
+        return this.inventoryContents.stream()
+                .filter(itemStack -> !itemStack.isEmpty() &&
+                        entity.isBreedingItem(itemStack) &&
+                        itemStack.getItem() instanceof ItemFood)
+                .min(Comparator.comparing(itemStack -> {
+                    ItemFood food = (ItemFood) itemStack.getItem();
+                    return Math.abs(healthDiff - food.getHealAmount(itemStack));
+                }))
+                .orElse(ItemStack.EMPTY);
     }
 }

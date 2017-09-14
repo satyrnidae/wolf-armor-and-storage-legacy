@@ -1,6 +1,8 @@
 package com.attributestudios.wolfarmor.client.renderer.entity.layer;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.api.util.Definitions;
+import com.attributestudios.wolfarmor.api.util.annotation.Future;
 import com.attributestudios.wolfarmor.client.model.ModelWolfArmor;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
@@ -154,9 +156,9 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      * @return The default model.
      */
     @Nonnull
-    private ModelWolfArmor getArmorModelForLayer(@Nonnull EntityWolf entityWolfArmored,
-                                                   @Nonnull ItemStack itemStack,
-                                                   int layer,
+    private ModelWolfArmor getArmorModelForLayer(@Future @Nonnull EntityWolf entityWolfArmored,
+                                                   @Future @Nonnull ItemStack itemStack,
+                                                   @Future int layer,
                                                    @Nonnull ModelWolfArmor model) {
         //TODO: API call to get model
         return model;
@@ -172,13 +174,13 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      * @return A new or cached resource location corresponding to the generated / api path.
      */
     @Nonnull
-    private ResourceLocation getArmorResource(@Nonnull EntityWolf entityWolf,
+    private ResourceLocation getArmorResource(@Future @Nonnull EntityWolf entityWolf,
                                                 @Nonnull ItemStack itemStack,
                                                 int layer,
                                                 @Nullable String type) {
         ItemWolfArmor armor = (ItemWolfArmor) itemStack.getItem();
         String texture = armor.getMaterial().getName();
-        String domain = WolfArmorMod.MOD_ID;
+        String domain = Definitions.MOD_ID;
         int i = texture.indexOf(':');
         if (i > -1) {
             domain = texture.substring(0, i);
@@ -187,7 +189,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
 
         String path = String.format("%s:textures/models/armor/wolf_%s_%d%s.png", domain, texture, layer, type == null ? "" : String.format("_%s", type));
 
-        //TODO: API call to get wolf armor layer path
+        //TODO: API / JSON call to get wolf armor layer path
 
         ResourceLocation resource = WOLF_ARMOR_TEXTURE_MAP.get(path);
 
@@ -261,7 +263,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      * @param colorRed The red color multiplier
      * @return This instance
      */
-    @SuppressWarnings("unused")
+    @Future
     @Nonnull
     public LayerWolfArmor setColorRed(float colorRed) {
         this.colorRed = colorRed;
@@ -274,7 +276,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      * @param colorGreen The green color multiplier
      * @return This instance
      */
-    @SuppressWarnings("unused")
+    @Future
     @Nonnull
     public LayerWolfArmor setColorGreen(float colorGreen) {
         this.colorGreen = colorGreen;
@@ -287,7 +289,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      * @param colorBlue The blue color multiplier
      * @return This instance
      */
-    @SuppressWarnings("unused")
+    @Future
     @Nonnull
     public LayerWolfArmor setColorBlue(float colorBlue) {
         this.colorBlue = colorBlue;
@@ -300,7 +302,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      * @param alpha The alpha multiplier
      * @return This instance
      */
-    @SuppressWarnings("unused")
+    @Future
     @Nonnull
     public LayerWolfArmor setAlpha(float alpha) {
         this.alpha = alpha;
@@ -313,7 +315,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      * @param shouldSkipArmorGlint Whether or not the enchanted item glint should be skipped.
      * @return This instance
      */
-    @SuppressWarnings("unused")
+    @Future
     @Nonnull
     public LayerWolfArmor setShouldSkipArmorGlint(boolean shouldSkipArmorGlint) {
         this.shouldSkipArmorGlint = shouldSkipArmorGlint;

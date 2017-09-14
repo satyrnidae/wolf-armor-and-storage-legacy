@@ -1,14 +1,14 @@
 package com.attributestudios.wolfarmor.client.renderer.entity.layer;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.api.util.Definitions.ResourceLocations.Textures;
+import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import com.attributestudios.wolfarmor.client.model.ModelWolfBackpack;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
-import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.passive.EntityWolf;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -23,8 +23,6 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
 
     private ModelWolfBackpack modelWolfBackpack;
     private final RenderLiving renderer;
-
-    private static final ResourceLocation TEXTURE_WOLF_BACKPACK = new ResourceLocation(WolfArmorMod.MOD_ID, "textures/models/wolf_pack.png");
 
     //endregion Fields
 
@@ -75,7 +73,7 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
                 this.modelWolfBackpack.setModelAttributes(renderer.getMainModel());
                 this.modelWolfBackpack.setLivingAnimations(entityWolf, limbSwing, limbSwingAmount, partialTicks);
 
-                this.renderer.bindTexture(TEXTURE_WOLF_BACKPACK);
+                this.renderer.bindTexture(Textures.TEXTURE_WOLF_BACKPACK);
 
                 GlStateManager.color(1, 1, 1, 1);
 

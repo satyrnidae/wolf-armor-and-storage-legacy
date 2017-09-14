@@ -1,31 +1,22 @@
 package com.attributestudios.wolfarmor.event;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
+import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.entity.ai.EntityAIWolfAutoEat;
 import com.attributestudios.wolfarmor.entity.ai.EntityAIWolfHowl;
 import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityWolf;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Contains all forge subscribed events for entities

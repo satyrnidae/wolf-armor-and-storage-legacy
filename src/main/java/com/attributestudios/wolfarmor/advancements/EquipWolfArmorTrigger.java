@@ -1,5 +1,6 @@
 package com.attributestudios.wolfarmor.advancements;
 
+import com.attributestudios.wolfarmor.api.util.annotation.DynamicallyUsed;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -23,6 +24,7 @@ public class EquipWolfArmorTrigger implements ICriterionTrigger<EquipWolfArmorTr
     private final Map<PlayerAdvancements, Listeners> listeners = Maps.newHashMap();
     private final ResourceLocation id;
 
+    @DynamicallyUsed
     public EquipWolfArmorTrigger(ResourceLocation id) {
         this.id = id;
     }

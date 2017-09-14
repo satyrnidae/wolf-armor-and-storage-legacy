@@ -1,14 +1,17 @@
 package com.attributestudios.wolfarmor.event;
 
-import com.attributestudios.wolfarmor.api.definitions.Items;
-import com.attributestudios.wolfarmor.api.definitions.EntityEntries;
-import com.attributestudios.wolfarmor.api.definitions.Recipes;
+import com.attributestudios.wolfarmor.item.Items;
+import com.attributestudios.wolfarmor.entity.EntityEntries;
+import com.attributestudios.wolfarmor.item.crafting.Recipes;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 
+/**
+ * Hanldes forge registration events.
+ */
 public class RegistrationEventHandler {
 
     @SubscribeEvent

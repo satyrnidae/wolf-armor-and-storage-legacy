@@ -1,12 +1,12 @@
 package com.attributestudios.wolfarmor.client;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.api.definitions.Items;
+import com.attributestudios.wolfarmor.item.Items;
 import com.attributestudios.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
 import com.attributestudios.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
 import com.attributestudios.wolfarmor.common.CommonProxy;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor;
-import com.attributestudios.wolfarmor.api.util.DynamicallyUsed;
+import com.attributestudios.wolfarmor.api.util.annotation.DynamicallyUsed;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.IItemColor;

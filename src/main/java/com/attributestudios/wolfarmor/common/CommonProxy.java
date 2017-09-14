@@ -1,8 +1,9 @@
 package com.attributestudios.wolfarmor.common;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.api.IProxy;
+import com.attributestudios.wolfarmor.api.util.IProxy;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import com.attributestudios.wolfarmor.common.loot.LootHandler;
 import com.attributestudios.wolfarmor.common.network.WolfArmorGuiHandler;
 import com.attributestudios.wolfarmor.common.network.WolfArmorPacketHandler;
 import com.attributestudios.wolfarmor.common.network.packets.WolfAutoHealMessage;
@@ -42,7 +43,6 @@ public class CommonProxy implements IProxy {
         registerItemRenders(initializationEvent);
         registerItemColorHandlers(initializationEvent);
         registerCapabilities();
-        registerRecipes();
     }
 
     @Override
@@ -57,21 +57,19 @@ public class CommonProxy implements IProxy {
         }
 
         try {
-            method.invoke(null, com.attributestudios.wolfarmor.api.definitions.CriteriaTriggers.EQUIP_WOLF_ARMOR);
+            method.invoke(null, com.attributestudios.wolfarmor.advancements.CriteriaTriggers.EQUIP_WOLF_ARMOR);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("Failed to register criteria: Unable to access method.", e);
         }
     }
-
-    @Deprecated
-    @Override
-    public void registerRecipes() {
-        //TODO maybe
-    }
-
     @Override
     public void registerPackets() {
         WolfArmorPacketHandler.INSTANCE.registerMessage(WolfAutoHealMessage.WolfAutoHealMessageHandler.class, WolfAutoHealMessage.class, 0, Side.CLIENT);
+    }
+
+    @Override
+    public void registerLootTables() {
+        LootHandler.init();
     }
 
     @Override
@@ -85,6 +83,7 @@ public class CommonProxy implements IProxy {
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
         this.registerGuiHandlers();
         this.registerPackets();
+        this.registerLootTables();
     }
 
     private boolean IsRendererInitialized = false;

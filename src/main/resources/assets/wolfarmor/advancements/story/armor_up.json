@@ -10,9 +10,9 @@
       "translate": "advancements.adventure.armor_up.description"
     }
   },
-  "parent": "minecraft:adventure/root",
+  "parent": "minecraft:story/root",
   "criteria": {
-    "wolf_equipped":{
+    "wolf_equipped": {
       "trigger": "wolfarmor:equip_wolf_armor",
       "conditions": {
         "entities": [
