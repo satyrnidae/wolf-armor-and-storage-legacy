@@ -30,6 +30,7 @@ bin/
 
 # IntelliJ
 wolfarmor*.iws
+wolfarmor*.iml
 .idea/
 
 #Visual Studio
