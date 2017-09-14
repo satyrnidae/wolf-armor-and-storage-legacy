@@ -39,10 +39,15 @@ wolfarmor*.iml
 #vscode
 .vscode/
 bin/
+
+#eclipse
+.settings/
+wolfarmor_Client.launch
+wolfarmor_Server.launch
+.classpath
 .project
 
 # Misc
-.settings/
 CREDITS-fml.txt
 forge-1.11-13.19.1.2189-changelog.txt
 LICENSE-new.txt

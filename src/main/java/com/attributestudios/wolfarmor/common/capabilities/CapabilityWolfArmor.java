@@ -2,8 +2,12 @@ package com.attributestudios.wolfarmor.common.capabilities;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
+import com.attributestudios.wolfarmor.api.util.Definitions;
 import com.attributestudios.wolfarmor.api.util.Definitions.ResourceLocations.Capabilities;
 import com.attributestudios.wolfarmor.api.util.annotation.Future;
+import com.attributestudios.wolfarmor.common.network.PacketHandler;
+import com.attributestudios.wolfarmor.common.network.packets.WolfChestedStateChangedMessage;
+import com.attributestudios.wolfarmor.common.network.packets.WolfEquippedArmorMessage;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.Block;
@@ -152,7 +156,7 @@ public class CapabilityWolfArmor {
         private void openWolfInventory(@Nonnull EntityPlayer player) {
             if (!this.wolf.getEntityWorld().isRemote) {
                 this.wolf.getAISit().setSitting(true);
-                player.openGui(WolfArmorMod.instance,
+                player.openGui(WolfArmorMod.getInstance(),
                         this.wolf.getEntityId(),
                         this.wolf.getEntityWorld(),
                         MathHelper.floor(this.wolf.posX),
@@ -163,22 +167,24 @@ public class CapabilityWolfArmor {
 
         @Override
         public void onInventoryChanged(@Nonnull IInventory inventory) {
-            @Nonnull ItemStack armorItemStack = inventory.getStackInSlot(INVENTORY_SLOT_ARMOR);
-            @Nonnull ItemStack previousArmorItem = this.getArmorItemStack();
-            if (armorItemStack != previousArmorItem) {
-                this.playEquipSound(armorItemStack.isEmpty() ? previousArmorItem : armorItemStack);
-                this.setArmorItemStack(armorItemStack);
-            }
+            if(!this.wolf.getEntityWorld().isRemote) {
+                @Nonnull ItemStack armorItemStack = inventory.getStackInSlot(INVENTORY_SLOT_ARMOR);
+                @Nonnull ItemStack previousArmorItem = this.getArmorItemStack();
+                if (armorItemStack != previousArmorItem) {
+                    this.playEquipSound(armorItemStack.isEmpty() ? previousArmorItem : armorItemStack);
+                    this.setArmorItemStack(armorItemStack);
+                }
 
-            applyArmorModifiers(this.wolf.getEntityAttribute(SharedMonsterAttributes.ARMOR), armorItemStack);
-            applyArmorModifiers(this.wolf.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS), armorItemStack);
+                applyArmorModifiers(this.wolf.getEntityAttribute(SharedMonsterAttributes.ARMOR), armorItemStack);
+                applyArmorModifiers(this.wolf.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS), armorItemStack);
+            }
         }
 
         private void applyArmorModifiers(@Nullable IAttributeInstance instance, @Nonnull ItemStack stack) {
             if(instance == null) {
                 return;
             }
-            instance.removeAllModifiers();
+            instance.removeModifier(ItemWolfArmor.ARMOR_UUID);
             if (stack.isEmpty() || !(stack.getItem() instanceof ItemWolfArmor)) {
                 return;
             }
@@ -264,6 +270,9 @@ public class CapabilityWolfArmor {
         @Override
         public void setHasChest(boolean value) {
             this.dataManager.set(HAS_CHEST, value);
+            if(!this.wolf.getEntityWorld().isRemote) {
+                PacketHandler.getChannel().sendToAll(new WolfChestedStateChangedMessage(this.wolf.getEntityId(), value));
+            }
         }
 
         @Override
@@ -275,6 +284,9 @@ public class CapabilityWolfArmor {
         @Override
         public void setArmorItemStack(@Nonnull ItemStack value) {
             this.dataManager.set(ARMOR_ITEM_STACK, value);
+            if(!this.wolf.getEntityWorld().isRemote) {
+                PacketHandler.getChannel().sendToAll(new WolfEquippedArmorMessage(this.wolf.getEntityId(), value));
+            }
         }
 
         @Override

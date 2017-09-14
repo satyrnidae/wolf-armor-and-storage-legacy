@@ -5,20 +5,21 @@ import com.attributestudios.wolfarmor.api.util.IProxy;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.common.loot.LootHandler;
 import com.attributestudios.wolfarmor.common.network.WolfArmorGuiHandler;
-import com.attributestudios.wolfarmor.common.network.WolfArmorPacketHandler;
-import com.attributestudios.wolfarmor.common.network.packets.WolfAutoHealMessage;
+import com.attributestudios.wolfarmor.common.network.PacketHandler;
 import com.attributestudios.wolfarmor.event.EntityEventHandler;
 import com.attributestudios.wolfarmor.event.PlayerEventHandler;
 import com.attributestudios.wolfarmor.event.RegistrationEventHandler;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.ICriterionTrigger;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IThreadListener;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
@@ -64,7 +65,7 @@ public class CommonProxy implements IProxy {
     }
     @Override
     public void registerPackets() {
-        WolfArmorPacketHandler.INSTANCE.registerMessage(WolfAutoHealMessage.WolfAutoHealMessageHandler.class, WolfAutoHealMessage.class, 0, Side.CLIENT);
+        PacketHandler.initialize();
     }
 
     @Override
@@ -96,11 +97,23 @@ public class CommonProxy implements IProxy {
         }
     }
 
+    @Override
     public void registerGuiHandlers() {
-        NetworkRegistry.INSTANCE.registerGuiHandler(WolfArmorMod.instance, new WolfArmorGuiHandler());
+        NetworkRegistry.INSTANCE.registerGuiHandler(WolfArmorMod.getInstance(), new WolfArmorGuiHandler());
     }
 
+    @Override
     public void registerCapabilities() {
         CapabilityWolfArmor.register();
+    }
+
+	@Override
+	public IThreadListener getThreadFromContext(MessageContext context) {
+		return context.getServerHandler().player.getServer();
+    }
+    
+    @Override
+    public EntityPlayer getPlayerFromContext(MessageContext context) {
+        return context.getServerHandler().player;
     }
 }

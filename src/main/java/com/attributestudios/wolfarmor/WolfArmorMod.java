@@ -23,12 +23,12 @@ import javax.annotation.Nonnull;
 public class WolfArmorMod {
     //region Fields
 
-    @Mod.Instance(Definitions.MOD_ID)
-    public static WolfArmorMod instance;
-
     @SidedProxy(clientSide = "com.attributestudios.wolfarmor.client.ClientProxy",
                 serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
     public static IProxy proxy;
+
+    @Mod.Instance(Definitions.MOD_ID)
+    private static WolfArmorMod instance;
 
     private static LogHelper logger;
 
@@ -37,6 +37,14 @@ public class WolfArmorMod {
     //endregion Fields
 
     //region Public / Protected Methods
+
+    public static IProxy getProxy() {
+        return proxy;
+    }
+
+    public static WolfArmorMod getInstance() {
+        return instance;
+    }
 
     /**
      * Handles pre-initialization tasks

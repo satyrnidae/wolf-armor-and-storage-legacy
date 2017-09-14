@@ -3,18 +3,19 @@ package com.attributestudios.wolfarmor.entity.ai;
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
-import com.attributestudios.wolfarmor.common.network.WolfArmorPacketHandler;
-import com.attributestudios.wolfarmor.common.network.packets.WolfAutoHealMessage;
+import com.attributestudios.wolfarmor.common.network.PacketHandler;
+import com.attributestudios.wolfarmor.common.network.packets.WolfEatMessage;
+import com.attributestudios.wolfarmor.common.network.packets.WolfHealMessage;
+
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.IInventoryChangedListener;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -90,30 +91,22 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
         if(eatingFood != ItemStack.EMPTY) {
             if (foodEatTime > 0) {
                 if (--foodEatTime % 4 == 0) {
-                    this.sendParticleUpdate(false);
+                    PacketHandler.getChannel().sendToAllAround(
+                        new WolfEatMessage(entity.getEntityId(), eatingFood),
+                        new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 60));
                     this.entity.playSound(SoundEvents.ENTITY_GENERIC_EAT,
                             0.5F,
                             (this.entity.getRNG().nextFloat() - this.entity.getRNG().nextFloat()) * 0.2F + 1);
                 }
             } else if (!hasHealedSinceLastReset) {
                 hasHealedSinceLastReset = true;
-                sendParticleUpdate(true);
+                PacketHandler.getChannel().sendToAllAround(
+                    new WolfHealMessage(entity.getEntityId()),
+                    new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 60));
                 this.entity.heal((float) ((ItemFood) eatingFood.getItem()).getHealAmount(eatingFood));
                 this.eatingFood.shrink(1);
             }
         }
-    }
-
-    private void sendParticleUpdate(boolean showHappyParticles) {
-        WolfArmorPacketHandler.INSTANCE.sendToAllAround(new WolfAutoHealMessage(this.entity.getEntityId(),
-                        Item.getIdFromItem(eatingFood.getItem()),
-                        eatingFood.getMetadata(),
-                        showHappyParticles),
-                new NetworkRegistry.TargetPoint(this.entity.dimension,
-                        this.entity.posX,
-                        this.entity.posY,
-                        this.entity.posZ,
-                        32));
     }
 
     @Override

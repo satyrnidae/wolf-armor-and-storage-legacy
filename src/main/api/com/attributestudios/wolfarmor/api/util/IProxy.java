@@ -1,9 +1,12 @@
 package com.attributestudios.wolfarmor.api.util;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import javax.annotation.Nonnull;
 
@@ -27,4 +30,8 @@ public interface IProxy {
      */
     @Deprecated
     void registerCriteriaTriggers();
+
+    IThreadListener getThreadFromContext(MessageContext context);
+
+    EntityPlayer getPlayerFromContext(MessageContext context);
 }

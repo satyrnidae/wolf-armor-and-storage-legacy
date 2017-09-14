@@ -30,6 +30,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
     //region Fields
 
     private ModelWolfArmor[] modelWolfArmors;
+    @SuppressWarnings("rawtypes")
     private final RenderLiving renderer;
 
     private static final Map<String, ResourceLocation> WOLF_ARMOR_TEXTURE_MAP = Maps.newHashMap();
@@ -49,6 +50,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      *
      * @param renderer The parent renderer.
      */
+    @SuppressWarnings("rawtypes")
     public LayerWolfArmor(@Nonnull RenderLiving renderer) {
         this.renderer = renderer;
         this.initArmor();
@@ -79,50 +81,52 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
                               float netHeadYaw,
                               float headPitch,
                               float scale) {
-        if (WolfArmorMod.getConfiguration().getIsWolfArmorRenderEnabled()) {
-            IWolfArmorCapability wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
-            if(wolfArmor == null) {
-                return;
-            }
+        if (!WolfArmorMod.getConfiguration().getIsWolfArmorRenderEnabled()) {
+            return;
+        }
 
-            ItemStack itemStack = wolfArmor.getArmorItemStack();
+        IWolfArmorCapability wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+        if(wolfArmor == null) {
+            return;
+        }
 
-                if (!itemStack.isEmpty() && itemStack.getItem() instanceof ItemWolfArmor) {
-                    ItemWolfArmor armorItem = (ItemWolfArmor) itemStack.getItem();
+        ItemStack itemStack = wolfArmor.getArmorItemStack();
 
-                for (int layer = 0; layer < modelWolfArmors.length; layer++) {
-                    ModelWolfArmor model = modelWolfArmors[layer];
-                    model = getArmorModelForLayer(entityWolf, itemStack, layer, model);
+        if (!itemStack.isEmpty() && itemStack.getItem() instanceof ItemWolfArmor) {
+            ItemWolfArmor armorItem = (ItemWolfArmor) itemStack.getItem();
 
-                    model.setModelAttributes(this.renderer.getMainModel());
-                    model.setLivingAnimations(entityWolf, limbSwing, limbSwingAmount, partialTicks);
+            for (int layer = 0; layer < modelWolfArmors.length; layer++) {
+                ModelWolfArmor model = modelWolfArmors[layer];
+                model = getArmorModelForLayer(entityWolf, itemStack, layer, model);
 
-                    this.renderer.bindTexture(this.getArmorResource(entityWolf, itemStack, layer, null));
+                model.setModelAttributes(this.renderer.getMainModel());
+                model.setLivingAnimations(entityWolf, limbSwing, limbSwingAmount, partialTicks);
 
-                    int color = armorItem.getColor(itemStack);
+                this.renderer.bindTexture(this.getArmorResource(entityWolf, itemStack, layer, null));
 
-                    if (color != 0xFFFFFFFF) {
-                        float r = (color >> 16 & 0xFF) / 255F;
-                        float g = (color >> 8 & 0xFF) / 255F;
-                        float b = (color & 0xFF) / 255F;
-                        GlStateManager.color(getColorRed() * r, getColorGreen() * g, getColorBlue() * b, getAlpha());
-                    } else {
-                        GlStateManager.color(getColorRed(), getColorGreen(), getColorBlue(), getAlpha());
-                    }
+                int color = armorItem.getColor(itemStack);
 
-                    model.render(entityWolf, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-
+                if (color != 0xFFFFFFFF) {
+                    float r = (color >> 16 & 0xFF) / 255F;
+                    float g = (color >> 8 & 0xFF) / 255F;
+                    float b = (color & 0xFF) / 255F;
+                    GlStateManager.color(getColorRed() * r, getColorGreen() * g, getColorBlue() * b, getAlpha());
+                } else {
                     GlStateManager.color(getColorRed(), getColorGreen(), getColorBlue(), getAlpha());
+                }
 
-                    if (armorItem.getHasOverlay(itemStack)) {
-                        this.renderer.bindTexture(this.getArmorResource(entityWolf, itemStack, layer, "overlay"));
-                        model.render(entityWolf, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-                    }
+                model.render(entityWolf, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
 
-                    if (!getShouldSkipArmorGlint() && itemStack.hasEffect()) {
-                        LayerArmorBase.renderEnchantedGlint(renderer, entityWolf, model, limbSwing, limbSwingAmount, partialTicks,
-                                ageInTicks, netHeadYaw, headPitch, scale);
-                    }
+                GlStateManager.color(getColorRed(), getColorGreen(), getColorBlue(), getAlpha());
+
+                if (armorItem.getHasOverlay(itemStack)) {
+                    this.renderer.bindTexture(this.getArmorResource(entityWolf, itemStack, layer, "overlay"));
+                    model.render(entityWolf, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+                }
+
+                if (!getShouldSkipArmorGlint() && itemStack.hasEffect()) {
+                    LayerArmorBase.renderEnchantedGlint(renderer, entityWolf, model, limbSwing, limbSwingAmount, partialTicks,
+                            ageInTicks, netHeadYaw, headPitch, scale);
                 }
             }
         }

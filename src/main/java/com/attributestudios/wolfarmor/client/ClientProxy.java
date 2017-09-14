@@ -16,11 +16,14 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderWolf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IThreadListener;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -35,6 +38,7 @@ import javax.annotation.Nullable;
 public class ClientProxy extends CommonProxy {
     //region Public / Protected Methods
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void registerEntityRenderingHandlers() {
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
@@ -99,6 +103,16 @@ public class ClientProxy extends CommonProxy {
             ModelLoader.registerItemVariants(item, item.getRegistryName());
             Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, resource);
         }
+    }
+
+    @Override
+    public IThreadListener getThreadFromContext(MessageContext context) {
+        return context.side.isClient() ? Minecraft.getMinecraft() : super.getThreadFromContext(context);
+    }
+
+    @Override
+    public EntityPlayer getPlayerFromContext(MessageContext context) {
+        return context.side.isClient()? Minecraft.getMinecraft().player : super.getPlayerFromContext(context);
     }
 
     //endregion Public / Protected Methods
