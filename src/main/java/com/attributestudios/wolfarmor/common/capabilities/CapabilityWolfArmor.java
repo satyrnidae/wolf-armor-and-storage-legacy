@@ -2,12 +2,8 @@ package com.attributestudios.wolfarmor.common.capabilities;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
-import com.attributestudios.wolfarmor.api.util.Definitions;
 import com.attributestudios.wolfarmor.api.util.Definitions.ResourceLocations.Capabilities;
 import com.attributestudios.wolfarmor.api.util.annotation.Future;
-import com.attributestudios.wolfarmor.common.network.PacketHandler;
-import com.attributestudios.wolfarmor.common.network.packets.WolfChestedStateChangedMessage;
-import com.attributestudios.wolfarmor.common.network.packets.WolfEquippedArmorMessage;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.Block;
@@ -100,7 +96,7 @@ public class CapabilityWolfArmor {
         private final EntityDataManager dataManager;
         private ContainerHorseChest inventory;
 
-        public Instance(@Nonnull EntityWolf wolf) {
+        Instance(@Nonnull EntityWolf wolf) {
             this.wolf = wolf;
             this.dataManager = wolf.getDataManager();
             this.dataManagerInit();
@@ -270,9 +266,6 @@ public class CapabilityWolfArmor {
         @Override
         public void setHasChest(boolean value) {
             this.dataManager.set(HAS_CHEST, value);
-            if(!this.wolf.getEntityWorld().isRemote) {
-                PacketHandler.getChannel().sendToAll(new WolfChestedStateChangedMessage(this.wolf.getEntityId(), value));
-            }
         }
 
         @Override
@@ -284,9 +277,6 @@ public class CapabilityWolfArmor {
         @Override
         public void setArmorItemStack(@Nonnull ItemStack value) {
             this.dataManager.set(ARMOR_ITEM_STACK, value);
-            if(!this.wolf.getEntityWorld().isRemote) {
-                PacketHandler.getChannel().sendToAll(new WolfEquippedArmorMessage(this.wolf.getEntityId(), value));
-            }
         }
 
         @Override

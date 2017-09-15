@@ -5,6 +5,7 @@ import com.attributestudios.wolfarmor.api.util.Definitions.ResourceLocations.Tex
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import com.attributestudios.wolfarmor.client.model.ModelWolfBackpack;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
@@ -66,48 +67,47 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
                               float headPitch,
                               float scale) {
 
-        if (WolfArmorMod.getConfiguration().getIsWolfChestRenderEnabled()) {
-            IWolfArmorCapability wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
-            if (wolfArmor.getHasChest()) {
+        if (!WolfArmorMod.getConfiguration().getIsWolfChestRenderEnabled()) {
+            return;
+        }
+        IWolfArmorCapability wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+        if (wolfArmor != null && wolfArmor.getHasChest()) {
+            this.modelWolfBackpack.setModelAttributes(renderer.getMainModel());
+            this.modelWolfBackpack.setLivingAnimations(entityWolf, limbSwing, limbSwingAmount, partialTicks);
 
-                this.modelWolfBackpack.setModelAttributes(renderer.getMainModel());
-                this.modelWolfBackpack.setLivingAnimations(entityWolf, limbSwing, limbSwingAmount, partialTicks);
+            this.renderer.bindTexture(Textures.TEXTURE_WOLF_BACKPACK);
 
-                this.renderer.bindTexture(Textures.TEXTURE_WOLF_BACKPACK);
+            GlStateManager.color(1, 1, 1, 1);
 
-                GlStateManager.color(1, 1, 1, 1);
-
-                if (!entityWolf.isInvisible()) {
-                    this.modelWolfBackpack.render(entityWolf, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-                } else {
-                    GlStateManager.pushMatrix();
+            if (!entityWolf.isInvisible()) {
+                this.modelWolfBackpack.render(entityWolf, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+            } else {
+                GlStateManager.pushMatrix();
+                {
+                    GlStateManager.color(1, 1, 1, 0.15F);
+                    GlStateManager.depthMask(false);
                     {
-                        GlStateManager.color(1, 1, 1, 0.15F);
-                        GlStateManager.depthMask(false);
+                        GlStateManager.enableBlend();
                         {
-                            GlStateManager.enableBlend();
-                            {
-                                GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
-                                        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+                                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-                                this.modelWolfBackpack.render(entityWolf,
-                                        limbSwing,
-                                        limbSwingAmount,
-                                        ageInTicks,
-                                        netHeadYaw,
-                                        headPitch,
-                                        scale);
+                            this.modelWolfBackpack.render(entityWolf,
+                                    limbSwing,
+                                    limbSwingAmount,
+                                    ageInTicks,
+                                    netHeadYaw,
+                                    headPitch,
+                                    scale);
 
-                            }
-                            GlStateManager.disableBlend();
                         }
-                        GlStateManager.depthMask(true);
+                        GlStateManager.disableBlend();
                     }
-                    GlStateManager.popMatrix();
+                    GlStateManager.depthMask(true);
                 }
+                GlStateManager.popMatrix();
             }
         }
-
     }
 
     //endregion Public / Protected Methods

@@ -31,12 +31,11 @@ if(versioningFile.canRead()) {
 }
 sourceSets.api {
     java {
-        srcDirs 'src/main/api'
+        srcDirs 'api/main/java'
     }
 }
 sourceSets.main {
     java {
-        srcDirs 'src/main/api'
         srcDirs 'src/main/java'
     }
 }
@@ -78,7 +77,7 @@ compileJava {
 }
 
 minecraft {
-    version = "1.12.1-14.22.1.2479"
+    version = "1.12.1-14.22.1.2478"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.

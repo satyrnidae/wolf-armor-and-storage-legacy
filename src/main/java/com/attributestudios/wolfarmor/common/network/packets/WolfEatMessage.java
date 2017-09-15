@@ -1,6 +1,7 @@
 package com.attributestudios.wolfarmor.common.network.packets;
 
-import com.attributestudios.wolfarmor.common.network.packets.AbstractMessage.AbstractClientMessage;
+import com.attributestudios.wolfarmor.api.util.annotation.DynamicallyUsed;
+import com.attributestudios.wolfarmor.common.network.MessageBase.ClientMessageBase;
 
 import java.io.IOException;
 
@@ -15,10 +16,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class WolfEatMessage extends AbstractClientMessage<WolfEatMessage> {
+public class WolfEatMessage extends ClientMessageBase<WolfEatMessage> {
 
     private int entityId;
     private ItemStack foodItem;
+
+    @DynamicallyUsed
+    public WolfEatMessage() {}
 
     public WolfEatMessage(int entityId, ItemStack foodItem) {
         this.entityId = entityId;
@@ -42,16 +46,34 @@ public class WolfEatMessage extends AbstractClientMessage<WolfEatMessage> {
         World world = player.getEntityWorld();
         Entity entity = player.getEntityWorld().getEntityByID(this.entityId);
         if(entity != null) {
-            Vec3d velocity = new Vec3d(world.rand.nextDouble() - 0.5D * 0.1D, world.rand.nextDouble() * 0.1D + 0.1D, 0.0D);
+            Vec3d velocity = new Vec3d((world.rand.nextFloat() - 0.5D) * 0.1D, world.rand.nextFloat() * 0.1D + 0.1D, 0.0D);
             velocity = velocity.rotatePitch(-entity.rotationPitch * (float)(Math.PI / 180));
             velocity = velocity.rotateYaw(-entity.rotationYaw * (float)(Math.PI / 180));
-            velocity = velocity.addVector(0.0D, 0.05D, 0.0D);
-            Vec3d position = new Vec3d(world.rand.nextDouble() - 0.5D, -world.rand.nextDouble() * 0.6D - 0.3D, 0.6D);
+            Vec3d position = new Vec3d(world.rand.nextFloat() - 0.5D, -world.rand.nextFloat() * 0.6D - 0.3D, 0.6D);
             position = position.rotatePitch(-entity.rotationPitch * (float)(Math.PI / 180));
             position = position.rotateYaw(-entity.rotationYaw * (float)(Math.PI / 180));
             position = position.addVector(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
 
-            world.spawnParticle(EnumParticleTypes.ITEM_CRACK, position.x, position.y, position.z, velocity.x, velocity.y, velocity.z, Item.getIdFromItem(foodItem.getItem()), foodItem.getMetadata());
+            if(foodItem.getHasSubtypes()) {
+                world.spawnParticle(EnumParticleTypes.ITEM_CRACK,
+                        position.x,
+                        position.y,
+                        position.z,
+                        velocity.x,
+                        velocity.y + 0.05D,
+                        velocity.z,
+                        Item.getIdFromItem(foodItem.getItem()), foodItem.getMetadata());
+            }
+            else {
+                world.spawnParticle(EnumParticleTypes.ITEM_CRACK,
+                        position.x,
+                        position.y,
+                        position.z,
+                        velocity.x,
+                        velocity.y + 0.05D,
+                        velocity.z,
+                        Item.getIdFromItem(foodItem.getItem()));
+            }
         }
 
 		return null;

@@ -2,7 +2,8 @@ package com.attributestudios.wolfarmor.common.network.packets;
 
 import java.io.IOException;
 
-import com.attributestudios.wolfarmor.common.network.packets.AbstractMessage.AbstractClientMessage;
+import com.attributestudios.wolfarmor.api.util.annotation.DynamicallyUsed;
+import com.attributestudios.wolfarmor.common.network.MessageBase.ClientMessageBase;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,9 +13,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class WolfHealMessage extends AbstractClientMessage<WolfHealMessage> {
+public class WolfHealMessage extends ClientMessageBase<WolfHealMessage> {
 
     private int entityId;
+
+    @DynamicallyUsed
+    public WolfHealMessage() {}
 
     public WolfHealMessage(int entityId) {
         this.entityId = entityId;

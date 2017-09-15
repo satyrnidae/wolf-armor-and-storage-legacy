@@ -87,7 +87,6 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
     @Override
     public void updateTask() {
         --eatCooldown;
-
         if(eatingFood != ItemStack.EMPTY) {
             if (foodEatTime > 0) {
                 if (--foodEatTime % 4 == 0) {
@@ -136,7 +135,7 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
     private ItemStack getMostEfficientFood() {
         final float healthDiff = this.entity.getMaxHealth() - this.entity.getHealth();
 
-        return this.inventoryContents.stream()
+        ItemStack mostEfficient = this.inventoryContents.stream()
                 .filter(itemStack -> !itemStack.isEmpty() &&
                         entity.isBreedingItem(itemStack) &&
                         itemStack.getItem() instanceof ItemFood)
@@ -145,5 +144,6 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
                     return Math.abs(healthDiff - food.getHealAmount(itemStack));
                 }))
                 .orElse(ItemStack.EMPTY);
+        return mostEfficient;
     }
 }

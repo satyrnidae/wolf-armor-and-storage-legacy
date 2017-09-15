@@ -85,16 +85,7 @@ public class CommonProxy implements IProxy {
         this.registerGuiHandlers();
         this.registerPackets();
         this.registerLootTables();
-    }
-
-    private boolean IsRendererInitialized = false;
-
-    @Override
-    public void serverAboutToStart(@Nonnull FMLServerAboutToStartEvent serverAboutToStartEvent) {
-        if (!IsRendererInitialized) {
-            IsRendererInitialized = true;
-            this.registerEntityRenderingHandlers();
-        }
+        this.registerEntityRenderingHandlers();
     }
 
     @Override

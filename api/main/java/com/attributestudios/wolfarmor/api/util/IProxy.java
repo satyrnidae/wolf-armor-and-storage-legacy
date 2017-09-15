@@ -14,7 +14,6 @@ public interface IProxy {
     void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent);
     void init(@Nonnull FMLInitializationEvent initializationEvent);
     void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent);
-    void serverAboutToStart(@Nonnull FMLServerAboutToStartEvent serverAboutToStartEvent);
 
     void registerEntityRenderingHandlers();
     void registerEventListeners();

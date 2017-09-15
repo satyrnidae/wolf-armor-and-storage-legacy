@@ -79,11 +79,6 @@ public class WolfArmorMod {
         proxy.postInit(postInitializationEvent);
     }
 
-    @Mod.EventHandler
-    public void serverAboutToStart(@Nonnull FMLServerAboutToStartEvent serverAboutToStartEvent) {
-        proxy.serverAboutToStart(serverAboutToStartEvent);
-    }
-
     //endregion Public / Protected Methods
 
     //region Accessors / Mutators
