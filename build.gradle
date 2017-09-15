@@ -36,6 +36,7 @@ sourceSets.api {
 }
 sourceSets.main {
     java {
+        srcDirs 'api/main/java'
         srcDirs 'src/main/java'
     }
 }

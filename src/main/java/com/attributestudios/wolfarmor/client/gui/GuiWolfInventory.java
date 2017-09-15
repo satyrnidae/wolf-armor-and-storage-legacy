@@ -87,6 +87,8 @@ public class GuiWolfInventory extends GuiContainer {
                 : I18n.format(this.playerInventory.getName()), 8, this.ySize - 94, 0x404040);
 
         this.drawWolfHealthAndArmor();
+
+        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
     }
 
     /**
@@ -101,6 +103,8 @@ public class GuiWolfInventory extends GuiContainer {
         this.screenPositionX = mouseX;
         this.screenPositionY = mouseY;
         super.drawScreen(mouseX, mouseY, partialTicks);
+
+        this.renderHoveredToolTip(mouseX, mouseY);
     }
 
     /**
