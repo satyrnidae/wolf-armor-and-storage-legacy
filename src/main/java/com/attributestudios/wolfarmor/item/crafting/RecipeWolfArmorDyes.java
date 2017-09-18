@@ -15,6 +15,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Wolf Armor dye recipes
@@ -25,8 +26,6 @@ public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> imple
     public boolean matches(@Nonnull InventoryCrafting inv, @Nonnull World world) {
         @Nonnull ItemStack armorItemStack = ItemStack.EMPTY;
         @Nonnull final List<ItemStack> dyes = Lists.newArrayList();
-
-        
 
         for(int slotIndex = 0; slotIndex < inv.getSizeInventory(); ++slotIndex) {
             @Nonnull ItemStack stackInSlot = inv.getStackInSlot(slotIndex);
@@ -42,7 +41,7 @@ public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> imple
                 continue;
             }
 
-            if(stackInSlot.getItem() != Items.DYE) {
+            if(!OreDictHelper.isValidDye(stackInSlot)) {
                 return false;
             }
             dyes.add(stackInSlot);
@@ -89,11 +88,12 @@ public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> imple
                 continue;
             }
 
-            if(stackInSlot.getItem() != Items.DYE) {
+            Optional<EnumDyeColor> dyeColorOptional = OreDictHelper.getColorFromStack(stackInSlot);
+            if(!dyeColorOptional.isPresent()) {
                 return ItemStack.EMPTY;
             }
 
-            float[] dyeColorMultipliers = EnumDyeColor.byDyeDamage(stackInSlot.getMetadata()).getColorComponentValues();
+            float[] dyeColorMultipliers = dyeColorOptional.get().getColorComponentValues();
             int rDye = (int)(dyeColorMultipliers[0] * 255.0F);
             int gDye = (int)(dyeColorMultipliers[1] * 255.0F);
             int bDye = (int)(dyeColorMultipliers[2] * 255.0F);
