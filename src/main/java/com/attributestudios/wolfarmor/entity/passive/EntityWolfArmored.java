@@ -1,48 +1,29 @@
 package com.attributestudios.wolfarmor.entity.passive;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.item.ItemWolfArmor;
+import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.ai.*;
-import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityRabbit;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityWolf;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.AnimalChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.IInventoryChangedListener;
 import net.minecraft.inventory.InventoryBasic;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Replacement entity for EntityWolf that supports armor
  */
+@SuppressWarnings({"DeprecatedIsStillUsed", "deprecation"})
+@Deprecated
 public class EntityWolfArmored extends EntityWolf implements IInventoryChangedListener {
     //region Fields
 
@@ -52,8 +33,6 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
     private static final String NBT_TAG_SLOT       = "slot";
     private static final String NBT_TAG_INVENTORY  = "inventory";
     private static final String NBT_TAG_ARMOR_ITEM = "armorItem";
-
-    private static final int INVENTORY_WOLF_MAX_SIZE = 7; // One armor + 6 potential storage
 
     private static final DataParameter<Byte>                HAS_CHEST  = EntityDataManager.createKey(EntityWolfArmored.class, DataSerializers.BYTE);
     private static final DataParameter<Optional<ItemStack>> ARMOR_ITEM = EntityDataManager.createKey(EntityWolfArmored.class, DataSerializers.OPTIONAL_ITEM_STACK);
@@ -77,41 +56,12 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
     //region Public / Protected Methods
 
     /**
-     * Initializes the entity AI
-     */
-    @Override
-    protected void initEntityAI() {
-        this.aiSit = new EntityAISit(this);
-        this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(2, this.aiSit);
-        this.tasks.addTask(3, new EntityAILeapAtTarget(this, 0.4F));
-        this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.0D, true));
-        this.tasks.addTask(5, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
-        this.tasks.addTask(6, new EntityAIMate(this, 1.0D));
-        this.tasks.addTask(7, new EntityAIWander(this, 1.0D));
-        this.tasks.addTask(8, new EntityAIBeg(this, 8.0F));
-        this.tasks.addTask(9, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        this.tasks.addTask(9, new EntityAILookIdle(this));
-        this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
-        this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-        this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
-        this.targetTasks.addTask(4, new EntityAITargetNonTamed<EntityAnimal>(this, EntityAnimal.class, false, new Predicate<Entity>()
-        {
-            public boolean apply(@Nullable Entity entity)
-            {
-                return entity instanceof EntitySheep || entity instanceof EntityRabbit;
-            }
-        }));
-        this.targetTasks.addTask(5, new EntityAINearestAttackableTarget<EntitySkeleton>(this, EntitySkeleton.class, false));
-    }
-
-    /**
      * Sets up the entity's inventory.
      */
     @SuppressWarnings("WeakerAccess")
     protected void inventoryInit() {
         AnimalChest inventoryExisting = this.inventory;
-        this.inventory = new AnimalChest("container.wolfarmor.wolf", this.getMaxSizeInventory());
+        this.inventory = new AnimalChest("container.wolfarmor.wolf", 7);
 
         String customName = this.getCustomNameTag();
 
@@ -249,184 +199,12 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
     }
 
     /**
-     * Gets the total armor value of the armor present on this entity
-     *
-     * @return The armor value of this wolf's armor
-     */
-    @Override
-    public int getTotalArmorValue()
-    {
-        int totalArmor = super.getTotalArmorValue();
-
-        if(this.getHasArmor())
-        {
-            ItemStack armorItemStack = this.getArmorItemStack();
-
-            if(armorItemStack != null && getIsValidWolfArmorItem(armorItemStack.getItem()))
-            {
-                totalArmor += ((ItemWolfArmor)armorItemStack.getItem()).getDamageReductionAmount();
-            }
-        }
-
-        return totalArmor;
-    }
-
-    /**
-     * Drops the entity's equipment on death.
-     * @param killedByPlayer Whtehr or not the entity was killed by a player.
-     * @param lootingModifier The looting modifier of the killing entity.
-     */
-    @Override
-    public void dropEquipment(boolean killedByPlayer, int lootingModifier) {
-        if(this.getHasArmor()) {
-            ItemStack armorItem = this.getArmorItemStack();
-
-            if(armorItem != null) {
-                this.entityDropItem(armorItem, 0);
-                this.inventory.setInventorySlotContents(0, null);
-            }
-        }
-
-        if(this.getHasChest()) {
-            this.entityDropItem(new ItemStack(Blocks.CHEST, 1), 0);
-            for(int slotIndex = 1; slotIndex < getMaxSizeInventory(); slotIndex++) {
-                ItemStack stack = this.inventory.getStackInSlot(slotIndex);
-
-                if(stack != null) {
-                    this.entityDropItem(stack, 0);
-                    this.inventory.setInventorySlotContents(slotIndex, null);
-                }
-            }
-        }
-    }
-
-    /**
-     * Gets the item held in the entity's hand
-     * @param hand Main or offhand
-     * @return The armored wolf's armor if the hand is the main hand.  (custom enchants support)
-     */
-    @Override
-    @Nullable
-    public ItemStack getHeldItem(@Nonnull EnumHand hand)
-    {
-        switch(hand) {
-            case MAIN_HAND:
-                return this.getArmorItemStack();
-            default:
-                return null;
-        }
-    }
-
-    /**
-     * Processes a player's attempt to interact with this entity
-     * @param player The player attempting to interact with this entity
-     * @param hand Main or offhand
-     * @param stack The stack with which the player is interacting with this entity
-     * @return <tt>true</tt> if the player successfully interacted with this entity, <tt>false</tt> if not
-     */
-    @Override
-    public boolean processInteract(@Nonnull EntityPlayer player, @Nonnull EnumHand hand, @Nullable ItemStack stack) {
-        if(stack != null && stack.getItem() == Items.SPAWN_EGG) {
-            if(!worldObj.isRemote) {
-                return spawnEggInteract(player, stack) || super.processInteract(player, hand, stack);
-            }
-            return super.processInteract(player, hand, stack);
-        }
-
-        if(this.isTamed() && this.isOwner(player) && !this.isChild()) {
-            if(player.isSneaking()) {
-                this.openWolfGui(player);
-                return true;
-            }
-            else {
-                if(stack != null) {
-                    if(WolfArmorMod.getConfiguration().getIsWolfChestEnabled()
-                       && Block.getBlockFromItem(stack.getItem()) == Blocks.CHEST
-                       && !this.getHasChest()) {
-                        this.setHasChest(true);
-                        this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1, (this.getRNG().nextFloat() - this.getRNG().nextFloat()) * 0.2F + 1);
-                        this.inventoryInit();
-                        if(!player.capabilities.isCreativeMode) {
-                            stack.stackSize--;
-                        }
-
-                        return true;
-                    }
-
-                    if(getIsValidWolfArmorItem(stack)) {
-                        this.openWolfGui(player);
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return super.processInteract(player, hand, stack);
-    }
-
-    /**
-     * Plays the entity item equip sound
-     * @param stack The equipped stack
-     */
-    @Override
-    public void playEquipSound(@Nullable ItemStack stack) {
-        if(stack != null && stack.getItem() instanceof ItemWolfArmor) {
-            ItemWolfArmor armorItem = (ItemWolfArmor)stack.getItem();
-            SoundEvent sound = armorItem.getMaterial().getEquipSound();
-
-            this.playSound(sound, 1, 1);
-        }
-
-        super.playEquipSound(stack);
-    }
-
-    /**
-     * Gets the wolf spawn egg, since this entity overrides the wolf.
-     * @param rayTraceResult The ray trace result
-     * @return The wolf spawn egg
-     */
-    @Override
-    @Nonnull
-    public ItemStack getPickedResult(@Nonnull RayTraceResult rayTraceResult) {
-
-        String name = EntityList.getEntityStringFromClass(EntityWolf.class);
-        if(EntityList.ENTITY_EGGS.containsKey(name)) {
-            ItemStack stack = new ItemStack(Items.SPAWN_EGG);
-            ItemMonsterPlacer.applyEntityIdToItemStack(stack, name);
-
-            return stack;
-        }
-
-        return super.getPickedResult(rayTraceResult);
-    }
-
-    /**
-     * Damages the entity's armor
-     * @param damage The damage to apply
-     */
-    @Override
-    protected void damageArmor(float damage) {
-        if (this.getHasArmor()) {
-            ItemStack armorStack = this.inventory.getStackInSlot(0);
-
-            if (armorStack != null && getIsValidWolfArmorItem(armorStack)) {
-                armorStack.damageItem((int) Math.ceil(damage), this);
-
-                if (armorStack.stackSize == 0)
-                {
-                    this.equipArmor(null);
-                }
-            }
-        }
-    }
-
-    /**
      * Equips a wolf armor item
      * @param armorItemStack The armor to equip
      * @return <tt>true</tt> if successful, <tt>false</tt> otherwise
      */
-    public boolean equipArmor(@Nullable ItemStack armorItemStack) {
-        if(!getIsValidWolfArmorItem(armorItemStack) || (this.getHasArmor() && armorItemStack != null)) {
+    private boolean equipArmor(@Nullable ItemStack armorItemStack) {
+        if(!CapabilityWolfArmor.getIsValidWolfArmorItem(armorItemStack) || (this.getHasArmor() && armorItemStack != null)) {
             return false;
         }
 
@@ -435,74 +213,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
         return true;
     }
 
-    /**
-     * Used to determine whether or not the item is a valid wolf armor item.
-     * @param item The item
-     * @return <tt>true</tt> if the item is an instance of <tt>ItemWolfArmor</tt>, false if not.
-     */
-    public static boolean getIsValidWolfArmorItem(@Nullable Item item) {
-        return item == null || item instanceof ItemWolfArmor;
-    }
-
-    /**
-     * Used to determine whether or not the item stack is a valid wolf armor item.
-     * @param item The item
-     * @return <tt>true</tt> if the item is an instance of <tt>ItemWolfArmor</tt>, false if not.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static boolean getIsValidWolfArmorItem(@Nullable ItemStack item) {
-        return item == null || getIsValidWolfArmorItem(item.getItem());
-    }
-
     //endregion Public / Protected Methods
-
-    //region Private Methods
-
-    /**
-     * Opens the wolf inventory
-     * @param player The player
-     */
-    private void openWolfGui(@Nonnull EntityPlayer player) {
-        if(!this.worldObj.isRemote) {
-            this.aiSit.setSitting(true);
-            player.openGui(WolfArmorMod.instance,
-                           this.getEntityId(),
-                           this.worldObj,
-                           MathHelper.floor_double(this.posX),
-                           MathHelper.floor_double(this.posY),
-                           MathHelper.floor_double(this.posZ));
-        }
-    }
-
-    /**
-     * Processes a player's attempt to interact with this entity with a spawn egg
-     * @param player The player attempting to interact with this entity
-     * @param stack The stack with which the player is interacting with this entity
-     * @return <tt>true</tt> if the player successfully interacted with this entity, <tt>false</tt> if not
-     */
-    private boolean spawnEggInteract(@Nonnull EntityPlayer player, @Nonnull ItemStack stack) {
-        Class<? extends Entity> clazz = EntityList.NAME_TO_CLASS.get(ItemMonsterPlacer.getEntityIdFromItem(stack));
-
-        if(clazz != null && (clazz == EntityWolf.class || clazz == EntityWolfArmored.class)) {
-            EntityAgeable child = this.createChild(this);
-            child.setGrowingAge(-24000);
-            child.setLocationAndAngles(posX, posY, posZ, 0, 0);
-            worldObj.spawnEntityInWorld(child);
-
-            if(stack.hasDisplayName()) {
-                child.setCustomNameTag(stack.getDisplayName());
-            }
-            if(!player.capabilities.isCreativeMode) {
-                stack.stackSize--;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    //endregion Private Methods
 
     //region Accessors / Mutators
 
@@ -564,7 +275,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
         if(itemStackOptional.isPresent()) {
             ItemStack armorItemStack = itemStackOptional.get();
 
-            if(!getIsValidWolfArmorItem(armorItemStack.getItem()) || armorItemStack.stackSize == 0) {
+            if(!CapabilityWolfArmor.getIsValidWolfArmorItem(armorItemStack.getItem()) || armorItemStack.stackSize == 0) {
                 this.dataManager.set(ARMOR_ITEM, Optional.<ItemStack>absent());
                 return null;
             }
@@ -590,20 +301,9 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
 
         Optional<ItemStack> itemStackOptional = Optional.fromNullable(armorItemStack);
 
-        if(getIsValidWolfArmorItem(armorItemStack)) {
+        if(CapabilityWolfArmor.getIsValidWolfArmorItem(armorItemStack)) {
             this.dataManager.set(ARMOR_ITEM, itemStackOptional);
         }
-    }
-
-    /**
-     * The maximum size for the entity's inventory, including armor slots.
-     *
-     * @return The maximum size for the entity's inventory
-     */
-    @SuppressWarnings("WeakerAccess")
-    @Nonnegative
-    protected int getMaxSizeInventory() {
-        return INVENTORY_WOLF_MAX_SIZE;
     }
 
     //endregion Accessors / Mutators

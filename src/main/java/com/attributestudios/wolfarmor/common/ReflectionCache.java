@@ -23,7 +23,8 @@ public final class ReflectionCache {
 
     //region Constructors
 
-    private ReflectionCache() {}
+    private ReflectionCache() {
+    }
 
     //endregion Constructors
 
@@ -31,35 +32,38 @@ public final class ReflectionCache {
 
     /**
      * Finds and caches a field.
-     * @param clazz The class
+     *
+     * @param clazz      The class
      * @param fieldNames The instance
      * @return The field
      */
-    @Nullable
+    @Nonnull
     public static Field getField(@Nonnull Class clazz,
-                                 @Nonnull String ... fieldNames) {
-        if(fieldNames.length > 0) {
+                                 @Nonnull String... fieldNames) {
+        if (fieldNames.length > 0) {
             Field field = null;
 
-            for(String s : fieldNames) {
+            for (String s : fieldNames) {
                 String key = clazz.getName() + "." + s;
-                if(CACHED_REFLECTION_FIELDS.containsKey(key)) {
+                if (CACHED_REFLECTION_FIELDS.containsKey(key)) {
                     field = CACHED_REFLECTION_FIELDS.get(key);
                     break;
                 }
             }
 
-            if(field == null) {
-                for(String s : fieldNames) {
+            if (field == null) {
+                for (String s : fieldNames) {
                     String key = clazz.getName() + "." + s;
                     try {
                         field = ReflectionHelper.findField(clazz, fieldNames);
                         CACHED_REFLECTION_FIELDS.put(key, field);
-                    } catch(ReflectionHelper.UnableToFindFieldException ex) {
+                    } catch (ReflectionHelper.UnableToFindFieldException ex) {
                         WolfArmorMod.getLogger().error(ex);
                     }
                 }
             }
+
+            if (field == null) throw new UnsupportedOperationException("Failed to find field.");
 
             return field;
         }
@@ -68,25 +72,27 @@ public final class ReflectionCache {
 
     /**
      * Finds and caches a method.
-     * @param clazz The class
-     * @param instance The instance
+     *
+     * @param clazz       The class
+     * @param instance    The instance
      * @param methodNames The possible method names
-     * @param params The method parameter types
-     * @param <E> The instance or class type
+     * @param params      The method parameter types
+     * @param <E>         The instance or class type
      * @return The method
      */
-    @Nullable
+    @SuppressWarnings("unused")
+    @Nonnull
     public static <E> Method getMethod(@Nonnull Class<? super E> clazz,
                                        @Nullable E instance,
                                        @Nonnull String[] methodNames,
-                                       @Nonnull Class<?> ... params) {
-        if(methodNames.length > 0) {
+                                       @Nonnull Class<?>... params) {
+        if (methodNames.length > 0) {
             Method method = null;
 
             String keyParams = "(";
 
-            for(int i = 0; i < params.length; i++) {
-                if(i > 0) {
+            for (int i = 0; i < params.length; i++) {
+                if (i > 0) {
                     keyParams += ", ";
                 }
                 keyParams += params[i].getName();
@@ -94,16 +100,16 @@ public final class ReflectionCache {
 
             keyParams += ")";
 
-            for(String s : methodNames) {
+            for (String s : methodNames) {
                 String key = clazz.getName() + "." + s + keyParams;
-                if(CACHED_REFLECTION_METHODS.containsKey(key)) {
+                if (CACHED_REFLECTION_METHODS.containsKey(key)) {
                     method = CACHED_REFLECTION_METHODS.get(key);
                     break;
                 }
             }
 
-            if(method == null) {
-                for(String s : methodNames) {
+            if (method == null) {
+                for (String s : methodNames) {
                     String key = clazz.getName() + "." + s + keyParams;
                     try {
                         method = ReflectionHelper.findMethod(clazz, instance, methodNames, params);
@@ -113,6 +119,9 @@ public final class ReflectionCache {
                     }
                 }
             }
+
+            if (method == null) throw new UnsupportedOperationException("Method could not be found.");
+
             return method;
         }
         throw new IllegalArgumentException("Must specify at least one method name.");

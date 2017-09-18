@@ -58,6 +58,7 @@ public class ModelWolfArmor extends ModelWolf {
 
     /**
      * Set up members that aren't directly accessible from subclasses
+     *
      * @param scale The scale of the model.
      */
     private void reflectAdditionalMembers(float scale) {

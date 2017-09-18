@@ -24,10 +24,11 @@ public final class WolfArmorConfiguration {
     private boolean isWolfChestRenderEnabled = DEFAULT_WOLF_CHEST_RENDER_ENABLED;
     private boolean isWolfHealthDisplayEnabled = DEFAULT_WOLF_HEALTH_DISPLAY_ENABLED;
     private boolean isWolfArmorDisplayEnabled = DEFAULT_WOLF_ARMOR_DISPLAY_ENABLED;
+    private boolean areHowlingUntamedWolvesEnabled = DEFAULT_HOWLING_UNTAMED_WOLVES_ENABLED;
 
     //region Common Config Settings
 
-    private static final String SETTING_WOLF_CHEST_ENABLED = "Enable Wolf Chests";
+    private static final String SETTING_WOLF_CHEST_ENABLED = "config.wolfarmor.general.enableChests";
 
     private static final Boolean DEFAULT_WOLF_CHEST_ENABLED = true;
 
@@ -35,10 +36,10 @@ public final class WolfArmorConfiguration {
 
     //region Client-Side Config Settings
 
-    private static final String SETTING_WOLF_ARMOR_RENDER_ENABLED = "Enable Wolf Armor Render Layer";
-    private static final String SETTING_WOLF_CHEST_RENDER_ENABLED = "Enable Wolf Chest Render Layer";
-    private static final String SETTING_WOLF_ARMOR_DISPLAY_ENABLED = "Enable Wolf Armor Display in GUI";
-    private static final String SETTING_WOLF_HEALTH_DISPLAY_ENABLED = "Enable Wolf Health Display in GUI";
+    private static final String SETTING_WOLF_ARMOR_RENDER_ENABLED = "config.wolfarmor.client.enableWolfArmorRender";
+    private static final String SETTING_WOLF_CHEST_RENDER_ENABLED = "config.wolfarmor.client.enableWolfChestRender";
+    private static final String SETTING_WOLF_ARMOR_DISPLAY_ENABLED = "config.wolfarmor.client.enableWolfArmorDisplay";
+    private static final String SETTING_WOLF_HEALTH_DISPLAY_ENABLED = "config.wolfarmor.client.enableWolfHealthDisplay";
 
     private static final boolean DEFAULT_WOLF_ARMOR_RENDER_ENABLED = true;
     private static final boolean DEFAULT_WOLF_CHEST_RENDER_ENABLED = true;
@@ -47,12 +48,23 @@ public final class WolfArmorConfiguration {
 
     //endregion Client-Side Config Settings
 
+    //region Behavioral Config Settings
+
+    public static final String CATEGORY_BEHAVIOR = "behavior";
+
+    private static final String SETTING_HOWLING_UNTAMED_WOLVES_ENABLED = "config.wolfarmor.behavior.enableHowlingUntamedWolves";
+
+    private static final boolean DEFAULT_HOWLING_UNTAMED_WOLVES_ENABLED = false;
+
+    //endregion Behavioral Config Settings
+
     //endregion Fields
 
     // region Constructors
 
     /**
      * Creates and loads wolf armor configuration.
+     *
      * @param preInitializationEvent The pre-initialization event.
      */
     @SuppressWarnings("WeakerAccess")
@@ -74,11 +86,12 @@ public final class WolfArmorConfiguration {
 
     /**
      * Handles config changed events
+     *
      * @param eventArgs The event arguments
      */
     @SubscribeEvent
     public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-        if(eventArgs.getModID().equals(WolfArmorMod.MOD_ID)) {
+        if (eventArgs.getModID().equals(WolfArmorMod.MOD_ID)) {
             syncConfig(FMLCommonHandler.instance().getSide() == Side.CLIENT);
         }
     }
@@ -94,50 +107,44 @@ public final class WolfArmorConfiguration {
         isWolfChestEnabled = getSettingWolfChestsEnabled().getBoolean();
     }
 
-    /**
-     * Synchronizes the current config value for the setting "Enable Wolf Armor Render Layer"
-     */
     private void syncIsWolfArmorRenderEnabled() {
         isWolfArmorRenderEnabled = getSettingWolfArmorRenderEnabled().getBoolean();
     }
 
-    /**
-     * Synchronizes the current config value for the setting "Enable Wolf Chest Render Layer"
-     */
     private void syncIsWolfChestRenderEnabled() {
         isWolfChestRenderEnabled = getSettingWolfChestRenderEnabled().getBoolean();
     }
 
-    /**
-     * Synchronizes the current config value for the setting "Enable Wolf Armor Display in GUI"
-     */
     private void syncIsWolfArmorDisplayEnabled() {
         isWolfArmorDisplayEnabled = getSettingWolfArmorDisplayEnabled().getBoolean();
     }
 
-    /**
-     * Synchronizes the current config value for the setting "Enable Wolf Armor Display in GUI"
-     */
     private void syncIsWolfHealthDisplayEnabled() {
         isWolfHealthDisplayEnabled = getSettingWolfHealthDisplayEnabled().getBoolean();
     }
 
+    private void syncAreHowlingUntamedWolvesEnabled() {
+        areHowlingUntamedWolvesEnabled = getSettingHowlingUntamedWolvesEnabled().getBoolean();
+    }
+
     /**
      * Synchronizes config values.
+     *
      * @param isClientSide Whether or not client-specific settings should be loaded
      */
-    private void syncConfig(boolean isClientSide)
-    {
+    private void syncConfig(boolean isClientSide) {
         syncIsWolfChestEnabled();
 
-        if(isClientSide) {
+        if (isClientSide) {
             syncIsWolfArmorRenderEnabled();
             syncIsWolfChestRenderEnabled();
             syncIsWolfArmorDisplayEnabled();
             syncIsWolfHealthDisplayEnabled();
         }
 
-        if(config.hasChanged()) {
+        syncAreHowlingUntamedWolvesEnabled();
+
+        if (config.hasChanged()) {
             WolfArmorMod.getLogger().debug("Saving configuration...");
             config.save();
             WolfArmorMod.getLogger().debug("Mod configuration saved.");
@@ -146,6 +153,7 @@ public final class WolfArmorConfiguration {
 
     /**
      * Gets the configuration file.
+     *
      * @param preInitializationEvent The pre-initialization event
      * @return The file path.
      */
@@ -155,14 +163,14 @@ public final class WolfArmorConfiguration {
 
         File configDir = new File(preInitializationEvent.getModConfigurationDirectory() + "/attributestudios");
 
-        if(!configDir.exists()) {
+        if (!configDir.exists()) {
             WolfArmorMod.getLogger().debug("Creating new top-level mod config directory...");
             //noinspection ResultOfMethodCallIgnored
             configDir.mkdirs();
         }
 
         File mainConfig = new File(configDir.getPath() + "/" + WolfArmorMod.MOD_ID + ".cfg");
-        if(!mainConfig.exists()) {
+        if (!mainConfig.exists()) {
             WolfArmorMod.getLogger().debug("Configuration file not found. A new configuration file will be created.");
         }
 
@@ -173,50 +181,36 @@ public final class WolfArmorConfiguration {
 
     //region Accessors / Mutators
 
-    /**
-     * Gets the value of the setting "Enable Wolf Chests"
-     * @return True if wolf chests should be rendered, false if not.
-     */
+    //region Generic Accessors
+
     public boolean getIsWolfChestEnabled() {
         return isWolfChestEnabled;
     }
 
-    /**
-     * Gets the value of the setting "Enable Wolf Armor Render Layer"
-     * @return True if wolf chests should be rendered, false if not.
-     */
     public boolean getIsWolfArmorRenderEnabled() {
         return isWolfArmorRenderEnabled;
     }
 
-    /**
-     * Gets the value of the setting "Enable Wolf Chest Render Layer"
-     * @return True if wolf chests should be rendered, false if not.
-     */
     public boolean getIsWolfChestRenderEnabled() {
         return isWolfChestRenderEnabled;
     }
 
-    /**
-     * Gets the value of the setting "Enable Wolf Chest Render Layer"
-     * @return True if wolf chests should be rendered, false if not.
-     */
     public boolean getIsWolfArmorDisplayEnabled() {
         return isWolfArmorDisplayEnabled;
     }
 
-    /**
-     * Gets the value of the setting "Enable Wolf Chest Render Layer"
-     * @return True if wolf chests should be rendered, false if not.
-     */
     public boolean getIsWolfHealthDisplayEnabled() {
         return isWolfHealthDisplayEnabled;
     }
 
-    /**
-     * Gets the config setting entry for "Enable Wolf Chests"
-     * @return The config property for enabling wolf chests (boolean)
-     */
+    public boolean getAreHowlingUntamedWolvesEnabled() {
+        return areHowlingUntamedWolvesEnabled;
+    }
+
+    //endregion Generic Accessors
+
+    //region Property Accessors
+
     @Nonnull
     public Property getSettingWolfChestsEnabled() {
         return config.get(Configuration.CATEGORY_GENERAL,
@@ -225,10 +219,6 @@ public final class WolfArmorConfiguration {
                 "Enables or disables wolf backpacks.");
     }
 
-    /**
-     * Gets the config setting entry for "Enable Wolf Armor Render Layer"
-     * @return The config property for enabling wolf chests (boolean)
-     */
     @Nonnull
     public Property getSettingWolfArmorRenderEnabled() {
         return config.get(Configuration.CATEGORY_CLIENT,
@@ -237,10 +227,6 @@ public final class WolfArmorConfiguration {
                 "Enables or disables rendering of wolf armor.");
     }
 
-    /**
-     * Gets the config setting entry for "Enable Wolf Chest Render Layer"
-     * @return The config property for enabling wolf chests (boolean)
-     */
     @Nonnull
     public Property getSettingWolfChestRenderEnabled() {
         return config.get(Configuration.CATEGORY_CLIENT,
@@ -249,10 +235,6 @@ public final class WolfArmorConfiguration {
                 "Enables or disables rendering of wolf backpacks.");
     }
 
-    /**
-     * Gets the config setting entry for "Enable Wolf Armor Display in GUI"
-     * @return The config property for enabling wolf chests (boolean)
-     */
     @Nonnull
     public Property getSettingWolfArmorDisplayEnabled() {
         return config.get(Configuration.CATEGORY_CLIENT,
@@ -261,10 +243,6 @@ public final class WolfArmorConfiguration {
                 "Enables or disables displaying a wolf's armor value in the wolf inventory screen.");
     }
 
-    /**
-     * Gets the config setting entry for "Enable Wolf Health Display in GUI"
-     * @return The config property for enabling wolf chests (boolean)
-     */
     @Nonnull
     public Property getSettingWolfHealthDisplayEnabled() {
         return config.get(Configuration.CATEGORY_CLIENT,
@@ -272,6 +250,16 @@ public final class WolfArmorConfiguration {
                 DEFAULT_WOLF_HEALTH_DISPLAY_ENABLED,
                 "Enables or disables displaying a wolf's health value in the wolf inventory screen.");
     }
+
+    @Nonnull
+    public Property getSettingHowlingUntamedWolvesEnabled() {
+        return config.get(Configuration.CATEGORY_CLIENT,
+                SETTING_HOWLING_UNTAMED_WOLVES_ENABLED,
+                DEFAULT_HOWLING_UNTAMED_WOLVES_ENABLED,
+                "Enables or disables untamed wolves howling at the full moon.");
+    }
+
+    //endregion Property Accessors
 
     //endregion Accessors / Mutators
 }
