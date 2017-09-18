@@ -1,26 +1,19 @@
 package com.attributestudios.wolfarmor.item.crafting;
 
-import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor;
 import com.google.common.collect.Lists;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.oredict.DyeUtils;
-import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +25,8 @@ public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> imple
     public boolean matches(@Nonnull InventoryCrafting inv, @Nonnull World world) {
         @Nonnull ItemStack armorItemStack = ItemStack.EMPTY;
         @Nonnull final List<ItemStack> dyes = Lists.newArrayList();
+
+        
 
         for(int slotIndex = 0; slotIndex < inv.getSizeInventory(); ++slotIndex) {
             @Nonnull ItemStack stackInSlot = inv.getStackInSlot(slotIndex);
@@ -47,7 +42,7 @@ public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> imple
                 continue;
             }
 
-            if(!DyeUtils.isDye(stackInSlot)) {
+            if(stackInSlot.getItem() != Items.DYE) {
                 return false;
             }
             dyes.add(stackInSlot);
@@ -94,11 +89,11 @@ public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> imple
                 continue;
             }
 
-            if(!DyeUtils.isDye(stackInSlot) || !DyeUtils.colorFromStack(stackInSlot).isPresent()) {
+            if(stackInSlot.getItem() != Items.DYE) {
                 return ItemStack.EMPTY;
             }
 
-            float[] dyeColorMultipliers = DyeUtils.colorFromStack(stackInSlot).get().getColorComponentValues();
+            float[] dyeColorMultipliers = EnumDyeColor.byDyeDamage(stackInSlot.getMetadata()).getColorComponentValues();
             int rDye = (int)(dyeColorMultipliers[0] * 255.0F);
             int gDye = (int)(dyeColorMultipliers[1] * 255.0F);
             int bDye = (int)(dyeColorMultipliers[2] * 255.0F);
