@@ -30,6 +30,7 @@ bin/
 
 # IntelliJ
 wolfarmor*.iws
+wolfarmor*.ipr
 wolfarmor*.iml
 .idea/
 
