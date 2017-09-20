@@ -31,12 +31,12 @@ if(versioningFile.canRead()) {
 }
 sourceSets.api {
     java {
-        srcDirs 'api/main/java'
+        srcDirs 'api/'
     }
 }
 sourceSets.main {
     java {
-        srcDirs 'api/main/java'
+        srcDirs 'api/'
         srcDirs 'src/main/java'
     }
 }
@@ -135,5 +135,6 @@ processResources {
 	// copy LICENSE
     from('/') {
         include 'LICENSE'
+        include 'CREDITS'
     }
 }

@@ -5,7 +5,6 @@ import com.attributestudios.wolfarmor.api.util.Definitions.ResourceLocations.Tex
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import com.attributestudios.wolfarmor.client.model.ModelWolfBackpack;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
