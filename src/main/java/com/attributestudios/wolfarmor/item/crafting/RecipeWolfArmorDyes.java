@@ -1,27 +1,21 @@
 package com.attributestudios.wolfarmor.item.crafting;
 
-import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor;
 import com.google.common.collect.Lists;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.oredict.DyeUtils;
-import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Wolf Armor dye recipes
@@ -47,7 +41,7 @@ public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> imple
                 continue;
             }
 
-            if(!DyeUtils.isDye(stackInSlot)) {
+            if(!OreDictHelper.isValidDye(stackInSlot)) {
                 return false;
             }
             dyes.add(stackInSlot);
@@ -94,11 +88,12 @@ public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> imple
                 continue;
             }
 
-            if(!DyeUtils.isDye(stackInSlot) || !DyeUtils.colorFromStack(stackInSlot).isPresent()) {
+            Optional<EnumDyeColor> dyeColorOptional = OreDictHelper.getColorFromStack(stackInSlot);
+            if(!dyeColorOptional.isPresent()) {
                 return ItemStack.EMPTY;
             }
 
-            float[] dyeColorMultipliers = DyeUtils.colorFromStack(stackInSlot).get().getColorComponentValues();
+            float[] dyeColorMultipliers = dyeColorOptional.get().getColorComponentValues();
             int rDye = (int)(dyeColorMultipliers[0] * 255.0F);
             int gDye = (int)(dyeColorMultipliers[1] * 255.0F);
             int bDye = (int)(dyeColorMultipliers[2] * 255.0F);
