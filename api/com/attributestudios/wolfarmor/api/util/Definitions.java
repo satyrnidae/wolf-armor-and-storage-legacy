@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 public abstract class Definitions {
     public static final String MOD_NAME = "Wolf Armor and Storage";
     public static final String MOD_ID = "wolfarmor";
-    public static final String MOD_VERSION = "1.12.1-2.1.0-ALPHA";
+    public static final String MOD_VERSION = "1.12.2-2.1.0-ALPHA";
 
     public static abstract class ResourceLocations {
         public static abstract class Entities {
