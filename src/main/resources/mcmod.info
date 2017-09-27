@@ -1,16 +1,18 @@
 [
-{
-  "modid": "wolfarmor",
-  "name": "Wolf Armor and Storage",
-  "description": "Adds armors and storage for wolves!",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "www.attributestudios.com/mcModWolfArmor.php",
-  "updateUrl": "",
-  "authorList": ["CenturionFox"],
-  "credits": "Copyright (C) 2015-2016 Attribute Studios.",
-  "logoFile": "assets/wolfarmor/logo.png",
-  "screenshots": [],
-  "dependencies": []
-}
+  {
+    "modid": "wolfarmor",
+    "name": "Wolf Armor and Storage",
+    "description": "Adds armors and storage for wolves!",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://minecraft.curseforge.com/projects/wolf-armor-and-storage",
+    "updateUrl": "",
+    "authorList": [
+      "CenturionFox"
+    ],
+    "credits": "Copyright (C) 2014-2017 Bridger Maskrey (CenturionFox). Licensed under MIT",
+    "logoFile": "assets/wolfarmor/logo.png",
+    "screenshots": [],
+    "dependencies": []
+  }
 ]

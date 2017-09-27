@@ -1,17 +1,16 @@
 package com.attributestudios.wolfarmor.client.model;
 
-import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import static java.lang.Math.PI;
 
@@ -35,6 +34,7 @@ public class ModelWolfBackpack extends ModelBase {
 
     /**
      * Constructs a new wolf backpack model
+     *
      * @param scale The scale
      */
     public ModelWolfBackpack(float scale) {
@@ -72,13 +72,14 @@ public class ModelWolfBackpack extends ModelBase {
 
     /**
      * Sets various angles and then renders the model.
-     * @param entity The entity that this model is rendering
-     * @param limbSwing The entity's limb swing progress
+     *
+     * @param entity          The entity that this model is rendering
+     * @param limbSwing       The entity's limb swing progress
      * @param limbSwingAmount The entity's limb swing amount
-     * @param ageInTicks The entity's age in ticks
-     * @param netHeadYaw The entity's head yaw
-     * @param headPitch The entity's head pitch
-     * @param scale The scale to render at.
+     * @param ageInTicks      The entity's age in ticks
+     * @param netHeadYaw      The entity's head yaw
+     * @param headPitch       The entity's head pitch
+     * @param scale           The scale to render at.
      */
     @Override
     public void render(@Nonnull Entity entity,
@@ -91,7 +92,7 @@ public class ModelWolfBackpack extends ModelBase {
         super.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
 
-        if(this.isChild) {
+        if (this.isChild) {
             GlStateManager.pushMatrix();
             {
                 GlStateManager.scale(0.5F, 0.5F, 0.5F);
@@ -102,8 +103,7 @@ public class ModelWolfBackpack extends ModelBase {
                 this.backpackLeftBottom.renderWithRotation(scale);
             }
             GlStateManager.popMatrix();
-        }
-        else {
+        } else {
             this.backpackRightTop.renderWithRotation(scale);
             this.backpackRightBottom.renderWithRotation(scale);
             this.backpackLeftTop.renderWithRotation(scale);
@@ -113,18 +113,19 @@ public class ModelWolfBackpack extends ModelBase {
 
     /**
      * Sets up animations for the entity
-     * @param entity the entity
-     * @param limbSwing The entity's limb swing progress
+     *
+     * @param entity          the entity
+     * @param limbSwing       The entity's limb swing progress
      * @param limbSwingAmount The entity's limb swing progress amount
      * @param partialTickTime The world's partial ticks
      */
     @Override
-    public void setLivingAnimations(@Nullable EntityLivingBase entity,
+    public void setLivingAnimations(@Nonnull EntityLivingBase entity,
                                     float limbSwing,
                                     float limbSwingAmount,
                                     float partialTickTime) {
-        if(entity instanceof EntityWolfArmored) {
-            EntityWolfArmored entityWolfArmored = (EntityWolfArmored) entity;
+        if (entity instanceof EntityWolf) {
+            EntityWolf entityWolfArmored = (EntityWolf) entity;
 
             float rotationPointY = 14;
             float rotationPointZ = 2;
@@ -166,7 +167,8 @@ public class ModelWolfBackpack extends ModelBase {
 
     /**
      * Sets the rotation of the model renderer
-     * @param model The model renderer
+     *
+     * @param model     The model renderer
      * @param xRotation X-axis rotation in radians
      * @param yRotation Y-axis rotation in radians
      * @param zRotation Z-axis rotation in radians

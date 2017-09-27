@@ -26,12 +26,29 @@ run/
 out/
 eclipse/
 temp/
+bin/
 
 # IntelliJ
-wolfarmor-*.iws
+wolfarmor*.iws
+wolfarmor*.ipr
+wolfarmor*.iml
+.idea/
+
+#Visual Studio
+.vs/
+
+#vscode
+.vscode/
+bin/
+
+#eclipse
+.settings/
+wolfarmor_Client.launch
+wolfarmor_Server.launch
+.classpath
+.project
 
 # Misc
-.settings/
 CREDITS-fml.txt
 forge-1.11-13.19.1.2189-changelog.txt
 LICENSE-new.txt
@@ -39,3 +56,4 @@ MinecraftForge-Credits.txt
 Paulscode IBXM Library License.txt
 Paulscode SoundSystem CodecIBXM License.txt
 README.txt
+forge-*-changelog.txt

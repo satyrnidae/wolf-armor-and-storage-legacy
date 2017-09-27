@@ -1,6 +1,7 @@
 package com.attributestudios.wolfarmor;
 
-import com.attributestudios.wolfarmor.common.CommonProxy;
+import com.attributestudios.wolfarmor.api.util.Definitions;
+import com.attributestudios.wolfarmor.api.util.IProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -13,23 +14,20 @@ import javax.annotation.Nonnull;
  * WolfArmorMod main class
  */
 @SuppressWarnings("WeakerAccess")
-@Mod(modid = WolfArmorMod.MOD_ID,
-     name = WolfArmorMod.MOD_NAME,
-     version = WolfArmorMod.MOD_VERSION,
-     guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory")
+@Mod(modid = Definitions.MOD_ID,
+        name = Definitions.MOD_NAME,
+        version = Definitions.MOD_VERSION,
+        guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory",
+        dependencies = "after: SophisticatedWolves")
 public class WolfArmorMod {
     //region Fields
 
-    public static final String MOD_NAME = "Wolf Armor and Storage";
-    public static final String MOD_ID = "wolfarmor";
-    public static final String MOD_VERSION = "1.3.2";
-
-    @Mod.Instance(WolfArmorMod.MOD_ID)
-    public static WolfArmorMod instance;
-
     @SidedProxy(clientSide = "com.attributestudios.wolfarmor.client.ClientProxy",
-            serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
-    public static CommonProxy proxy;
+                serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
+    public static IProxy proxy;
+
+    @Mod.Instance(Definitions.MOD_ID)
+    private static WolfArmorMod instance;
 
     private static LogHelper logger;
 
@@ -39,8 +37,17 @@ public class WolfArmorMod {
 
     //region Public / Protected Methods
 
+    public static IProxy getProxy() {
+        return proxy;
+    }
+
+    public static WolfArmorMod getInstance() {
+        return instance;
+    }
+
     /**
      * Handles pre-initialization tasks
+     *
      * @param preInitializationEvent The pre-initialization event
      */
     @Mod.EventHandler
@@ -53,6 +60,7 @@ public class WolfArmorMod {
 
     /**
      * Handles initialization tasks
+     *
      * @param initializationEvent The initialization event
      */
     @Mod.EventHandler
@@ -62,6 +70,7 @@ public class WolfArmorMod {
 
     /**
      * Handles post-initialization events
+     *
      * @param postInitializationEvent The post initialization event
      */
     @Mod.EventHandler
@@ -75,6 +84,7 @@ public class WolfArmorMod {
 
     /**
      * Gets the mod logger
+     *
      * @return The logger
      */
     @Nonnull
@@ -84,6 +94,7 @@ public class WolfArmorMod {
 
     /**
      * Gets the configuration settings
+     *
      * @return The configuration settings
      */
     @Nonnull

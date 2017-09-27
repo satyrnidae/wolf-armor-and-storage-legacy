@@ -1,14 +1,18 @@
 package com.attributestudios.wolfarmor.common.inventory;
 
-import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
+import com.attributestudios.wolfarmor.advancements.CriteriaTriggers;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+
+import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 
 /**
  * Models a container for a wolf's inventory.
@@ -17,7 +21,7 @@ public class ContainerWolfInventory extends Container {
     //region Fields
 
     private IInventory wolfInventory;
-    private EntityWolfArmored theWolf;
+    private EntityWolf theWolf;
 
     //endregion Fields
 
@@ -25,13 +29,14 @@ public class ContainerWolfInventory extends Container {
 
     /**
      * Creates a new wolf inventory container.
+     *
      * @param playerInventory The player's  inventory
-     * @param wolfInventory The wolf's inventory
-     * @param theWolf The wolf
+     * @param wolfInventory   The wolf's inventory
+     * @param theWolf         The wolf
      */
     public ContainerWolfInventory(@Nonnull IInventory playerInventory,
                                   @Nonnull final IInventory wolfInventory,
-                                  @Nonnull final EntityWolfArmored theWolf,
+                                  @Nonnull final EntityWolf theWolf,
                                   @Nonnull EntityPlayer player) {
         this.wolfInventory = wolfInventory;
         this.theWolf = theWolf;
@@ -45,8 +50,7 @@ public class ContainerWolfInventory extends Container {
              * in the case of armor slots)
              */
             @Override
-            public int getSlotStackLimit()
-            {
+            public int getSlotStackLimit() {
                 return 1;
             }
 
@@ -57,27 +61,39 @@ public class ContainerWolfInventory extends Container {
              */
             @Override
             public boolean isItemValid(@Nonnull ItemStack stack) {
-                return stack.isEmpty() || (super.isItemValid(stack) && EntityWolfArmored.getIsValidWolfArmorItem(stack.getItem()));
+                return stack.isEmpty() || (super.isItemValid(stack) && CapabilityWolfArmor.isValidWolfArmor(stack.getItem()));
+            }
+
+            @Override
+            public void onSlotChanged() {
+                super.onSlotChanged();
+
+                ItemStack stack = this.getStack();
+                if(player instanceof EntityPlayerMP && !stack.isEmpty() && CapabilityWolfArmor.isValidWolfArmor(stack.getItem())) {
+                    CriteriaTriggers.EQUIP_WOLF_ARMOR.trigger((EntityPlayerMP)player, theWolf);
+                }
             }
         });
 
+        IWolfArmorCapability wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+
         int x;
         int y;
-        if(theWolf.getHasChest()) {
-            for(y = 0; y < 2; y++) {
-                for(x = 0; x < 3; x++) {
+        if (wolfArmor != null && wolfArmor.getHasChest()) {
+            for (y = 0; y < 2; y++) {
+                for (x = 0; x < 3; x++) {
                     this.addSlotToContainer(new Slot(wolfInventory, 1 + x + y * 3, 98 + x * 18, 18 + y * 18));
                 }
             }
         }
 
-        for(y = 0; y < 3; y++) {
-            for(x = 0; x < 9; x++) {
+        for (y = 0; y < 3; y++) {
+            for (x = 0; x < 9; x++) {
                 this.addSlotToContainer(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 84 + y * 18));
             }
         }
 
-        for(x = 0; x < 9; x++) {
+        for (x = 0; x < 9; x++) {
             this.addSlotToContainer(new Slot(playerInventory, x, 8 + x * 18, 142));
         }
     }
@@ -88,17 +104,19 @@ public class ContainerWolfInventory extends Container {
 
     /**
      * Transfers an item stack.
+     *
      * @param player The player entity.
-     * @param slot The slot the player is interacting with.
+     * @param slot   The slot the player is interacting with.
      * @return The item stack
      */
     @Override
     @Nonnull
     public ItemStack transferStackInSlot(@Nonnull EntityPlayer player, int slot) {
         ItemStack stack = ItemStack.EMPTY;
+
         Slot inventorySlot = this.inventorySlots.get(slot);
 
-        if(inventorySlot != null && inventorySlot.getHasStack()) {
+        if (inventorySlot != null && inventorySlot.getHasStack()) {
             ItemStack stackInSlot = inventorySlot.getStack();
 
             if (!stackInSlot.isEmpty()) {
@@ -130,12 +148,9 @@ public class ContainerWolfInventory extends Container {
         return stack;
     }
 
-    //endregion Public / Protected Methods
-
-    //region Accessors / Mutators
-
     /**
      * Gets whether or not the container can be interacted with/
+     *
      * @param player The player attempting to interact with this container
      * @return <tt>true</tt> if the interaction can be initiated, <tt>false</tt> if not
      */
@@ -146,5 +161,5 @@ public class ContainerWolfInventory extends Container {
                 this.theWolf.getDistanceToEntity(player) < 8;
     }
 
-    //endregion Accessors / Mutators
+    //endregion Public / Protected Methods
 }
