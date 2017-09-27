@@ -158,7 +158,7 @@ public class ContainerWolfInventory extends Container {
     public boolean canInteractWith(@Nonnull EntityPlayer player) {
         return this.wolfInventory.isUsableByPlayer(player) &&
                 !this.theWolf.isDead &&
-                this.theWolf.getDistanceToEntity(player) < 8;
+                this.theWolf.getDistance(player) < 8;
     }
 
     //endregion Public / Protected Methods

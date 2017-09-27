@@ -85,7 +85,7 @@ public class ClientProxy extends CommonProxy {
     public void registerItemColorHandlers(@Nonnull FMLInitializationEvent initializationEvent) {
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler(new IItemColor() {
             @Override
-            public int getColorFromItemstack(@Nonnull ItemStack stack, int tintIndex) {
+            public int colorMultiplier(@Nonnull ItemStack stack, int tintIndex) {
                 return tintIndex > 0 ? -1 : ((ItemWolfArmor) stack.getItem()).getColor(stack);
             }
         }, Items.LEATHER_WOLF_ARMOR);

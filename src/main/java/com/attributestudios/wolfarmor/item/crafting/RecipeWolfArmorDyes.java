@@ -136,7 +136,7 @@ public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> imple
     }
 
     @Override
-    public boolean isHidden() { return true; }
+    public boolean isDynamic() { return true; }
 
     @Override
     public boolean canFit(int width, int height) { return width * height >= 2; }
