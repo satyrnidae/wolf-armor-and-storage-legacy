@@ -10,8 +10,8 @@ import java.util.Random;
 
 
 public class EntityAIWolfHowl extends EntityAIBase {
-    private EntityWolf entity;
-    private Random random;
+    private final EntityWolf entity;
+    private final Random random;
     private int soundTimer;
 
     public EntityAIWolfHowl(EntityWolf entity) {
@@ -38,7 +38,7 @@ public class EntityAIWolfHowl extends EntityAIBase {
     }
 
     @Override
-    public boolean continueExecuting() {
+    public boolean shouldContinueExecuting() {
         return soundTimer > 0;
     }
 

@@ -1,23 +1,21 @@
 package com.attributestudios.wolfarmor.common.capabilities;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
+import com.attributestudios.wolfarmor.api.util.Definitions.ResourceLocations.Capabilities;
+import com.attributestudios.wolfarmor.api.util.annotation.Future;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor;
-import com.google.common.base.Optional;
-
+import com.google.common.collect.Multimap;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.AnimalChest;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.IInventoryChangedListener;
-import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.inventory.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -26,381 +24,419 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.logging.log4j.Level;
 
-public class CapabilityWolfArmor implements ICapabilitySerializable<NBTTagCompound>, IWolfArmor, IInventoryChangedListener {
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-    @CapabilityInject(IWolfArmor.class)
-    public static Capability<IWolfArmor> WOLF_ARMOR = null;
-    
-    public static void RegisterCapability() {
-    	CapabilityManager.INSTANCE.register(IWolfArmor.class, new Capability.IStorage<IWolfArmor>() {
+public class CapabilityWolfArmor {
+    @Future
+    public static final int MAX_SIZE_INVENTORY = 7;
+    @Future
+    public static final int INVENTORY_SLOT_ARMOR = 0;
+    public static final int INVENTORY_SLOT_CHEST_START = 1;
+    public static final int INVENTORY_SLOT_CHEST_LENGTH = 6;
 
-			@Override
-			public NBTBase writeNBT(Capability<IWolfArmor> capability, IWolfArmor instance, EnumFacing side) {
-				return null;
-			}
+    @CapabilityInject(IWolfArmorCapability.class)
+    public static Capability<IWolfArmorCapability> WOLF_ARMOR_CAPABILITY = null;
 
-			@Override
-			public void readNBT(Capability<IWolfArmor> capability, IWolfArmor instance, EnumFacing side, NBTBase nbt) {
-				
-			}
-		}, CapabilityWolfArmor.class);
+    public static void register() {
+        CapabilityManager.INSTANCE.register(IWolfArmorCapability.class, new Storage(), CapabilityWolfArmor.Instance.class);
+        MinecraftForge.EVENT_BUS.register(new EventHandlers());
     }
 
-    /**
-     * Used to determine whether or not the item is a valid wolf armor item.W
-     *
-     * @param item The item
-     * @return <tt>true</tt> if the item is an instance of <tt>ItemWolfArmor</tt>, false if not.
-     */
-    public static boolean getIsValidWolfArmorItem(@Nullable Item item) {
-        return item == null || item instanceof ItemWolfArmor;
+    public static boolean isValidWolfArmor(@Nonnull ItemStack armorItemStack) {
+        return armorItemStack.isEmpty() || isValidWolfArmor(armorItemStack.getItem());
     }
 
-    /**
-     * Used to determine whether or not the item stack is a valid wolf armor item.
-     *
-     * @param item The item
-     * @return <tt>true</tt> if the item is an instance of <tt>ItemWolfArmor</tt>, false if not.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static boolean getIsValidWolfArmorItem(@Nullable ItemStack item) {
-        return item == null || getIsValidWolfArmorItem(item.getItem());
+    public static boolean isValidWolfArmor(@Nullable Item armorItem) {
+        return armorItem != null && armorItem instanceof ItemWolfArmor;
     }
 
-    private AnimalChest inventory;
-    private static final String NBT_TAG_HAS_CHEST = "hasChest";
-    private static final String NBT_TAG_SLOT = "slot";
-    private static final String NBT_TAG_INVENTORY = "inventory";
-    private static final String NBT_TAG_ARMOR_ITEM = "armorItem";
+    public static class Storage implements Capability.IStorage<IWolfArmorCapability> {
+        static final String NBT_TAG_HAS_CHEST = "hasChest";
+        static final String NBT_TAG_SLOT = "slot";
+        static final String NBT_TAG_INVENTORY = "inventory";
+        static final String NBT_TAG_ARMOR_ITEM = "armorItem";
 
-    private static final int INVENTORY_WOLF_MAX_SIZE = 7; // One armor + 6 potential storage
-
-    private final EntityWolf wolf;
-    private final EntityDataManager dataManager;
-
-    private static final DataParameter<Byte> HAS_CHEST = EntityDataManager.createKey(EntityWolf.class, DataSerializers.BYTE);
-    private static final DataParameter<Optional<ItemStack>> ARMOR_ITEM = EntityDataManager.createKey(EntityWolf.class, DataSerializers.OPTIONAL_ITEM_STACK);
-
-    //private boolean
-
-    public CapabilityWolfArmor(@Nonnull EntityWolf wolf) {
-        this.wolf = wolf;
-        dataManager = wolf.getDataManager();
-        dataManager.register(HAS_CHEST, (byte) 0);
-        dataManager.register(ARMOR_ITEM, Optional.<ItemStack>absent());
-        this.inventoryInit();
-    }
-
-    @Override
-    @Nonnull
-    public NBTTagCompound serializeNBT() {
-        NBTTagCompound tags = new NBTTagCompound();
-
-        boolean entityHasChest = this.getHasChest();
-        boolean entityHasArmor = this.getHasArmor();
-
-        tags.setBoolean(NBT_TAG_HAS_CHEST, entityHasChest);
-
-        if (entityHasChest) {
-            NBTTagList inventoryItemsTagList = new NBTTagList();
-
-            for (byte slotIndex = 0;
-                 slotIndex < this.getInventory().getSizeInventory();
-                 slotIndex++) {
-                ItemStack stackInSlot = this.getInventory().getStackInSlot(slotIndex);
-
-                if (stackInSlot != null) {
-                    NBTTagCompound slotTag = new NBTTagCompound();
-
-                    slotTag.setByte(NBT_TAG_SLOT, slotIndex);
-                    stackInSlot.writeToNBT(slotTag);
-
-                    inventoryItemsTagList.appendTag(slotTag);
-                }
-            }
-
-            tags.setTag(NBT_TAG_INVENTORY, inventoryItemsTagList);
+        @Nullable
+        @Override
+        public NBTBase writeNBT(Capability<IWolfArmorCapability> capability, IWolfArmorCapability instance, EnumFacing side) {
+            return null;
         }
 
-        if (entityHasArmor) {
-            ItemStack armorItem = getArmorItemStack();
-
-            if (armorItem != null) {
-                tags.setTag(NBT_TAG_ARMOR_ITEM, armorItem.writeToNBT(new NBTTagCompound()));
-            } else {
-                tags.removeTag(NBT_TAG_ARMOR_ITEM);
-            }
+        @Override
+        public void readNBT(Capability<IWolfArmorCapability> capability, IWolfArmorCapability instance, EnumFacing side, NBTBase nbt) {
         }
-        return tags;
-
     }
 
-    @Override
-    public void deserializeNBT(@Nonnull NBTTagCompound tags) {
-        boolean entityHasChest = tags.hasKey(NBT_TAG_HAS_CHEST, 1) && tags.getBoolean(NBT_TAG_HAS_CHEST);
+    public static class Instance implements ICapabilitySerializable<NBTTagCompound>, IWolfArmorCapability, IInventoryChangedListener {
+        private static final DataParameter<Boolean> HAS_CHEST =
+                EntityDataManager.createKey(EntityWolf.class, DataSerializers.BOOLEAN);
+        private static final DataParameter<ItemStack> ARMOR_ITEM_STACK =
+                EntityDataManager.createKey(EntityWolf.class, DataSerializers.ITEM_STACK);
+        private final EntityWolf wolf;
+        private final EntityDataManager dataManager;
+        private ContainerHorseChest inventory;
 
-        this.setHasChest(entityHasChest);
-
-        if (entityHasChest) {
+        Instance(@Nonnull EntityWolf wolf) {
+            this.wolf = wolf;
+            this.dataManager = wolf.getDataManager();
+            this.dataManagerInit();
             this.inventoryInit();
-            // Tags of type NBTTagCompound
-            NBTTagList inventoryItemsTagList = tags.getTagList(NBT_TAG_INVENTORY, 10);
+        }
 
-            for (int tagIndex = 0; tagIndex < inventoryItemsTagList.tagCount(); tagIndex++) {
-                NBTTagCompound itemTag = inventoryItemsTagList.getCompoundTagAt(tagIndex);
-                byte slotIndex = itemTag.getByte(NBT_TAG_SLOT);
+        private void dataManagerInit() {
+            this.dataManager.register(HAS_CHEST, false);
+            this.dataManager.register(ARMOR_ITEM_STACK, ItemStack.EMPTY);
+        }
 
-                if (slotIndex < this.inventory.getSizeInventory()) {
-                    this.inventory.setInventorySlotContents(slotIndex, ItemStack.loadItemStackFromNBT(itemTag));
+        private void inventoryInit() {
+            ContainerHorseChest inventoryExisting = this.inventory;
+            this.inventory = new ContainerHorseChest("inventory.wolfarmor.wolf", this.getMaxSizeInventory());
+
+            String customWolfName = this.wolf.getCustomNameTag();
+            if (!customWolfName.isEmpty()) {
+                this.inventory.setCustomName(customWolfName);
+            }
+
+            if (inventoryExisting != null) {
+                inventoryExisting.removeInventoryChangeListener(this);
+                int slotCount = Math.min(this.inventory.getSizeInventory(), inventoryExisting.getSizeInventory());
+                for (int slotIndex = 0; slotIndex < slotCount; ++slotIndex) {
+                    @Nonnull ItemStack stackInSlot = inventoryExisting.getStackInSlot(slotIndex);
+                    if (!stackInSlot.isEmpty()) {
+                        this.inventory.setInventorySlotContents(slotIndex, stackInSlot.copy());
+                    }
                 }
             }
+
+            this.inventory.addInventoryChangeListener(this);
+            this.inventory.markDirty();
         }
 
-        NBTTagCompound armorTags = tags.getCompoundTag(NBT_TAG_ARMOR_ITEM);
-
-        if (!armorTags.hasNoTags()) {
-            ItemStack armorItemStack = ItemStack.loadItemStackFromNBT(armorTags);
-
-            this.equipArmor(armorItemStack);
-        }
-    }
-
-    @Override
-    public boolean getHasChest() {
-        return WolfArmorMod.getConfiguration().getIsWolfChestEnabled() && (this.dataManager.get(HAS_CHEST) & 0x2) != 0;
-    }
-
-    @Override
-    public void setHasChest(boolean value) {
-        byte hasChest = this.dataManager.get(HAS_CHEST);
-
-        if (value) {
-            this.dataManager.set(HAS_CHEST, (byte) (hasChest | 2));
-        } else {
-            this.dataManager.set(HAS_CHEST, (byte) (hasChest & -3));
-        }
-    }
-
-    @Override
-    public boolean getHasArmor() {
-        return this.getArmorItemStack() != null;
-    }
-
-    @Override
-    @Nonnull
-    public IInventory getInventory() {
-        return this.inventory;
-    }
-
-    @Override
-    @Nullable
-    public ItemStack getArmorItemStack() {
-        Optional<ItemStack> itemStackOptional = this.dataManager.get(ARMOR_ITEM);
-
-        if (itemStackOptional.isPresent()) {
-            ItemStack armorItemStack = itemStackOptional.get();
-
-            if (!getIsValidWolfArmorItem(armorItemStack.getItem()) || armorItemStack.stackSize == 0) {
-                this.dataManager.set(ARMOR_ITEM, Optional.<ItemStack>absent());
-                return null;
+        private void playEquipSound(@Nonnull ItemStack itemStack) {
+            if (itemStack.isEmpty()) {
+                return;
+            }
+            SoundEvent sound = null;
+            if (Block.getBlockFromItem(itemStack.getItem()) == Blocks.CHEST) {
+                sound = SoundEvents.ENTITY_CHICKEN_EGG;
+            } else if (itemStack.getItem() instanceof ItemWolfArmor) {
+                ItemWolfArmor wolfArmor = (ItemWolfArmor) itemStack.getItem();
+                sound = wolfArmor.getMaterial().getEquipSound();
             }
 
-            return armorItemStack;
+            if (sound != null) {
+                this.wolf.playSound(sound, 1, (this.wolf.getRNG().nextFloat() - this.wolf.getRNG().nextFloat()) * 0.2F + 1);
+            }
         }
 
-        return null;
-    }
+        private void openWolfInventory(@Nonnull EntityPlayer player) {
+            if (!this.wolf.getEntityWorld().isRemote) {
+                this.wolf.getAISit().setSitting(true);
+                player.openGui(WolfArmorMod.getInstance(),
+                        this.wolf.getEntityId(),
+                        this.wolf.getEntityWorld(),
+                        MathHelper.floor(this.wolf.posX),
+                        MathHelper.floor(this.wolf.posY),
+                        MathHelper.floor(this.wolf.posZ));
+            }
+        }
 
-    private void playEquipSound(@Nullable ItemStack stack) {
-        if (stack != null && stack.getItem() instanceof ItemWolfArmor) {
+        @Override
+        public void onInventoryChanged(@Nonnull IInventory inventory) {
+            if(!this.wolf.getEntityWorld().isRemote) {
+                @Nonnull ItemStack armorItemStack = inventory.getStackInSlot(INVENTORY_SLOT_ARMOR);
+                @Nonnull ItemStack previousArmorItem = this.getArmorItemStack();
+                if (armorItemStack != previousArmorItem) {
+                    this.playEquipSound(armorItemStack.isEmpty() ? previousArmorItem : armorItemStack);
+                    this.setArmorItemStack(armorItemStack);
+                }
+
+                applyArmorModifiers(this.wolf.getEntityAttribute(SharedMonsterAttributes.ARMOR), armorItemStack);
+                applyArmorModifiers(this.wolf.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS), armorItemStack);
+            }
+        }
+
+        private void applyArmorModifiers(@Nullable IAttributeInstance instance, @Nonnull ItemStack stack) {
+            if(instance == null) {
+                return;
+            }
+            instance.removeModifier(ItemWolfArmor.ARMOR_UUID);
+            if (stack.isEmpty() || !(stack.getItem() instanceof ItemWolfArmor)) {
+                return;
+            }
             ItemWolfArmor armorItem = (ItemWolfArmor) stack.getItem();
-            SoundEvent sound = armorItem.getMaterial().getEquipSound();
-
-            wolf.playSound(sound, 1, 1);
-        }
-    }
-
-
-    @SuppressWarnings("ConstantConditions")
-    @Override
-    public void setArmorItemStack(@Nullable ItemStack armorItemStack) {
-        ItemStack previousItemStack = getArmorItemStack();
-
-        if (armorItemStack != null && (previousItemStack == null || previousItemStack.getItem() != armorItemStack.getItem())) {
-            this.playEquipSound(armorItemStack);
+            Multimap<String, AttributeModifier> map = armorItem.getAttributeModifiers(EntityEquipmentSlot.CHEST, stack);
+            if (map.containsKey(instance.getAttribute().getName())) {
+                map.get(instance.getAttribute().getName()).forEach(instance::applyModifier);
+            }
         }
 
-        Optional<ItemStack> itemStackOptional = Optional.fromNullable(armorItemStack);
+        @Override
+        @Nonnull
+        public NBTTagCompound serializeNBT() {
+            NBTTagCompound tags = new NBTTagCompound();
 
-        if (getIsValidWolfArmorItem(armorItemStack)) {
-            this.dataManager.set(ARMOR_ITEM, itemStackOptional);
+            Boolean hasChest = this.getHasChest();
+            tags.setBoolean(Storage.NBT_TAG_HAS_CHEST, hasChest);
+
+            if (hasChest) {
+                NBTTagList inventoryItems = new NBTTagList();
+                IInventory inventory = this.getInventory();
+
+                for (byte slotIndex = 0; slotIndex < inventory.getSizeInventory(); ++slotIndex) {
+                    @Nonnull ItemStack stackInSlot = inventory.getStackInSlot(slotIndex);
+                    if (stackInSlot.isEmpty()) {
+                        continue;
+                    }
+                    NBTTagCompound stackInSlotTags = new NBTTagCompound();
+
+                    stackInSlotTags.setByte(Storage.NBT_TAG_SLOT, slotIndex);
+                    stackInSlot.writeToNBT(stackInSlotTags);
+
+                    inventoryItems.appendTag(stackInSlotTags);
+                }
+
+                tags.setTag(Storage.NBT_TAG_INVENTORY, inventoryItems);
+            }
+
+            if (this.getHasArmor()) {
+                ItemStack armorItemStack = this.getArmorItemStack();
+                if (!armorItemStack.isEmpty()) {
+                    NBTTagCompound armorItemTag = armorItemStack.writeToNBT(new NBTTagCompound());
+                    tags.setTag(Storage.NBT_TAG_ARMOR_ITEM, armorItemTag);
+                } else {
+                    tags.removeTag(Storage.NBT_TAG_ARMOR_ITEM);
+                }
+            }
+            return tags;
         }
 
-        //update armor attribute
-        @Nullable IAttributeInstance armorAttribute = wolf.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-        if (armorAttribute != null) {
-            armorAttribute.removeAllModifiers();
-            if (armorItemStack != null)
-                armorAttribute.applyModifier(((ItemWolfArmor) armorItemStack.getItem()).getMaterial().armorAttr);
+        @Override
+        public void deserializeNBT(@Nonnull NBTTagCompound tags) {
+            boolean hasChest = tags.getBoolean(Storage.NBT_TAG_HAS_CHEST);
+            this.setHasChest(hasChest);
+
+            if (hasChest) {
+                this.inventoryInit();
+                NBTTagList inventoryTagList = tags.getTagList(Storage.NBT_TAG_INVENTORY, 10);
+
+                for (int index = 0; index < inventoryTagList.tagCount(); ++index) {
+                    NBTTagCompound compoundTagAt = inventoryTagList.getCompoundTagAt(index);
+                    byte slotIndex = compoundTagAt.getByte(Storage.NBT_TAG_SLOT);
+                    if (slotIndex >= 0 && slotIndex < this.inventory.getSizeInventory()) {
+                        this.inventory.setInventorySlotContents(slotIndex, new ItemStack(compoundTagAt));
+                    } else {
+                        WolfArmorMod.getLogger().log(Level.WARN, String.format("[NBT LOAD] Discarded invalid slot information at index %d", slotIndex));
+                    }
+                }
+            }
+
+            NBTTagCompound armorTags = tags.getCompoundTag(Storage.NBT_TAG_ARMOR_ITEM);
+            if (!armorTags.hasNoTags()) {
+                @Nonnull ItemStack armorItemStack = new ItemStack(armorTags);
+                this.equipArmor(armorItemStack);
+            }
         }
-    }
 
-    @Override
-    public int getMaxSizeInventory() {
-        return INVENTORY_WOLF_MAX_SIZE;
-    }
+        @Override
+        public boolean getHasChest() {
+            return this.dataManager.get(HAS_CHEST);
+        }
 
-    @Override
-    public boolean equipArmor(@Nullable ItemStack armorItemStack) {
-        if (!getIsValidWolfArmorItem(armorItemStack) || (this.getHasArmor() && armorItemStack != null)) {
+        @Override
+        public void setHasChest(boolean value) {
+            this.dataManager.set(HAS_CHEST, value);
+        }
+
+        @Override
+        @Nonnull
+        public ItemStack getArmorItemStack() {
+            return this.dataManager.get(ARMOR_ITEM_STACK);
+        }
+
+        @Override
+        public void setArmorItemStack(@Nonnull ItemStack value) {
+            this.dataManager.set(ARMOR_ITEM_STACK, value);
+        }
+
+        @Override
+        public boolean getHasArmor() {
+            return !this.getArmorItemStack().isEmpty();
+        }
+
+        @Override
+        @Nonnegative
+        public int getMaxSizeInventory() {
+            return MAX_SIZE_INVENTORY;
+        }
+
+        @Override
+        @Nonnull
+        public InventoryBasic getInventory() {
+            return this.inventory;
+        }
+
+        @Override
+        public boolean canEquipItem(@Nonnull ItemStack armorItemStack) {
+            return isValidWolfArmor(armorItemStack) && (!this.getHasArmor() || armorItemStack.isEmpty());
+        }
+
+        @Override
+        public void equipArmor(@Nonnull ItemStack armorItemStack) {
+            if (canEquipItem(armorItemStack)) {
+                this.inventory.setInventorySlotContents(INVENTORY_SLOT_ARMOR, armorItemStack);
+            }
+        }
+
+        @Override
+        public boolean processInteract(@Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
+            if (this.wolf.getEntityWorld().isRemote ||
+                    this.wolf.isChild() ||
+                    !this.wolf.isTamed() ||
+                    !this.wolf.isOwner(player)) {
+                return false;
+            }
+            @Nonnull ItemStack itemInHand = player.getHeldItem(hand);
+            boolean isWolfChestEnabled = WolfArmorMod.getConfiguration().getIsWolfChestEnabled();
+            if (player.isSneaking()) {
+                this.openWolfInventory(player);
+                return true;
+            }
+            if (!itemInHand.isEmpty()) {
+                if (Block.getBlockFromItem(itemInHand.getItem()) == Blocks.CHEST &&
+                        isWolfChestEnabled && !this.getHasChest()) {
+                    this.playEquipSound(itemInHand); //Plays chicken pop sound
+                    this.setHasChest(true);
+                    if (!player.capabilities.isCreativeMode) {
+                        itemInHand.shrink(1);
+                    }
+                    return true;
+                }
+                if (isValidWolfArmor(itemInHand)) {
+                    this.openWolfInventory(player);
+                    return true;
+                }
+            }
             return false;
         }
 
-        this.inventory.setInventorySlotContents(0, armorItemStack);
-
-        return true;
-    }
-
-    private void openWolfGui(@Nonnull EntityPlayer player) {
-        if (!wolf.getEntityWorld().isRemote) {
-            wolf.getAISit().setSitting(true);
-            player.openGui(WolfArmorMod.instance,
-                    wolf.getEntityId(),
-                    wolf.getEntityWorld(),
-                    MathHelper.floor_double(wolf.posX),
-                    MathHelper.floor_double(wolf.posY),
-                    MathHelper.floor_double(wolf.posZ));
+        @Override
+        public void dropEquipment(boolean killedByPlayer, int lootingModifier) {
+            if (this.getHasArmor()) {
+                @Nonnull ItemStack armorItemStack = this.getArmorItemStack();
+                if (!armorItemStack.isEmpty()) {
+                    this.wolf.entityDropItem(armorItemStack, 0);
+                    this.equipArmor(ItemStack.EMPTY);
+                }
+            }
+            if (this.getHasChest()) {
+                this.wolf.entityDropItem(new ItemStack(Blocks.CHEST, 1), 0);
+                this.dropInventoryContents();
+            }
         }
-    }
 
-    @Override
-    public boolean processInteract(@Nonnull EntityPlayer player, @Nonnull EnumHand hand, @Nullable ItemStack stack) {
-        if (wolf.isTamed() && wolf.isOwner(player) && !wolf.isChild()) {
-            if (player.isSneaking()) {
-                openWolfGui(player);
-                return true;
-            } else {
-                if (stack != null) {
-                    if (WolfArmorMod.getConfiguration().getIsWolfChestEnabled()
-                            && Block.getBlockFromItem(stack.getItem()) == Blocks.CHEST
-                            && !this.getHasChest()) {
-                        this.setHasChest(true);
-                        wolf.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1, (wolf.getRNG().nextFloat() - wolf.getRNG().nextFloat()) * 0.2F + 1);
-                        this.inventoryInit();
-                        if (!player.capabilities.isCreativeMode) {
-                            stack.stackSize--;
-                        }
+        @Override
+        public void dropInventoryContents() {
+            for (int slotIndex = INVENTORY_SLOT_CHEST_START; slotIndex < INVENTORY_SLOT_CHEST_START + INVENTORY_SLOT_CHEST_LENGTH; ++slotIndex) {
+                @Nonnull ItemStack stackInSlot = this.inventory.getStackInSlot(slotIndex);
+                if (!stackInSlot.isEmpty()) {
+                    this.wolf.entityDropItem(stackInSlot, 0);
+                    this.inventory.setInventorySlotContents(slotIndex, ItemStack.EMPTY);
+                }
+            }
+        }
 
-                        return true;
-                    }
-
-                    if (getIsValidWolfArmorItem(stack)) {
-                        this.openWolfGui(player);
-                        return true;
+        @Override
+        public void damageArmor(float damage) {
+            if (this.getHasArmor()) {
+                ItemStack stackInSlot = this.inventory.getStackInSlot(INVENTORY_SLOT_ARMOR);
+                if (!stackInSlot.isEmpty()) {
+                    stackInSlot.damageItem((int) Math.ceil(damage), this.wolf);
+                    if (stackInSlot.getCount() == 0) {
+                        @Nonnull ItemStack particleStack = stackInSlot.copy();
+                        particleStack.setCount(1);
+                        this.equipArmor(ItemStack.EMPTY);
+                        this.wolf.renderBrokenItemStack(particleStack);
                     }
                 }
             }
         }
-        return false;
-    }
 
-    private void inventoryInit() {
-
-        AnimalChest inventoryExisting = this.inventory;
-        this.inventory = new AnimalChest("container.wolfarmor.wolf", this.getMaxSizeInventory());
-
-        String customName = wolf.getCustomNameTag();
-
-        if (!customName.isEmpty()) {
-            this.inventory.setCustomName(customName);
+        @SuppressWarnings("unchecked")
+        @Override
+        @Nullable
+        public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+            return capability == CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY ? (T) this : null;
         }
 
-        if (inventoryExisting != null) {
-            inventoryExisting.removeInventoryChangeListener(this);
+        @Override
+        public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
+            return capability == CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY;
+        }
+    }
 
-            int numberOfItemsExisting = Math.min(this.inventory.getSizeInventory(), inventoryExisting.getSizeInventory());
+    public static final class EventHandlers {
+        @SubscribeEvent
+        public void onAttachCapability(AttachCapabilitiesEvent<Entity> event) {
+            Entity entity = event.getObject();
+            if (entity instanceof EntityWolf && !(entity instanceof IWolfArmorCapability)) {
+                event.addCapability(Capabilities.WOLF_ARMOR, new CapabilityWolfArmor.Instance((EntityWolf) entity));
+            }
+        }
 
-            for (int slotIndex = 0; slotIndex < numberOfItemsExisting; slotIndex++) {
-                ItemStack stackInSlot = inventoryExisting.getStackInSlot(slotIndex);
-
-                if (stackInSlot != null) {
-                    this.inventory.setInventorySlotContents(slotIndex, stackInSlot.copy());
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public void onPlayerInteract(PlayerInteractEvent.EntityInteract event) {
+            if (event.getTarget() instanceof EntityWolf) {
+                @Nullable IWolfArmorCapability wolfArmorCapability = event.getTarget().getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+                if (wolfArmorCapability != null) {
+                    EntityPlayer player = event.getEntityPlayer();
+                    EnumHand hand = event.getHand();
+                    if (wolfArmorCapability.processInteract(player, hand)) {
+                        event.setCanceled(true);
+                    }
                 }
             }
         }
 
-        this.inventory.addInventoryChangeListener(this);
-        this.inventory.markDirty();
-    }
-
-    @Override
-    public void onInventoryChanged(@Nonnull InventoryBasic invBasic) {
-        ItemStack armor = inventory.getStackInSlot(0);
-
-        this.setArmorItemStack(armor);
-    }
-
-    @Override
-    public void dropEquipment(boolean killedByPlayer, int lootingModifier) {
-        if (this.getHasArmor()) {
-            ItemStack armorItem = this.getArmorItemStack();
-
-            if (armorItem != null) {
-                wolf.entityDropItem(armorItem, 0);
-                this.inventory.setInventorySlotContents(0, null);
-            }
-        }
-
-        if (this.getHasChest()) {
-            wolf.entityDropItem(new ItemStack(Blocks.CHEST, 1), 0);
-            for (int slotIndex = 1; slotIndex < getMaxSizeInventory(); slotIndex++) {
-                ItemStack stack = this.inventory.getStackInSlot(slotIndex);
-
-                if (stack != null) {
-                    wolf.entityDropItem(stack, 0);
-                    this.inventory.setInventorySlotContents(slotIndex, null);
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public void onDropItems(LivingDropsEvent event) {
+            if (event.getEntity() instanceof EntityWolf) {
+                @Nullable IWolfArmorCapability wolfArmorCapability = event.getEntity().getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+                if (wolfArmorCapability != null) {
+                    DamageSource source = event.getSource();
+                    wolfArmorCapability.dropEquipment(source != null && source.getTrueSource() instanceof EntityPlayer, event.getLootingLevel());
                 }
             }
         }
-    }
 
-    @Override
-    public void damageArmor(float damage) {
-        if (this.getHasArmor()) {
-            ItemStack armorStack = this.inventory.getStackInSlot(0);
-
-            if (armorStack != null && getIsValidWolfArmorItem(armorStack)) {
-                armorStack.damageItem((int) Math.ceil(damage), wolf);
-
-                if (armorStack.stackSize == 0) {
-                    this.equipArmor(null);
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public void onDamageArmor(LivingHurtEvent event) {
+            if (event.getEntity() instanceof EntityWolf) {
+                @Nullable IWolfArmorCapability wolfArmorCapability = event.getEntity().getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+                if (wolfArmorCapability != null) {
+                    wolfArmorCapability.damageArmor(event.getAmount());
                 }
             }
         }
-    }
-
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == WOLF_ARMOR;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @Nullable
-    public <T> T getCapability(@Nullable Capability<T> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityWolfArmor.WOLF_ARMOR) {
-            return (T) this;
-        }
-
-        return null;
     }
 }

@@ -1,10 +1,11 @@
 package com.attributestudios.wolfarmor.client.gui;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.api.item.IWolfArmorMaterial;
+import com.attributestudios.wolfarmor.api.util.Definitions;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
-import com.attributestudios.wolfarmor.common.capabilities.IWolfArmor;
+import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import com.attributestudios.wolfarmor.common.inventory.ContainerWolfInventory;
-import com.attributestudios.wolfarmor.item.ItemWolfArmor.WolfArmorMaterial;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -26,7 +27,7 @@ import javax.annotation.Nonnull;
 public class GuiWolfInventory extends GuiContainer {
     //region Fields
 
-    private ResourceLocation TEXTURE_GUI_WOLF_INVENTORY = new ResourceLocation(WolfArmorMod.MOD_ID, "textures/gui/wolf.png");
+    private ResourceLocation TEXTURE_GUI_WOLF_INVENTORY = new ResourceLocation(Definitions.MOD_ID, "textures/gui/wolf.png");
 
     private IInventory wolfInventory;
     private IInventory playerInventory;
@@ -36,7 +37,7 @@ public class GuiWolfInventory extends GuiContainer {
     private float screenPositionX;
     private float screenPositionY;
 
-    private final IWolfArmor wolfArmor;
+    private final IWolfArmorCapability wolfArmor;
 
     //endregion Fields
 
@@ -55,7 +56,7 @@ public class GuiWolfInventory extends GuiContainer {
                             @Nonnull EntityWolf theWolf,
                             @Nonnull EntityPlayer player) {
         super(new ContainerWolfInventory(playerInventory, wolfInventory, theWolf, player));
-        this.wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
+        this.wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
         this.wolfInventory = wolfInventory;
         this.playerInventory = playerInventory;
         this.theWolf = theWolf;
@@ -76,16 +77,18 @@ public class GuiWolfInventory extends GuiContainer {
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         String wolfName = this.theWolf.hasCustomName()
                 ? this.theWolf.getCustomNameTag()
-                : I18n.format("entity.wolfarmor.Wolf.name");
+                : I18n.format("entity.Wolf.name");
 
-        this.fontRendererObj.drawString(this.wolfInventory.hasCustomName()
+        this.fontRenderer.drawString(this.wolfInventory.hasCustomName()
                 ? this.wolfInventory.getName()
                 : I18n.format(this.wolfInventory.getName(), wolfName), 8, 6, 0x404040);
-        this.fontRendererObj.drawString(this.playerInventory.hasCustomName()
+        this.fontRenderer.drawString(this.playerInventory.hasCustomName()
                 ? this.playerInventory.getName()
                 : I18n.format(this.playerInventory.getName()), 8, this.ySize - 94, 0x404040);
 
         this.drawWolfHealthAndArmor();
+
+        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
     }
 
     /**
@@ -100,6 +103,8 @@ public class GuiWolfInventory extends GuiContainer {
         this.screenPositionX = mouseX;
         this.screenPositionY = mouseY;
         super.drawScreen(mouseX, mouseY, partialTicks);
+
+        this.renderHoveredToolTip(mouseX, mouseY);
     }
 
     /**
@@ -191,7 +196,7 @@ public class GuiWolfInventory extends GuiContainer {
                 }
 
                 int armor = this.theWolf.getTotalArmorValue();
-                int maxArmor = WolfArmorMaterial.getMaxArmorValue();
+                double maxArmor = IWolfArmorMaterial.MAX_VANILLA_ARMOR_VALUE;
                 int rowOffset = (int) Math.min((maxArmor + 0.5F) / 2, 30);
 
                 for (int columnOffset = 0; rowOffset > 0; columnOffset += 20) {

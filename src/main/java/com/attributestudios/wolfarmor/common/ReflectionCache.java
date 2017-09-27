@@ -1,6 +1,7 @@
 package com.attributestudios.wolfarmor.common;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.api.util.annotation.Future;
 import com.google.common.collect.Maps;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
@@ -13,119 +14,104 @@ import java.util.Map;
 /**
  * Caches reflection calls
  */
-public final class ReflectionCache {
+public abstract class ReflectionCache {
     //region Fields
 
     private static Map<String, Field> CACHED_REFLECTION_FIELDS = Maps.newHashMap();
     private static Map<String, Method> CACHED_REFLECTION_METHODS = Maps.newHashMap();
 
+    private static Exception lastError;
+
     //endregion Fields
-
-    //region Constructors
-
-    private ReflectionCache() {
-    }
-
-    //endregion Constructors
 
     //region Accessors / Mutators
 
     /**
      * Finds and caches a field.
      *
-     * @param clazz      The class
-     * @param fieldNames The instance
+     * @param clazz        The class
+     * @param fieldName    The unobfuscated name of the field
+     * @param fieldObfName the obfuscated name of the field
      * @return The field
      */
-    @Nonnull
+    @Nullable
     public static Field getField(@Nonnull Class clazz,
-                                 @Nonnull String... fieldNames) {
-        if (fieldNames.length > 0) {
-            Field field = null;
-
-            for (String s : fieldNames) {
-                String key = clazz.getName() + "." + s;
-                if (CACHED_REFLECTION_FIELDS.containsKey(key)) {
-                    field = CACHED_REFLECTION_FIELDS.get(key);
-                    break;
-                }
-            }
-
-            if (field == null) {
-                for (String s : fieldNames) {
-                    String key = clazz.getName() + "." + s;
-                    try {
-                        field = ReflectionHelper.findField(clazz, fieldNames);
-                        CACHED_REFLECTION_FIELDS.put(key, field);
-                    } catch (ReflectionHelper.UnableToFindFieldException ex) {
-                        WolfArmorMod.getLogger().error(ex);
-                    }
-                }
-            }
-
-            if (field == null) throw new UnsupportedOperationException("Failed to find field.");
-
-            return field;
+                                 @Nonnull String fieldName,
+                                 @Nonnull String fieldObfName) {
+        String key = String.format("%s.%s", clazz.getName(), fieldObfName);
+        Field field = null;
+        if(CACHED_REFLECTION_FIELDS.containsKey(key)) {
+            field = CACHED_REFLECTION_FIELDS.get(key);
         }
-        throw new IllegalArgumentException("Must specify at least one field name.");
+        if(field == null) {
+            try {
+                field = ReflectionHelper.findField(clazz, fieldName, fieldObfName);
+                CACHED_REFLECTION_FIELDS.put(key, field);
+            } catch (Exception ex) {
+                WolfArmorMod.getLogger().error(ex);
+                setLastError(ex);
+            }
+        }
+
+        return field;
     }
 
     /**
      * Finds and caches a method.
      *
-     * @param clazz       The class
-     * @param instance    The instance
-     * @param methodNames The possible method names
-     * @param params      The method parameter types
-     * @param <E>         The instance or class type
+     * @param clazz         The class
+     * @param methodName    The deobf method name
+     * @param methodObfName The obf method name
+     * @param params        The method parameter types
+     * @param <E>           The instance or class type
      * @return The method
      */
-    @SuppressWarnings("unused")
-    @Nonnull
+    @Future
+    @Nullable
     public static <E> Method getMethod(@Nonnull Class<? super E> clazz,
-                                       @Nullable E instance,
-                                       @Nonnull String[] methodNames,
-                                       @Nonnull Class<?>... params) {
-        if (methodNames.length > 0) {
-            Method method = null;
+                                       @Nonnull String methodName,
+                                       @Nullable String methodObfName,
+                                       @Nullable Class<?>... params) {
+        Method method = null;
 
-            String keyParams = "(";
+        StringBuilder keyParams = new StringBuilder("(");
 
+        if(params != null) {
             for (int i = 0; i < params.length; i++) {
                 if (i > 0) {
-                    keyParams += ", ";
+                    keyParams.append(", ");
                 }
-                keyParams += params[i].getName();
+                keyParams.append(params[i].getName());
             }
-
-            keyParams += ")";
-
-            for (String s : methodNames) {
-                String key = clazz.getName() + "." + s + keyParams;
-                if (CACHED_REFLECTION_METHODS.containsKey(key)) {
-                    method = CACHED_REFLECTION_METHODS.get(key);
-                    break;
-                }
-            }
-
-            if (method == null) {
-                for (String s : methodNames) {
-                    String key = clazz.getName() + "." + s + keyParams;
-                    try {
-                        method = ReflectionHelper.findMethod(clazz, instance, methodNames, params);
-                        CACHED_REFLECTION_METHODS.put(key, method);
-                    } catch (ReflectionHelper.UnableToFindMethodException ex) {
-                        WolfArmorMod.getLogger().error(ex);
-                    }
-                }
-            }
-
-            if (method == null) throw new UnsupportedOperationException("Method could not be found.");
-
-            return method;
         }
-        throw new IllegalArgumentException("Must specify at least one method name.");
+
+        keyParams.append(")");
+
+        String key = clazz.getName() + "." + methodObfName + keyParams;
+        if (CACHED_REFLECTION_METHODS.containsKey(key)) {
+            method = CACHED_REFLECTION_METHODS.get(key);
+        }
+
+        if (method == null) {
+            try {
+                method = ReflectionHelper.findMethod(clazz, methodName, methodObfName, params);
+                CACHED_REFLECTION_METHODS.put(key, method);
+            } catch (Exception ex) {
+                WolfArmorMod.getLogger().error(ex);
+                setLastError(ex);
+            }
+        }
+
+        return method;
+    }
+    //endregion Accessors / Mutators
+
+    @Nullable
+    public static Exception getLastError() {
+        return lastError;
     }
 
-    //endregion Accessors / Mutators
+    private static void setLastError(@Nullable Exception lastError) {
+        ReflectionCache.lastError = lastError;
+    }
 }

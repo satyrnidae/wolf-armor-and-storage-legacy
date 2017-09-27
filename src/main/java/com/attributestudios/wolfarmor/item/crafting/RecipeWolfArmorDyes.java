@@ -1,15 +1,21 @@
 package com.attributestudios.wolfarmor.item.crafting;
 
+import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor;
+import com.google.common.collect.Lists;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.oredict.DyeUtils;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -20,198 +26,118 @@ import java.util.List;
 /**
  * Wolf Armor dye recipes
  */
-@SuppressWarnings("WeakerAccess")
-public class RecipeWolfArmorDyes implements IRecipe {
-    //region Public / Protected Methods
+public class RecipeWolfArmorDyes extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
 
-    /**
-     * Used to check if a recipe matches current crafting inventory
-     *
-     * @param inventoryCrafting The crafting grid
-     * @param world             The world
-     */
     @Override
-    public boolean matches(@Nonnull InventoryCrafting inventoryCrafting, @Nonnull World world) {
-        ItemStack armorItem = null;
-        ArrayList<ItemStack> dyes = new ArrayList<ItemStack>();
+    public boolean matches(@Nonnull InventoryCrafting inv, @Nonnull World world) {
+        @Nonnull ItemStack armorItemStack = ItemStack.EMPTY;
+        @Nonnull final List<ItemStack> dyes = Lists.newArrayList();
 
-        for (int slotIndex = 0; slotIndex < inventoryCrafting.getSizeInventory(); slotIndex++) {
-            ItemStack stackInSlot = inventoryCrafting.getStackInSlot(slotIndex);
-
-            if (stackInSlot != null) {
-                if (stackInSlot.getItem() instanceof ItemWolfArmor) {
-                    ItemWolfArmor wolfArmorItem = (ItemWolfArmor) stackInSlot.getItem();
-
-                    if (!wolfArmorItem.getMaterial().getIsDyeable() || armorItem != null) {
-                        return false;
-                    }
-
-                    armorItem = stackInSlot;
-                } else {
-                    if (getDyeEquivalent(stackInSlot) < 0) {
-                        return false;
-                    }
-
-                    dyes.add(stackInSlot);
-                }
+        for(int slotIndex = 0; slotIndex < inv.getSizeInventory(); ++slotIndex) {
+            @Nonnull ItemStack stackInSlot = inv.getStackInSlot(slotIndex);
+            if(stackInSlot.isEmpty()) {
+               continue;
             }
-        }
-
-        return armorItem != null && !dyes.isEmpty();
-    }
-
-    //endregion Public / Protected Methods
-
-    //region Private Methods
-
-    /**
-     * Whether or not a given stack has an equivalent dye entry
-     *
-     * @param stack The dye item stack
-     * @return The quivalent dye metadata value for the given item stack
-     */
-    private int getDyeEquivalent(@Nullable ItemStack stack) {
-        int dyeEquivalent = -1;
-
-        if (stack != null) {
-            int[] oreIds = OreDictionary.getOreIDs(stack);
-
-            for (int oreId : oreIds) {
-                String oreName = OreDictionary.getOreName(oreId);
-
-                List<ItemStack> ores = OreDictionary.getOres(oreName);
-
-                for (ItemStack oreStack : ores) {
-                    if (oreStack.getItem() == Items.DYE && oreStack.getItemDamage() != Short.MAX_VALUE) { // a dye but not just any dye
-                        dyeEquivalent = oreStack.getItemDamage();
-                        break;
-                    }
+            if(stackInSlot.getItem() instanceof ItemWolfArmor) {
+                @Nullable ItemWolfArmor armorItem = (ItemWolfArmor)stackInSlot.getItem();
+                if(!armorItem.getMaterial().getCanBeDyed() || !armorItemStack.isEmpty()) {
+                    return false;
                 }
+                armorItemStack = stackInSlot;
+                continue;
             }
-        }
 
-        return dyeEquivalent;
-    }
-
-    //endregion Private Methods
-
-    //region Accessors / Mutators
-
-    /**
-     * Returns an Item that is the result of this recipe
-     *
-     * @param inventoryCrafting The crafting grid
-     */
-    @Override
-    @Nullable
-    public ItemStack getCraftingResult(@Nonnull InventoryCrafting inventoryCrafting) {
-        ItemStack stack = null;
-        int[] color = new int[3];
-        int rgb;
-        int rgbMax = 0;
-        int count = 0;
-
-        ItemWolfArmor itemArmor = null;
-
-        for (int slotIndex = 0; slotIndex < inventoryCrafting.getSizeInventory(); slotIndex++) {
-            ItemStack stackInSlot = inventoryCrafting.getStackInSlot(slotIndex);
-
-            if (stackInSlot != null) {
-                if (stackInSlot.getItem() instanceof ItemWolfArmor) {
-                    itemArmor = (ItemWolfArmor) stackInSlot.getItem();
-
-                    if (!itemArmor.getMaterial().getIsDyeable() || stack != null) {
-                        return null;
-                    }
-
-                    stack = stackInSlot.copy();
-                    stack.stackSize = 1;
-
-                    if (itemArmor.getHasColor(stackInSlot)) {
-                        rgb = itemArmor.getColor(stackInSlot);
-                        float[] existingColor = new float[]{
-                                (rgb >> 16 & 0xFF) / 255F,
-                                (rgb >> 8 & 0xFF) / 255F,
-                                (rgb & 0xFF) / 255F
-                        };
-                        rgbMax = (int) (rgbMax + Math.max(existingColor[0], Math.max(existingColor[1], existingColor[2])) * 255F);
-                        color[0] = (int) (color[0] + existingColor[0] * 255F);
-                        color[1] = (int) (color[1] + existingColor[1] * 255F);
-                        color[2] = (int) (color[2] + existingColor[2] * 255F);
-                        count++;
-                    }
-                } else {
-                    int dyeEquivalent = getDyeEquivalent(stackInSlot);
-
-                    if (dyeEquivalent < 0) {
-                        return null;
-                    }
-
-                    float[] fleeceColor = EntitySheep.getDyeRgb(EnumDyeColor.byDyeDamage(dyeEquivalent));
-                    int[] dye = new int[]{
-                            (int) (fleeceColor[0] * 255),
-                            (int) (fleeceColor[1] * 255),
-                            (int) (fleeceColor[2] * 255)
-                    };
-                    rgbMax += Math.max(dye[0], Math.max(dye[1], dye[2]));
-                    color[0] += dye[0];
-                    color[1] += dye[1];
-                    color[2] += dye[2];
-                    count++;
-                }
+            if(!DyeUtils.isDye(stackInSlot)) {
+                return false;
             }
+            dyes.add(stackInSlot);
         }
 
-        if (itemArmor == null) {
-            return null;
-        }
-
-        int redAvg = color[0] / count;
-        int greenAvg = color[1] / count;
-        int blueAvg = color[2] / count;
-        float rgbAvg = rgbMax / (float) count;
-        float rgbAvgMax = Math.max(redAvg, Math.max(greenAvg, blueAvg));
-        int red = (int) (redAvg * rgbAvg / rgbAvgMax);
-        int green = (int) (greenAvg * rgbAvg / rgbAvgMax);
-        int blue = (int) (blueAvg * rgbAvg / rgbAvgMax);
-
-        rgb = (((red << 8) + green) << 8) + blue;
-        itemArmor.setColor(stack, rgb);
-
-        return stack;
+        return !armorItemStack.isEmpty() && !dyes.isEmpty();
     }
 
-    /**
-     * Returns the size of the recipe area
-     */
-    @Override
-    @Nonnegative
-    public int getRecipeSize() {
-        return 10;
-    }
-
-    /**
-     * Gets the recipe output
-     *
-     * @return nothing
-     */
-    @Override
-    @Nullable
-    public ItemStack getRecipeOutput() {
-        return null;
-    }
-
-    /**
-     * Gets the items remaining in the crafting table
-     *
-     * @param inv The inventory
-     * @return The remaining items
-     */
     @Override
     @Nonnull
-    public ItemStack[] getRemainingItems(@Nonnull InventoryCrafting inv) {
+    public ItemStack getCraftingResult(@Nonnull InventoryCrafting inv) {
+        @Nonnull ItemStack result = ItemStack.EMPTY;
+        int[] rgbColor = new int[3];
+        int colorMultiplier = 0;
+        int colorCount = 0;
+        @Nullable ItemWolfArmor armorItem = null;
+
+        for(int slotIndex = 0; slotIndex < inv.getSizeInventory(); ++slotIndex) {
+            @Nonnull ItemStack stackInSlot = inv.getStackInSlot(slotIndex);
+            if(stackInSlot.isEmpty()) {
+                continue;
+            }
+
+            // Get current armor color and mult into rgbColor array
+            if(stackInSlot.getItem() instanceof ItemWolfArmor) {
+                armorItem = (ItemWolfArmor)stackInSlot.getItem();
+                if(!armorItem.getMaterial().getCanBeDyed() || !result.isEmpty()) {
+                    return ItemStack.EMPTY;
+                }
+                result = stackInSlot.copy();
+                result.setCount(1);
+
+                if(armorItem.getHasColor(result)) {
+                    int armorColor = armorItem.getColor(result);
+                    float rArmor = (float)(armorColor >> 16 & 0xff) / 255.0F;
+                    float gArmor = (float)(armorColor >> 8 & 0xff) / 255.0F;
+                    float bArmor = (float)(armorColor & 0xff) / 255.0F;
+                    colorMultiplier = (int)((float)colorMultiplier + Math.max(rArmor, Math.max(gArmor, bArmor)) * 255.0F);
+                    rgbColor[0] = (int)((float)rgbColor[0] + rArmor * 255.0F);
+                    rgbColor[1] = (int)((float)rgbColor[1] + gArmor * 255.0F);
+                    rgbColor[2] = (int)((float)rgbColor[2] + bArmor * 255.0F);
+                    ++colorCount;
+                }
+                continue;
+            }
+
+            if(!DyeUtils.isDye(stackInSlot) || !DyeUtils.colorFromStack(stackInSlot).isPresent()) {
+                return ItemStack.EMPTY;
+            }
+
+            float[] dyeColorMultipliers = DyeUtils.colorFromStack(stackInSlot).get().getColorComponentValues();
+            int rDye = (int)(dyeColorMultipliers[0] * 255.0F);
+            int gDye = (int)(dyeColorMultipliers[1] * 255.0F);
+            int bDye = (int)(dyeColorMultipliers[2] * 255.0F);
+            colorMultiplier += Math.max(rDye, Math.max(gDye, bDye));
+            rgbColor[0] += rDye;
+            rgbColor[1] += gDye;
+            rgbColor[2] += bDye;
+            ++colorCount;
+        }
+        if(armorItem == null) {
+            return ItemStack.EMPTY;
+        }
+
+        int rAvg = rgbColor[0] / colorCount;
+        int gAvg = rgbColor[1] / colorCount;
+        int bAvg = rgbColor[2] / colorCount;
+        float colorMultiplierAvg = (float)colorMultiplier / (float)colorCount;
+        float maxColorValue = (float)Math.max(rAvg, Math.max(gAvg, bAvg));
+        rAvg = (int)((float)rAvg * colorMultiplierAvg / maxColorValue);
+        gAvg = (int)((float)gAvg * colorMultiplierAvg / maxColorValue);
+        bAvg = (int)((float)bAvg * colorMultiplierAvg / maxColorValue);
+        int finalColor = (((rAvg << 8) + gAvg) << 8) + bAvg;
+        armorItem.setColor(result, finalColor);
+        return result;
+    }
+
+    @Override
+    @Nonnull
+    public ItemStack getRecipeOutput() { return ItemStack.EMPTY; }
+
+    @Override
+    @Nonnull
+    public NonNullList<ItemStack> getRemainingItems(@Nonnull InventoryCrafting inv) {
         return ForgeHooks.defaultRecipeGetRemainingItems(inv);
     }
 
-    //endregion Accessors / Mutators
+    @Override
+    public boolean isHidden() { return true; }
+
+    @Override
+    public boolean canFit(int width, int height) { return width * height >= 2; }
 }

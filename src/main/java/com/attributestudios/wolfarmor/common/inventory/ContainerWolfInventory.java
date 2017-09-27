@@ -1,17 +1,18 @@
 package com.attributestudios.wolfarmor.common.inventory;
 
+import com.attributestudios.wolfarmor.advancements.CriteriaTriggers;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
-import com.attributestudios.wolfarmor.common.capabilities.IWolfArmor;
+import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 
 /**
  * Models a container for a wolf's inventory.
@@ -33,7 +34,6 @@ public class ContainerWolfInventory extends Container {
      * @param wolfInventory   The wolf's inventory
      * @param theWolf         The wolf
      */
-    @SuppressWarnings("ConstantConditions")
     public ContainerWolfInventory(@Nonnull IInventory playerInventory,
                                   @Nonnull final IInventory wolfInventory,
                                   @Nonnull final EntityWolf theWolf,
@@ -60,16 +60,26 @@ public class ContainerWolfInventory extends Container {
              * @return True if the item is valid in a slot and if the item is a wolf armor item
              */
             @Override
-            public boolean isItemValid(@Nullable ItemStack stack) {
-                return stack == null || (super.isItemValid(stack) && CapabilityWolfArmor.getIsValidWolfArmorItem(stack.getItem()));
+            public boolean isItemValid(@Nonnull ItemStack stack) {
+                return stack.isEmpty() || (super.isItemValid(stack) && CapabilityWolfArmor.isValidWolfArmor(stack.getItem()));
+            }
+
+            @Override
+            public void onSlotChanged() {
+                super.onSlotChanged();
+
+                ItemStack stack = this.getStack();
+                if(player instanceof EntityPlayerMP && !stack.isEmpty() && CapabilityWolfArmor.isValidWolfArmor(stack.getItem())) {
+                    CriteriaTriggers.EQUIP_WOLF_ARMOR.trigger((EntityPlayerMP)player, theWolf);
+                }
             }
         });
 
-        IWolfArmor wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
+        IWolfArmorCapability wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
 
         int x;
         int y;
-        if (wolfArmor.getHasChest()) {
+        if (wolfArmor != null && wolfArmor.getHasChest()) {
             for (y = 0; y < 2; y++) {
                 for (x = 0; x < 3; x++) {
                     this.addSlotToContainer(new Slot(wolfInventory, 1 + x + y * 3, 98 + x * 18, 18 + y * 18));
@@ -100,32 +110,36 @@ public class ContainerWolfInventory extends Container {
      * @return The item stack
      */
     @Override
-    @Nullable
+    @Nonnull
     public ItemStack transferStackInSlot(@Nonnull EntityPlayer player, int slot) {
-        ItemStack stack = null;
+        ItemStack stack = ItemStack.EMPTY;
+
         Slot inventorySlot = this.inventorySlots.get(slot);
 
         if (inventorySlot != null && inventorySlot.getHasStack()) {
             ItemStack stackInSlot = inventorySlot.getStack();
 
-            if (stackInSlot != null) {
+            if (!stackInSlot.isEmpty()) {
                 stack = stackInSlot.copy();
 
-                if (slot < this.wolfInventory.getSizeInventory()) {
-                    if (!this.mergeItemStack(stackInSlot, this.wolfInventory.getSizeInventory(), this.inventorySlots.size(), true)) {
-                        return null;
+                if(slot < this.wolfInventory.getSizeInventory()) {
+                    if(!this.mergeItemStack(stackInSlot, this.wolfInventory.getSizeInventory(), this.inventorySlots.size(), true)) {
+                        return ItemStack.EMPTY;
                     }
-                } else if (this.getSlot(0).isItemValid(stackInSlot) && !this.getSlot(0).getHasStack()) {
-                    if (!this.mergeItemStack(stackInSlot, 0, 2, false)) {
-                        return null;
+                }
+                else if(this.getSlot(0).isItemValid(stackInSlot) && !this.getSlot(0).getHasStack()) {
+                    if(!this.mergeItemStack(stackInSlot, 0, 2, false)) {
+                        return ItemStack.EMPTY;
                     }
-                } else if (this.wolfInventory.getSizeInventory() <= 1 || !this.mergeItemStack(stackInSlot, 1, this.wolfInventory.getSizeInventory(), false)) {
-                    return null;
+                }
+                else if(this.wolfInventory.getSizeInventory() <= 1 || !this.mergeItemStack(stackInSlot, 1, this.wolfInventory.getSizeInventory(), false)) {
+                    return ItemStack.EMPTY;
                 }
 
-                if (stackInSlot.stackSize == 0) {
-                    inventorySlot.putStack(null);
-                } else {
+                if(stackInSlot.getCount() == 0) {
+                    inventorySlot.putStack(ItemStack.EMPTY);
+                }
+                else {
                     inventorySlot.onSlotChanged();
                 }
             }
@@ -142,7 +156,7 @@ public class ContainerWolfInventory extends Container {
      */
     @Override
     public boolean canInteractWith(@Nonnull EntityPlayer player) {
-        return this.wolfInventory.isUseableByPlayer(player) &&
+        return this.wolfInventory.isUsableByPlayer(player) &&
                 !this.theWolf.isDead &&
                 this.theWolf.getDistanceToEntity(player) < 8;
     }

@@ -7,15 +7,14 @@ import net.minecraft.client.model.ModelWolf;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.lang.reflect.Field;
+
 /**
  * Models wolf armor overlays since the base ModelWolf does not support scaling
  */
 @SideOnly(Side.CLIENT)
 public class ModelWolfArmor extends ModelWolf {
     //region Fields
-
-    private static final String WOLF_TAIL_SRG = "field_78180_g";
-    private static final String WOLF_MANE_SRG = "field_78186_h";
 
     //endregion Fields
 
@@ -70,11 +69,20 @@ public class ModelWolfArmor extends ModelWolf {
         wolfTail.setRotationPoint(-1, 12, 8);
 
         try {
-            ReflectionCache.getField(ModelWolf.class, WOLF_TAIL_SRG, "wolfTail").set(this, wolfTail);
-            ReflectionCache.getField(ModelWolf.class, WOLF_MANE_SRG, "wolfMane").set(this, wolfMane);
+            Field wolfTailField = ReflectionCache.getField(ModelWolf.class, "wolfTail", "field_78180_g");
+            if (wolfTailField == null) {
+                throw new RuntimeException("[MODEL INIT] Field wolfTail / field_78180_g not found", ReflectionCache.getLastError());
+            }
+            wolfTailField.set(this, wolfTail);
+
+            Field wolfManeField = ReflectionCache.getField(ModelWolf.class, "wolfMane", "field_78186_h");
+            if(wolfManeField == null) {
+                throw new RuntimeException("[MODEL INIT] Field wolfMane / field_78186_h not found", ReflectionCache.getLastError());
+            }
+            wolfManeField.set(this, wolfMane);
         } catch (IllegalAccessException ex) {
             WolfArmorMod.getLogger().fatal(ex);
-            throw new RuntimeException("Failed to initialize non-public members in ModelWolfArmor.reflectAdditionalMembers", ex);
+            throw new RuntimeException("[MODEL INIT] Failed to initialize non-public members in ModelWolf", ex);
         }
     }
 

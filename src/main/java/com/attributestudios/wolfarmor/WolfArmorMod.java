@@ -1,12 +1,12 @@
 package com.attributestudios.wolfarmor;
 
-import com.attributestudios.wolfarmor.common.CommonProxy;
+import com.attributestudios.wolfarmor.api.util.Definitions;
+import com.attributestudios.wolfarmor.api.util.IProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 
 import javax.annotation.Nonnull;
 
@@ -14,24 +14,20 @@ import javax.annotation.Nonnull;
  * WolfArmorMod main class
  */
 @SuppressWarnings("WeakerAccess")
-@Mod(modid = WolfArmorMod.MOD_ID,
-        name = WolfArmorMod.MOD_NAME,
-        version = WolfArmorMod.MOD_VERSION,
+@Mod(modid = Definitions.MOD_ID,
+        name = Definitions.MOD_NAME,
+        version = Definitions.MOD_VERSION,
         guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory",
         dependencies = "after: SophisticatedWolves")
 public class WolfArmorMod {
     //region Fields
 
-    public static final String MOD_NAME = "Wolf Armor and Storage";
-    public static final String MOD_ID = "wolfarmor";
-    public static final String MOD_VERSION = "1.3.1";
-
-    @Mod.Instance(WolfArmorMod.MOD_ID)
-    public static WolfArmorMod instance;
-
     @SidedProxy(clientSide = "com.attributestudios.wolfarmor.client.ClientProxy",
-            serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
-    public static CommonProxy proxy;
+                serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
+    public static IProxy proxy;
+
+    @Mod.Instance(Definitions.MOD_ID)
+    private static WolfArmorMod instance;
 
     private static LogHelper logger;
 
@@ -40,6 +36,14 @@ public class WolfArmorMod {
     //endregion Fields
 
     //region Public / Protected Methods
+
+    public static IProxy getProxy() {
+        return proxy;
+    }
+
+    public static WolfArmorMod getInstance() {
+        return instance;
+    }
 
     /**
      * Handles pre-initialization tasks
@@ -72,11 +76,6 @@ public class WolfArmorMod {
     @Mod.EventHandler
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
         proxy.postInit(postInitializationEvent);
-    }
-
-    @Mod.EventHandler
-    public void serverAboutToStart(@Nonnull FMLServerAboutToStartEvent serverAboutToStartEvent) {
-        proxy.serverAboutToStart();
     }
 
     //endregion Public / Protected Methods

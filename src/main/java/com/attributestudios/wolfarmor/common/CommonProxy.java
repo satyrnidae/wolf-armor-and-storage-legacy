@@ -1,195 +1,109 @@
 package com.attributestudios.wolfarmor.common;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.api.util.IProxy;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import com.attributestudios.wolfarmor.common.loot.LootHandler;
 import com.attributestudios.wolfarmor.common.network.WolfArmorGuiHandler;
-import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
-import com.attributestudios.wolfarmor.event.WolfArmorEntityEventHandler;
-import com.attributestudios.wolfarmor.event.WolfArmorPlayerEventHandler;
-import com.attributestudios.wolfarmor.item.WolfArmorItems;
-import com.attributestudios.wolfarmor.item.crafting.RecipeWolfArmorDyes;
-import com.attributestudios.wolfarmor.item.crafting.WolfArmorRecipes;
-import com.google.common.collect.Maps;
-import net.minecraft.util.ResourceLocation;
+import com.attributestudios.wolfarmor.common.network.PacketHandler;
+import com.attributestudios.wolfarmor.event.EntityEventHandler;
+import com.attributestudios.wolfarmor.event.PlayerEventHandler;
+import com.attributestudios.wolfarmor.event.RegistrationEventHandler;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.ICriterionTrigger;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IThreadListener;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
-/**
- * Handles mod initialization and common methods for client and server side interactions.
- */
-public class CommonProxy {
-    //region Fields
+public class CommonProxy implements IProxy {
 
-    private static final Map<String, ResourceLocation> CACHED_RESOURCE_LOCATIONS = Maps.newHashMap();
-
-    //endregion Fields
-
-    //region Public / Protected Methods
-
-    //region Pre-Initialization
-
-    /**
-     * Handles pre-initialization tasks
-     *
-     * @param preInitializationEvent The pre-initialization event
-     */
+    @Override
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
-        registerItems();
-        registerItemRenderers(preInitializationEvent);
+        registerEventListeners();
+        registerCriteriaTriggers();
     }
 
-    /**
-     * Registers entity renderers.  This should not do anything in a common proxy.
-     */
-    protected void registerEntityRenderingHandlers() {
-        // does nothing server-side
-    }
+    @Override
+    public void registerEntityRenderingHandlers() {}
 
-    /**
-     * Registers all items for this mod
-     */
-    @SuppressWarnings("WeakerAccess")
-    protected void registerItems() {
-        WolfArmorItems.init();
-    }
+    @Override
+    public void registerItemRenders(@Nonnull FMLInitializationEvent initializationEvent) {}
 
-    /**
-     * Registers all item renderers for this mod
-     *
-     * @param preInitializationEvent the initialization event
-     */
-    protected void registerItemRenderers(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
-
-    }
-
-    //endregion Pre-Initialization
-
-    //region Initialization
-
-    /**
-     * Handles initialization tasks
-     *
-     * @param initializationEvent The initialization event
-     */
-    @SuppressWarnings("deprecation")
+    @Override
     public void init(@Nonnull FMLInitializationEvent initializationEvent) {
-        this.registerItemColorHandlers(initializationEvent);
-        this.registerRecipes();
-        this.registerEventListeners();
-        // include for world upgrade
-        this.registerEntities();
-        // Register capability correctly to avoid WOLF_ARMOR be null
-        CapabilityWolfArmor.RegisterCapability();
+        registerItemRenders(initializationEvent);
+        registerItemColorHandlers(initializationEvent);
+        registerCapabilities();
     }
 
-    /**
-     * Registers item colorization handlers
-     *
-     * @param initializationEvent The initialization event
-     */
-    protected void registerItemColorHandlers(@Nonnull FMLInitializationEvent initializationEvent) {
+    @Override
+    public void registerItemColorHandlers(@Nonnull FMLInitializationEvent initializationEvent) {}
+
+    @Override
+    public void registerCriteriaTriggers() {
+        Method method = ReflectionCache.getMethod(CriteriaTriggers.class, "register", "func_192118_a", ICriterionTrigger.class);
+
+        if(method == null) {
+            throw new RuntimeException("Failed to register criteria: method not found", ReflectionCache.getLastError());
+        }
+
+        try {
+            method.invoke(null, com.attributestudios.wolfarmor.advancements.CriteriaTriggers.EQUIP_WOLF_ARMOR);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Failed to register criteria: Unable to access method.", e);
+        }
+    }
+    @Override
+    public void registerPackets() {
+        PacketHandler.initialize();
     }
 
-    /**
-     * Registers all custom mod entities.
-     */
-    @SuppressWarnings({"WeakerAccess", "DeprecatedIsStillUsed", "deprecation"})
-    @Deprecated
-    protected void registerEntities() {
-        EntityRegistry.registerModEntity(EntityWolfArmored.class, "Wolf", 0, WolfArmorMod.instance, 80, 3, false);
+    @Override
+    public void registerLootTables() {
+        LootHandler.init();
     }
 
-    /**
-     * Registers all crafting recipes for this mod
-     */
-    @SuppressWarnings("WeakerAccess")
-    protected void registerRecipes() {
-        WolfArmorRecipes.init();
-        RecipeSorter.register(WolfArmorMod.MOD_ID + ":WolfArmorDyes", RecipeWolfArmorDyes.class, RecipeSorter.Category.SHAPELESS, "");
+    @Override
+    public void registerEventListeners() {
+        MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
+        MinecraftForge.EVENT_BUS.register(new PlayerEventHandler());
+        MinecraftForge.EVENT_BUS.register(new RegistrationEventHandler());
     }
 
-    /**
-     * Registers all event listeners for this mod.
-     */
-    @SuppressWarnings("WeakerAccess")
-    protected void registerEventListeners() {
-        MinecraftForge.EVENT_BUS.register(new WolfArmorEntityEventHandler());
-        MinecraftForge.EVENT_BUS.register(new WolfArmorPlayerEventHandler());
-    }
-
-    //endregion Initialization
-
-    //region Post-Initialization
-
-    /**
-     * Handles post-initialization tasks
-     *
-     * @param postInitializationEvent The post-initialization event.
-     */
+    @Override
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
-        this.registerGuiHandlers(postInitializationEvent);
+        this.registerGuiHandlers();
+        this.registerPackets();
+        this.registerLootTables();
+        this.registerEntityRenderingHandlers();
     }
 
-    private boolean IsRenderSetted = false;
-
-    public void serverAboutToStart() {
-        if (!IsRenderSetted) {
-            IsRenderSetted = true;
-            this.registerEntityRenderingHandlers();
-        }
+    @Override
+    public void registerGuiHandlers() {
+        NetworkRegistry.INSTANCE.registerGuiHandler(WolfArmorMod.getInstance(), new WolfArmorGuiHandler());
     }
 
-    /**
-     * Registers all GUI handlers for the mod.
-     *
-     * @param postInitializationEvent The post-initialization event.
-     */
-    private void registerGuiHandlers(@SuppressWarnings("unused") @Nonnull FMLPostInitializationEvent postInitializationEvent) {
-        NetworkRegistry.INSTANCE.registerGuiHandler(WolfArmorMod.instance, new WolfArmorGuiHandler());
+    @Override
+    public void registerCapabilities() {
+        CapabilityWolfArmor.register();
     }
 
-    //endregion Post-Initialization
-
-    //endregion Public / Protected Methods
-
-    //region Accessors / Mutators
-
-    //TODO: Common lib / api implementation
-
-    /**
-     * Gets or creates and caches a resource location for the given path.
-     *
-     * @param path The path
-     * @return A resource location for the path
-     */
-    @SuppressWarnings("unused")
-    public ResourceLocation getResourceLocation(String path) {
-        ResourceLocation resourceLocation = CACHED_RESOURCE_LOCATIONS.get(path);
-
-        if (resourceLocation == null) {
-            int index = path.indexOf(':');
-            String domain = WolfArmorMod.MOD_ID;
-
-            if (index > -1) {
-                domain = path.substring(0, index);
-                path = path.substring(index);
-            }
-
-            resourceLocation = new ResourceLocation(domain, path);
-            CACHED_RESOURCE_LOCATIONS.put(path, resourceLocation);
-        }
-
-        return resourceLocation;
+	@Override
+	public IThreadListener getThreadFromContext(MessageContext context) {
+		return context.getServerHandler().player.getServer();
     }
-
-    //endregion Accessors / Mutators
-
+    
+    @Override
+    public EntityPlayer getPlayerFromContext(MessageContext context) {
+        return context.getServerHandler().player;
+    }
 }

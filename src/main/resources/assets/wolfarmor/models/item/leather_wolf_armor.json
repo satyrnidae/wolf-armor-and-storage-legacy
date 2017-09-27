@@ -1,5 +1,5 @@
 {
-  "parent":"item/generated",
+  "parent":"minecraft:item/generated",
   "textures": {
     "layer0":"wolfarmor:items/leather_wolf_armor",
     "layer1":"wolfarmor:items/leather_wolf_armor_overlay"

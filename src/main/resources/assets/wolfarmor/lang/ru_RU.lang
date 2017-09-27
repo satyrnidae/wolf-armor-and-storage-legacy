@@ -1,12 +1,38 @@
+#TODO: This language file must be checked by a native or formally capable Russian language speaker
+#TODO: The latest version of this file contains many entries which were automatically translated with Google Translate
+
 item.wolfarmor.leatherWolfArmor.name=Кожаная волчья броня
 item.wolfarmor.chainWolfArmor.name=Кольчужная волчья броня
 item.wolfarmor.ironWolfArmor.name=Железная волчья броня
 item.wolfarmor.goldWolfArmor.name=Золотая волчья броня
 item.wolfarmor.diamondWolfArmor.name=Алмазная волчья броня
 
-container.wolfarmor.wolf=%1$s
+config.wolfarmor.general.enableChests=Включить рюкзаки волка
+config.wolfarmor.general.enableChests.comment=Включает или отключает рюкзаки волка
+config.wolfarmor.client.enableWolfArmorRender=Нарисуйте броню волка
+config.wolfarmor.client.enableWolfArmorRender.comment=Включает или отключает визуализацию модели брони волка
+config.wolfarmor.client.enableWolfChestRender=Рисовать рюкзаки волка
+config.wolfarmor.client.enableWolfChestRender.comment=Включает или отключает визуализацию рюкзака волка
+config.wolfarmor.client.enableWolfArmorDisplay=Покажите уровень брони волка в инвентаре
+config.wolfarmor.client.enableWolfArmorDisplay.comment=Включает или отключает отображение текущего уровня брони волка в пользовательском интерфейсе
+config.wolfarmor.client.enableWolfHealthDisplay=Покажите здоровье волка в инвентаре
+config.wolfarmor.client.enableWolfHealthDisplay.comment=Включает или отключает отображение состояния здоровья волка на экране инвентаря
+config.wolfarmor.behavior.enableHowlingUntamedWolves=Включить воющий волк
+config.wolfarmor.behavior.enableHowlingUntamedWolves.comment=Управляет вокализацией волка в полнолуние
+config.wolfarmor.behavior.shouldWolvesEatWhenDamaged=Включить автоматически исцеляющие волки
+config.wolfarmor.behavior.shouldWolvesEatWhenDamaged.comment=Если это разрешено, волки автоматически съедят любое мясо, которое хранится в их рюкзаке.
+
+advancements.adventure.armor_up.title=Защитите своего волка
+advancements.adventure.armor_up.description=Оборудуйте своего волка некоторой доспехов
+
+inventory.wolfarmor.wolf=%1$s
 
 gui.wolfarmor.config=Мод "Wolf Armor"
 gui.wolfarmor.configSubtitle=Конфигурационные параметры
+gui.wolfarmor.config.category.general=Общие настройки
+gui.wolfarmor.config.category.client=Настройки только для клиента
+gui.wolfarmor.config.category.client.render=Настройки рендеринга
+gui.wolfarmor.config.category.client.gui=Настройки пользовательского интерфейса
+gui.wolfarmor.config.category.behavior=Поведение волка
 
-entity.wolfarmor.Wolf.name=Волк
+entity.wolfarmor.wolf_armored.name=Волк

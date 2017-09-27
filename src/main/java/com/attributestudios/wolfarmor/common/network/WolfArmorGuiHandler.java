@@ -2,7 +2,7 @@ package com.attributestudios.wolfarmor.common.network;
 
 import com.attributestudios.wolfarmor.client.gui.GuiWolfInventory;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
-import com.attributestudios.wolfarmor.common.capabilities.IWolfArmor;
+import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import com.attributestudios.wolfarmor.common.inventory.ContainerWolfInventory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityWolf;
@@ -40,11 +40,12 @@ public class WolfArmorGuiHandler implements IGuiHandler {
                                       int z) {
         Entity entity = world.getEntityByID(ID);
 
-        if (entity != null && entity.hasCapability(CapabilityWolfArmor.WOLF_ARMOR, null)) {
-            IWolfArmor wolfArmor = entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
-            return new ContainerWolfInventory(player.inventory, wolfArmor.getInventory(), (EntityWolf) entity, player);
+        if (entity != null && entity.hasCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null)) {
+            IWolfArmorCapability wolfArmor = entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+            if (wolfArmor != null) {
+                return new ContainerWolfInventory(player.inventory, wolfArmor.getInventory(), (EntityWolf) entity, player);
+            }
         }
-
         return null;
     }
 
@@ -71,11 +72,12 @@ public class WolfArmorGuiHandler implements IGuiHandler {
                                       int z) {
         Entity entity = world.getEntityByID(ID);
 
-        if (entity != null && entity.hasCapability(CapabilityWolfArmor.WOLF_ARMOR, null)) {
-            IWolfArmor wolfArmor = entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR, null);
-            return new GuiWolfInventory(player.inventory, wolfArmor.getInventory(), (EntityWolf) entity, player);
+        if (entity != null && entity.hasCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null)) {
+            IWolfArmorCapability wolfArmor = entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+            if (wolfArmor != null) {
+                return new GuiWolfInventory(player.inventory, wolfArmor.getInventory(), (EntityWolf) entity, player);
+            }
         }
-
         return null;
     }
 
