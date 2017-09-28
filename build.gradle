@@ -16,20 +16,36 @@ buildscript {
 }
 
 apply plugin: 'forge'
+//Only edit below this line, the above code adds and enables the nessasary things for Forge to be setup.
 
 def versioningFile = file('versioning.properties')
-def major = 0
-def minor = 0
-def revision = 0
-def buildNum = 0
+def mcversion = '0.0'
+def majormod = '0'
+def majorapi = '0'
+def minor = '0'
+def patch = 0
+def extended = ''
 
 if(versioningFile.canRead()) {
 	Properties versionProperties = new Properties()
 	versionProperties.load(new FileInputStream(versioningFile))
-	major = versionProperties['major'].toInteger()
-	minor = versionProperties['minor'].toInteger()
-	revision = versionProperties['revision'].toInteger()
-	buildNum = versionProperties['build'].toInteger()
+	mcversion = versionProperties['MCVERSION'].toString()
+    majormod = versionProperties['MAJORMOD'].toString()
+    majorapi = versionProperties['MAJORAPI'].toString()
+    minor = versionProperties['MINOR'].toString()
+    patch = versionProperties['PATCH'].toInteger()
+    extended = versionProperties['EXTENDED'].toString()
+}
+sourceSets.api {
+    java {
+        srcDirs 'api/'
+    }
+}
+sourceSets.main {
+    java {
+        srcDirs 'api/'
+        srcDirs 'src/main/java'
+    }
 }
 
 build {
@@ -37,11 +53,11 @@ build {
 		if (versioningFile.canRead()) {
 			Properties versionProps = new Properties()
 			versionProps.load(new FileInputStream(versioningFile))
-			buildNum = versionProps['build'].toInteger() + 1
-			versionProps['build'] = buildNum.toString()
+			patch = versionProps['PATCH'].toInteger() + 1
+			versionProps['PATCH'] = patch.toString()
 			versionProps.store(versioningFile.newWriter(), null)
 		} else {
-			throw new GradleException("Could not read version.properties!")
+			throw new GradleException("Could not read versioning.properties!")
 		}
 	}
 	
@@ -56,15 +72,22 @@ build {
     return 0
 }
 
-version = major + "." + minor + "." + revision + "." + buildNum
+version = mcversion + "-" + majormod + "." + majorapi + "." + minor + "." + patch + extended
 logger.quiet("Current version is " + version)
 group= "com.attributestudios.wolfarmor" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 //noinspection GroovyUnusedAssignment
 archivesBaseName = "wolfarmor"
 
+//noinspection GroovyUnusedAssignment
+sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.8"
+}
+
 minecraft {
-    version = "1.7.10-10.13.4.1614-1.7.10"
+    version = "1.7.10-10.13.4.1558-1.7.10"
     runDir = "run"
+    mappings = "stable_12"
 }
 
 dependencies {
@@ -104,16 +127,6 @@ processResources {
 	// copy LICENSE
     from('/') {
         include 'LICENSE'
+        include 'CREDITS'
     }
 }
-
-idea {
-	module { 
-		inheritOutputDirs = true 
-	}
-}
-
-sourceSets {
-    main { output.resourcesDir = output.classesDir }
-}
-
