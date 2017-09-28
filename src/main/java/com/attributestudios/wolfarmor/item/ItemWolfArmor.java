@@ -62,7 +62,7 @@ public class ItemWolfArmor extends Item {
         this.material = material;
         this.maxStackSize = 1;
         this.canRepair = true;
-        this.setMaxDamage(material.getDurability());
+        this.setMaxDurability(material.getDurability());
 
         this.setCreativeTab(CreativeTabs.tabMisc);
         BlockDispenser.dispenseBehaviorRegistry.putObject(this, DISPENSE_ITEM);
@@ -125,7 +125,7 @@ public class ItemWolfArmor extends Item {
      */
     @Nullable
     private static ItemStack dispenseWolfArmor(@Nonnull IBlockSource source, @Nonnull ItemStack stack) {
-        EnumFacing direction = BlockDispenser.func_149937_b(source.getBlockMetadata());
+        EnumFacing direction = BlockDispenser.getFacingDirection(source.getBlockMetadata());
         int xDispenseLoc = source.getXInt() + direction.getFrontOffsetX();
         int yDispenseLoc = source.getYInt() + direction.getFrontOffsetY();
         int zDispenseLoc = source.getZInt() + direction.getFrontOffsetZ();

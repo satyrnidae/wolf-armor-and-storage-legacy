@@ -54,7 +54,7 @@ public class WolfArmorPlayerEventHandler {
             if(stack != null)
             {
                 int metadata = event.world.getBlockMetadata(event.x, event.y, event.z);
-                int fillLevel = BlockCauldron.func_150027_b(metadata);
+                int fillLevel = BlockCauldron.getPowerFromMeta(metadata);
 
                 if(fillLevel > 0 && stack.getItem() instanceof ItemWolfArmor)
                 {
@@ -64,7 +64,7 @@ public class WolfArmorPlayerEventHandler {
                     {
                         itemWolfArmor.removeColor(stack);
                         event.world.setBlockMetadataWithNotify(event.x, event.y, event.z, fillLevel - 1, 2);
-                        event.world.func_147453_f(event.x, event.y, event.z, Blocks.cauldron);
+                        event.world.updateNeighborsAboutBlockChange(event.x, event.y, event.z, Blocks.cauldron);
                         event.setResult(Event.Result.ALLOW);
                         event.setCanceled(true);
                     }

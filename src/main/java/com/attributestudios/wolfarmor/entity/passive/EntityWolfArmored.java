@@ -7,6 +7,7 @@ import com.attributestudios.wolfarmor.item.WolfArmorItems;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -36,7 +37,7 @@ public class EntityWolfArmored extends EntityWolf implements IInvBasic {
     
     //region Fields
 
-    private AnimalChest inventory;
+    public AnimalChest inventory;
 
     private static final String NBT_TAG_HAS_CHEST  = "hasChest";
     private static final String NBT_TAG_SLOT       = "slot";
@@ -129,9 +130,9 @@ public class EntityWolfArmored extends EntityWolf implements IInvBasic {
             NBTTagList inventoryItemsTagList = new NBTTagList();
 
             for (byte slotIndex = 0;
-                 slotIndex < this.getInventory().getSizeInventory();
+                 slotIndex < this.inventory.getSizeInventory();
                  slotIndex++) {
-                ItemStack stackInSlot = this.getInventory().getStackInSlot(slotIndex);
+                ItemStack stackInSlot = this.inventory.getStackInSlot(slotIndex);
 
                 if (stackInSlot != null) {
                     NBTTagCompound slotTag = new NBTTagCompound();
@@ -444,7 +445,7 @@ public class EntityWolfArmored extends EntityWolf implements IInvBasic {
      * @return <tt>true</tt> if the player successfully interacted with this entity, <tt>false</tt> if not
      */
     private boolean spawnEggInteract(@Nonnull EntityPlayer player, @Nonnull ItemStack stack) {
-        Class clazz = EntityList.getClassFromID(stack.getItemDamage());
+        Class clazz = EntityList.getClassFromID(stack.getMetadata());
 
         if(clazz != null && (clazz == EntityWolf.class || clazz == EntityWolfArmored.class)) {
             EntityAgeable child = this.createChild(this);
@@ -522,16 +523,6 @@ public class EntityWolfArmored extends EntityWolf implements IInvBasic {
         {
             this.dataWatcher.updateObject(DATA_WATCHER_HAS_ARMOR, (byte)(hasArmor & -3));
         }
-    }
-
-    /**
-     * Gets the entity's inventory
-     *
-     * @return The entity's inventory
-     */
-    @Nonnull
-    public IInventory getInventory() {
-        return this.inventory;
     }
 
     /**

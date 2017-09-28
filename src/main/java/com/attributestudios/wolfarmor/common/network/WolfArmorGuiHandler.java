@@ -40,7 +40,7 @@ public class WolfArmorGuiHandler implements IGuiHandler {
 
         if(entity != null && entity instanceof EntityWolfArmored) {
             EntityWolfArmored wolfArmored = (EntityWolfArmored)entity;
-            return new ContainerWolfInventory(player.inventory, wolfArmored.getInventory(), wolfArmored);
+            return new ContainerWolfInventory(player.inventory, wolfArmored.inventory, wolfArmored);
         }
 
         return null;
@@ -71,7 +71,7 @@ public class WolfArmorGuiHandler implements IGuiHandler {
 
         if(entity != null && entity instanceof EntityWolfArmored) {
             EntityWolfArmored wolfArmored = (EntityWolfArmored)entity;
-            return new GuiWolfInventory(player.inventory, wolfArmored.getInventory(), wolfArmored);
+            return new GuiWolfInventory(player.inventory, wolfArmored.inventory, wolfArmored);
         }
 
         return null;

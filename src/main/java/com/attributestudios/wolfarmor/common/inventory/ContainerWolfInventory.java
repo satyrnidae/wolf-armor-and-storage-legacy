@@ -35,7 +35,7 @@ public class ContainerWolfInventory extends Container {
         this.wolfInventory = wolfInventory;
         this.theWolf = theWolf;
 
-        this.wolfInventory.openInventory();
+        this.wolfInventory.openChest();
 
         this.addSlotToContainer(new Slot(wolfInventory, 0, 8, 18) {
             /**

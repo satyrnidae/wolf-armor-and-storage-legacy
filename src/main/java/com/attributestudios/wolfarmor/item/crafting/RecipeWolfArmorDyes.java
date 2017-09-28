@@ -80,8 +80,8 @@ public class RecipeWolfArmorDyes implements IRecipe {
                 ArrayList<ItemStack> ores = OreDictionary.getOres(oreName);
 
                 for (ItemStack oreStack : ores) {
-                    if (oreStack.getItem() == Items.dye && oreStack.getItemDamage() != Short.MAX_VALUE) { // a dye but not just any dye
-                        dyeEquivalent = oreStack.getItemDamage();
+                    if (oreStack.getItem() == Items.dye && oreStack.getMetadata() != Short.MAX_VALUE) { // a dye but not just any dye
+                        dyeEquivalent = oreStack.getMetadata();
                         break;
                     }
                 }

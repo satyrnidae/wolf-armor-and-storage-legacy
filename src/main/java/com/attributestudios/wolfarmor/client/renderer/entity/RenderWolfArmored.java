@@ -112,7 +112,7 @@ public class RenderWolfArmored extends RenderWolf {
      * @param model The model
      */
     public void setupModelAttributes(@Nonnull EntityLivingBase entityLivingBase, float partialTicks, ModelBase model) {
-        model.onGround = this.renderSwingProgress(entityLivingBase, partialTicks);
+        model.swingProgress = this.getSwingProgress(entityLivingBase, partialTicks);
         model.isRiding = entityLivingBase.isRiding();
         model.isChild = entityLivingBase.isChild();
     }

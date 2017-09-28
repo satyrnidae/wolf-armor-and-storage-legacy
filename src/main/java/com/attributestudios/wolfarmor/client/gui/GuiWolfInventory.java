@@ -68,10 +68,10 @@ public class GuiWolfInventory extends GuiContainer {
                 ? this.theWolf.getCustomNameTag()
                 : I18n.format("entity.wolfarmor.Wolf.name");
 
-        this.fontRendererObj.drawString(this.wolfInventory.hasCustomInventoryName()
+        this.fontRendererObj.drawString(this.wolfInventory.isCustomInventoryName()
                 ? this.wolfInventory.getInventoryName()
                 : I18n.format(this.wolfInventory.getInventoryName(), wolfName), 8, 6, 0x404040);
-        this.fontRendererObj.drawString(this.playerInventory.hasCustomInventoryName()
+        this.fontRendererObj.drawString(this.playerInventory.isCustomInventoryName()
                 ? this.playerInventory.getInventoryName()
                 : I18n.format(this.playerInventory.getInventoryName()), 8, this.ySize - 94, 0x404040);
 
@@ -116,7 +116,7 @@ public class GuiWolfInventory extends GuiContainer {
                 this.drawTexturedModalRect(positionX + 97, positionY + 17, this.xSize, 0, 54, 36);
             }
 
-            GuiInventory.func_147046_a(positionX + 51, positionY + 60, 30, (float) (positionX + 51) - this.screenPositionX,
+            GuiInventory.drawEntityOnScreen(positionX + 51, positionY + 60, 30, (float) (positionX + 51) - this.screenPositionX,
                                        (float) (positionY - 50) - this.screenPositionY, this.theWolf);
 
         } GL11.glPopMatrix();
