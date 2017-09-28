@@ -29,9 +29,9 @@ temp/
 bin/
 
 # IntelliJ
-wolfarmor*.iws
-wolfarmor*.ipr
-wolfarmor*.iml
+*.iws
+*.ipr
+*.iml
 .idea/
 
 #Visual Studio
@@ -43,14 +43,12 @@ bin/
 
 #eclipse
 .settings/
-wolfarmor_Client.launch
-wolfarmor_Server.launch
+*.launch
 .classpath
 .project
 
 # Misc
 CREDITS-fml.txt
-forge-1.11-13.19.1.2189-changelog.txt
 LICENSE-new.txt
 MinecraftForge-Credits.txt
 Paulscode IBXM Library License.txt
