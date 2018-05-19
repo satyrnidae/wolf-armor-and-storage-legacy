@@ -47,6 +47,9 @@ bin/
 .classpath
 .project
 
+#branch Files
+branch/
+
 # Misc
 CREDITS-fml.txt
 LICENSE-new.txt
