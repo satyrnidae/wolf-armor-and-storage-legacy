@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
         name = Definitions.MOD_NAME,
         version = Definitions.MOD_VERSION,
         guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory",
-        dependencies = "after: SophisticatedWolves")
+        dependencies = "after: sophisticatedwolves")
 public class WolfArmorMod {
     //region Fields
 
