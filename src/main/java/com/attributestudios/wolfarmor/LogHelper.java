@@ -3,7 +3,6 @@ package com.attributestudios.wolfarmor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LoggingException;
-import scala.reflect.internal.Trees;
 
 import javax.annotation.Nonnull;
 
