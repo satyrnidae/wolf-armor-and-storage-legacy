@@ -1,6 +1,5 @@
 package com.attributestudios.wolfarmor.client;
 
-import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.item.Items;
 import com.attributestudios.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
 import com.attributestudios.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
@@ -10,18 +9,14 @@ import com.attributestudios.wolfarmor.api.util.annotation.DynamicallyUsed;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.IItemColor;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderWolf;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
@@ -46,25 +41,6 @@ public class ClientProxy extends CommonProxy {
 
         renderWolf.addLayer(new LayerWolfArmor(renderWolf));
         renderWolf.addLayer(new LayerWolfBackpack(renderWolf));
-
-        if (Loader.isModLoaded("SophisticatedWolves")) {
-            RenderLiving sRender = null;
-            try {
-                Class clazz = Class.forName("sophisticated_wolves.entity.EntitySophisticatedWolf");
-                if(EntityWolf.class.isAssignableFrom(clazz)) {
-                    Render<? extends Entity> renderer = renderManager.entityRenderMap.get(clazz);
-                    if(renderer != null && RenderLiving.class.isAssignableFrom(renderer.getClass())) {
-                        sRender = (RenderLiving)renderer;
-                    }
-                }
-            } catch (ClassNotFoundException e) {
-                WolfArmorMod.getLogger().warning(e);
-            }
-            if (sRender != null) {
-                sRender.addLayer(new LayerWolfArmor(sRender));
-                sRender.addLayer(new LayerWolfBackpack(sRender));
-            }
-        }
     }
 
     /**

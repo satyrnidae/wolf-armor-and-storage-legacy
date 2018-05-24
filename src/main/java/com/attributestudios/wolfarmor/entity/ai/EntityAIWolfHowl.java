@@ -8,18 +8,32 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-
+/**
+ * Allows wolves to howl at the moon
+ */
 public class EntityAIWolfHowl extends EntityAIBase {
     private final EntityWolf entity;
     private final Random random;
     private int soundTimer;
 
+    /**
+     * Initializes a new wolf howl AI instance
+     * @param entity
+     */
     public EntityAIWolfHowl(EntityWolf entity) {
         this.entity = entity;
         this.random = entity.getRNG();
-        soundTimer = random.nextInt(600) + random.nextInt(120);
+        soundTimer = random.nextInt(600) + random.nextInt(120) + random.nextInt(120) + random.nextInt(120);
     }
 
+    /**
+     * The AI will be allowed to execute if the following conditions are met:
+     * - Howling wild wolves is enabled
+     * - The wolf is not tamed
+     * - The current moon phase is 0 (full moon)
+     * - It is not daytime
+     * @return <tt>true</tt> if the above conditions are met.
+     */
     @Override
     public boolean shouldExecute() {
         if (!WolfArmorMod.getConfiguration().getAreHowlingUntamedWolvesEnabled()) {
@@ -27,21 +41,31 @@ public class EntityAIWolfHowl extends EntityAIBase {
         }
 
         World entityWorld = entity.getEntityWorld();
-        int phase = entityWorld.getMoonPhase();
+        int phase = entityWorld.provider.getMoonPhase(entityWorld.getWorldTime());
 
         return !entity.isTamed() && phase == 0 && !entityWorld.isDaytime();
     }
 
+    /**
+     * Plays the wolf howling sound
+     */
     @Override
     public void startExecuting() {
-        this.entity.playSound(SoundEvents.ENTITY_WOLF_HOWL, 1, 0.75f + random.nextFloat() * (entity.isChild() ? 2 : 1));
+        this.entity.playSound(SoundEvents.ENTITY_WOLF_HOWL, 5.0F, 0.75f + (random.nextFloat() * (entity.isChild() ? 1.25F : 0.25F)));
     }
 
+    /**
+     * The task executes until the timer runs out, then resets.
+     * @return <tt>true</tt> if the sound timer is greater than 0.
+     */
     @Override
     public boolean shouldContinueExecuting() {
         return soundTimer > 0;
     }
 
+    /**
+     * While the sound timer is greater than zero, the task subtracts one from the value each tick
+     */
     @Override
     public void updateTask() {
         if (soundTimer > 0) {
@@ -49,7 +73,11 @@ public class EntityAIWolfHowl extends EntityAIBase {
         }
     }
 
+    /**
+     * Resets the sound timer to a random interval of at least 600 ticks
+     */
+    @Override
     public void resetTask() {
-        soundTimer = 600 + random.nextInt(600);
+        soundTimer = 600 + random.nextInt(600)  + random.nextInt(120) + random.nextInt(120) + random.nextInt(120);
     }
 }
