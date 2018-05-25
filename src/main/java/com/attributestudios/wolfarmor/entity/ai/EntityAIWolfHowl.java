@@ -18,12 +18,11 @@ public class EntityAIWolfHowl extends EntityAIBase {
 
     /**
      * Initializes a new wolf howl AI instance
-     * @param entity
+     * @param entity The wolf entity.
      */
     public EntityAIWolfHowl(EntityWolf entity) {
         this.entity = entity;
         this.random = entity.getRNG();
-        soundTimer = random.nextInt(600) + random.nextInt(120) + random.nextInt(120) + random.nextInt(120);
     }
 
     /**
@@ -47,11 +46,11 @@ public class EntityAIWolfHowl extends EntityAIBase {
     }
 
     /**
-     * Plays the wolf howling sound
+     * Sets the time to the next wolf howl.
      */
     @Override
     public void startExecuting() {
-        this.entity.playSound(SoundEvents.ENTITY_WOLF_HOWL, 5.0F, 0.75f + (random.nextFloat() * (entity.isChild() ? 1.25F : 0.25F)));
+        soundTimer = 600 + random.nextInt(600)  + random.nextInt(120) + random.nextInt(120) + random.nextInt(120);
     }
 
     /**
@@ -74,10 +73,10 @@ public class EntityAIWolfHowl extends EntityAIBase {
     }
 
     /**
-     * Resets the sound timer to a random interval of at least 600 ticks
+     * Plays the wolf howl sound.
      */
     @Override
     public void resetTask() {
-        soundTimer = 600 + random.nextInt(600)  + random.nextInt(120) + random.nextInt(120) + random.nextInt(120);
+        this.entity.playSound(SoundEvents.ENTITY_WOLF_HOWL, 5.0F, 0.75f + (random.nextFloat() * (entity.isChild() ? 1.25F : 0.25F)));
     }
 }

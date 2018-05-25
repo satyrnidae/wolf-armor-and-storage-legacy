@@ -1,6 +1,5 @@
 package com.attributestudios.wolfarmor.client.gui.config;
 
-import com.attributestudios.wolfarmor.api.util.annotation.DynamicallyUsed;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.IModGuiFactory;
@@ -15,7 +14,6 @@ import java.util.Set;
  * GUI Factory for the WolfArmor Mod
  */
 @SideOnly(Side.CLIENT)
-@DynamicallyUsed
 public class WolfArmorGuiFactory implements IModGuiFactory {
     //region Public / Protected Methods
 

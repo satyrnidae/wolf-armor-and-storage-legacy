@@ -1,6 +1,6 @@
 package com.attributestudios.wolfarmor;
 
-import com.attributestudios.wolfarmor.api.util.Definitions;
+import com.attributestudios.wolfarmor.api.util.Resources;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -95,7 +95,7 @@ public final class WolfArmorConfiguration {
      */
     @SubscribeEvent
     public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-        if (eventArgs.getModID().equals(Definitions.MOD_ID)) {
+        if (eventArgs.getModID().equals(Resources.MOD_ID)) {
             syncConfig(FMLCommonHandler.instance().getSide() == Side.CLIENT);
         }
     }
@@ -178,7 +178,7 @@ public final class WolfArmorConfiguration {
             configDir.mkdirs();
         }
 
-        File mainConfig = new File(configDir.getPath() + "/" + Definitions.MOD_ID + ".cfg");
+        File mainConfig = new File(configDir.getPath() + "/" + Resources.MOD_ID + ".cfg");
         if (!mainConfig.exists()) {
             WolfArmorMod.getLogger().debug("Configuration file not found. A new configuration file will be created.");
         }

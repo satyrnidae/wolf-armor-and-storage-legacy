@@ -2,8 +2,7 @@ package com.attributestudios.wolfarmor.client.gui.config;
 
 import com.attributestudios.wolfarmor.WolfArmorConfiguration;
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.api.util.Definitions;
-import com.attributestudios.wolfarmor.api.util.annotation.DynamicallyUsed;
+import com.attributestudios.wolfarmor.api.util.Resources;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.config.*;
@@ -20,7 +19,6 @@ import java.util.List;
  * Configuration GUI for the Wolf Armor mod.
  */
 @SideOnly(Side.CLIENT)
-@DynamicallyUsed
 public class WolfArmorGuiConfig extends GuiConfig {
     //region Constructors
 
@@ -30,11 +28,10 @@ public class WolfArmorGuiConfig extends GuiConfig {
      * @param parent The parent screen.
      */
     @SuppressWarnings("WeakerAccess")
-    @DynamicallyUsed
     public WolfArmorGuiConfig(@Nonnull GuiScreen parent) {
         super(parent,
                 getConfigurationElements(),
-                Definitions.MOD_ID,
+                Resources.MOD_ID,
                 false,
                 false,
                 I18n.format("gui.wolfarmor.config"),

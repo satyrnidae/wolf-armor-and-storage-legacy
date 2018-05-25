@@ -1,10 +1,10 @@
 package com.attributestudios.wolfarmor.client.renderer.entity.layer;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.api.util.Definitions.ResourceLocations.Textures;
+import com.attributestudios.wolfarmor.api.util.Capabilities;
+import com.attributestudios.wolfarmor.api.util.Resources;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import com.attributestudios.wolfarmor.client.model.ModelWolfBackpack;
-import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
@@ -69,12 +69,12 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
         if (!WolfArmorMod.getConfiguration().getIsWolfChestRenderEnabled()) {
             return;
         }
-        IWolfArmorCapability wolfArmor = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+        IWolfArmorCapability wolfArmor = entityWolf.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
         if (wolfArmor != null && wolfArmor.getHasChest()) {
             this.modelWolfBackpack.setModelAttributes(renderer.getMainModel());
             this.modelWolfBackpack.setLivingAnimations(entityWolf, limbSwing, limbSwingAmount, partialTicks);
 
-            this.renderer.bindTexture(Textures.TEXTURE_WOLF_BACKPACK);
+            this.renderer.bindTexture(Resources.TEXTURE_WOLF_BACKPACK);
 
             GlStateManager.color(1, 1, 1, 1);
 

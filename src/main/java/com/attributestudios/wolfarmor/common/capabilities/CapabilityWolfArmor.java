@@ -2,8 +2,8 @@ package com.attributestudios.wolfarmor.common.capabilities;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
-import com.attributestudios.wolfarmor.api.util.Definitions.ResourceLocations.Capabilities;
-import com.attributestudios.wolfarmor.api.util.annotation.Future;
+import com.attributestudios.wolfarmor.api.util.Capabilities;
+import com.attributestudios.wolfarmor.api.util.Resources;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.Block;
@@ -31,7 +31,6 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -45,20 +44,19 @@ import org.apache.logging.log4j.Level;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.Callable;
 
+/**
+ * Handles registration and
+ */
 public class CapabilityWolfArmor {
-    @Future
     public static final int MAX_SIZE_INVENTORY = 7;
-    @Future
     public static final int INVENTORY_SLOT_ARMOR = 0;
     public static final int INVENTORY_SLOT_CHEST_START = 1;
     public static final int INVENTORY_SLOT_CHEST_LENGTH = 6;
 
-    @CapabilityInject(IWolfArmorCapability.class)
-    public static Capability<IWolfArmorCapability> WOLF_ARMOR_CAPABILITY = null;
-
     public static void register() {
-        CapabilityManager.INSTANCE.register(IWolfArmorCapability.class, new Storage(), CapabilityWolfArmor.Instance.class);
+        CapabilityManager.INSTANCE.register(IWolfArmorCapability.class, new Storage(), new Factory());
         MinecraftForge.EVENT_BUS.register(new EventHandlers());
     }
 
@@ -67,7 +65,23 @@ public class CapabilityWolfArmor {
     }
 
     public static boolean isValidWolfArmor(@Nullable Item armorItem) {
-        return armorItem != null && armorItem instanceof ItemWolfArmor;
+        return armorItem instanceof ItemWolfArmor;
+    }
+
+    public static class Factory implements Callable<IWolfArmorCapability> {
+
+        /**
+         *
+         * @return
+         */
+        @Override
+        public IWolfArmorCapability call() {
+            try {
+                return Instance.class.newInstance();
+            } catch(InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public static class Storage implements Capability.IStorage<IWolfArmorCapability> {
@@ -386,12 +400,12 @@ public class CapabilityWolfArmor {
         @Override
         @Nullable
         public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-            return capability == CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY ? (T) this : null;
+            return capability == Capabilities.CAPABILITY_WOLF_ARMOR ? (T) this : null;
         }
 
         @Override
         public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-            return capability == CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY;
+            return capability == Capabilities.CAPABILITY_WOLF_ARMOR;
         }
     }
 
@@ -400,14 +414,14 @@ public class CapabilityWolfArmor {
         public void onAttachCapability(AttachCapabilitiesEvent<Entity> event) {
             Entity entity = event.getObject();
             if (entity instanceof EntityWolf && !(entity instanceof IWolfArmorCapability)) {
-                event.addCapability(Capabilities.WOLF_ARMOR, new CapabilityWolfArmor.Instance((EntityWolf) entity));
+                event.addCapability(Resources.CAPABILITY_WOLF_ARMOR, new CapabilityWolfArmor.Instance((EntityWolf) entity));
             }
         }
 
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public void onPlayerInteract(PlayerInteractEvent.EntityInteract event) {
             if (event.getTarget() instanceof EntityWolf) {
-                @Nullable IWolfArmorCapability wolfArmorCapability = event.getTarget().getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+                @Nullable IWolfArmorCapability wolfArmorCapability = event.getTarget().getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
                 if (wolfArmorCapability != null) {
                     EntityPlayer player = event.getEntityPlayer();
                     EnumHand hand = event.getHand();
@@ -421,7 +435,7 @@ public class CapabilityWolfArmor {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public void onDropItems(LivingDropsEvent event) {
             if (event.getEntity() instanceof EntityWolf) {
-                @Nullable IWolfArmorCapability wolfArmorCapability = event.getEntity().getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+                @Nullable IWolfArmorCapability wolfArmorCapability = event.getEntity().getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
                 if (wolfArmorCapability != null) {
                     DamageSource source = event.getSource();
                     wolfArmorCapability.dropEquipment(source != null && source.getTrueSource() instanceof EntityPlayer, event.getLootingLevel());
@@ -432,7 +446,7 @@ public class CapabilityWolfArmor {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public void onDamageArmor(LivingHurtEvent event) {
             if (event.getEntity() instanceof EntityWolf) {
-                @Nullable IWolfArmorCapability wolfArmorCapability = event.getEntity().getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+                @Nullable IWolfArmorCapability wolfArmorCapability = event.getEntity().getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
                 if (wolfArmorCapability != null) {
                     wolfArmorCapability.damageArmor(event.getAmount());
                 }

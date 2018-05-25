@@ -2,7 +2,6 @@ package com.attributestudios.wolfarmor.common.network.packets;
 
 import java.io.IOException;
 
-import com.attributestudios.wolfarmor.api.util.annotation.DynamicallyUsed;
 import com.attributestudios.wolfarmor.common.network.MessageBase.ClientMessageBase;
 
 import net.minecraft.entity.Entity;
@@ -17,7 +16,6 @@ public class WolfHealMessage extends ClientMessageBase<WolfHealMessage> {
 
     private int entityId;
 
-    @DynamicallyUsed
     public WolfHealMessage() {}
 
     public WolfHealMessage(int entityId) {

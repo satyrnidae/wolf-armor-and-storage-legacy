@@ -1,9 +1,9 @@
 package com.attributestudios.wolfarmor.client.gui;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.api.item.IWolfArmorMaterial;
-import com.attributestudios.wolfarmor.api.util.Definitions;
-import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import com.attributestudios.wolfarmor.api.IWolfArmorMaterial;
+import com.attributestudios.wolfarmor.api.util.Capabilities;
+import com.attributestudios.wolfarmor.api.util.Resources;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import com.attributestudios.wolfarmor.common.inventory.ContainerWolfInventory;
 import net.minecraft.client.gui.Gui;
@@ -14,7 +14,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -26,8 +25,6 @@ import javax.annotation.Nonnull;
 @SideOnly(Side.CLIENT)
 public class GuiWolfInventory extends GuiContainer {
     //region Fields
-
-    private ResourceLocation TEXTURE_GUI_WOLF_INVENTORY = new ResourceLocation(Definitions.MOD_ID, "textures/gui/wolf.png");
 
     private IInventory wolfInventory;
     private IInventory playerInventory;
@@ -56,7 +53,7 @@ public class GuiWolfInventory extends GuiContainer {
                             @Nonnull EntityWolf theWolf,
                             @Nonnull EntityPlayer player) {
         super(new ContainerWolfInventory(playerInventory, wolfInventory, theWolf, player));
-        this.wolfArmor = theWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+        this.wolfArmor = theWolf.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
         this.wolfInventory = wolfInventory;
         this.playerInventory = playerInventory;
         this.theWolf = theWolf;
@@ -120,7 +117,7 @@ public class GuiWolfInventory extends GuiContainer {
         {
             GlStateManager.color(1, 1, 1, 1);
 
-            this.mc.getTextureManager().bindTexture(TEXTURE_GUI_WOLF_INVENTORY);
+            this.mc.getTextureManager().bindTexture(Resources.TEXTURE_GUI_WOLF_INVENTORY);
 
             int positionX = (this.width - this.xSize) / 2;
             int positionY = (this.height - this.ySize) / 2;

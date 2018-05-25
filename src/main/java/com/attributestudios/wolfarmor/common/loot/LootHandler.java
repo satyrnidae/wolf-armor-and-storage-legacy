@@ -1,7 +1,6 @@
 package com.attributestudios.wolfarmor.common.loot;
 
-import com.attributestudios.wolfarmor.api.util.Definitions;
-import com.attributestudios.wolfarmor.api.util.Definitions.ResourceLocations.LootTables;
+import com.attributestudios.wolfarmor.api.util.Resources;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.*;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
@@ -12,7 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class LootHandler {
     private LootHandler() {
         MinecraftForge.EVENT_BUS.register(this);
-        LootTableList.register(LootTables.DUNGEON_INJECT);
+        LootTableList.register(Resources.LOOT_TABLE_DUNGEON_CHEST_INJECT);
     }
 
     public static void init() {
@@ -34,7 +33,7 @@ public class LootHandler {
                 case "stronghold_corridor":
                 case "stronghold_crossing":
                 case "village_blacksmith":
-                    event.getTable().addPool(getInjectPool(LootTables.DUNGEON_INJECT));
+                    event.getTable().addPool(getInjectPool(Resources.LOOT_TABLE_DUNGEON_CHEST_INJECT));
                     break;
                 default:
                     break;
@@ -48,7 +47,7 @@ public class LootHandler {
                 new LootCondition[0],
                 new RandomValueRange(1),
                 new RandomValueRange(1),
-                Definitions.MOD_ID + "_injected_pool");
+                Resources.MOD_ID + "_injected_pool");
     }
 
     private LootEntry getInjectEntry(ResourceLocation lootDungeonInject) {
@@ -56,6 +55,6 @@ public class LootHandler {
                 1,
                 0,
                 new LootCondition[0],
-                Definitions.MOD_ID + "_injected_entry");
+                Resources.MOD_ID + "_injected_entry");
     }
 }

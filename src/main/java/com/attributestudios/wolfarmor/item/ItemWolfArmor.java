@@ -1,8 +1,8 @@
 package com.attributestudios.wolfarmor.item;
 
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
-import com.attributestudios.wolfarmor.api.item.IWolfArmorMaterial;
-import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import com.attributestudios.wolfarmor.api.util.Capabilities;
+import com.attributestudios.wolfarmor.api.IWolfArmorMaterial;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.creativetab.CreativeTabs;
@@ -119,7 +119,7 @@ public class ItemWolfArmor extends Item {
             if (wolf != null) {
                 ItemStack copyStack = stack.copy();
                 copyStack.setCount(1);
-                IWolfArmorCapability wolfArmor = wolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+                IWolfArmorCapability wolfArmor = wolf.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
                 if (wolfArmor == null || !wolfArmor.canEquipItem(copyStack)) {
                     return stack;
                 }

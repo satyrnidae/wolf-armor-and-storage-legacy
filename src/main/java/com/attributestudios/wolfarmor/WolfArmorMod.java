@@ -1,7 +1,7 @@
 package com.attributestudios.wolfarmor;
 
-import com.attributestudios.wolfarmor.api.util.Definitions;
-import com.attributestudios.wolfarmor.api.util.IProxy;
+import com.attributestudios.wolfarmor.api.util.Resources;
+import com.attributestudios.wolfarmor.api.IProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -14,19 +14,21 @@ import javax.annotation.Nonnull;
  * WolfArmorMod main class
  */
 @SuppressWarnings("WeakerAccess")
-@Mod(modid = Definitions.MOD_ID,
-        name = Definitions.MOD_NAME,
-        version = Definitions.MOD_VERSION,
+@Mod(modid = Resources.MOD_ID,
+        name = Resources.MOD_NAME,
+        version = WolfArmorMod.MOD_VERSION,
         guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory",
         dependencies = "after: sophisticatedwolves")
 public class WolfArmorMod {
     //region Fields
 
+    public static final String MOD_VERSION = "1.12.2-2.1.0-RELEASE";
+
     @SidedProxy(clientSide = "com.attributestudios.wolfarmor.client.ClientProxy",
                 serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
     public static IProxy proxy;
 
-    @Mod.Instance(Definitions.MOD_ID)
+    @Mod.Instance(Resources.MOD_ID)
     private static WolfArmorMod instance;
 
     private static LogHelper logger;
@@ -37,10 +39,20 @@ public class WolfArmorMod {
 
     //region Public / Protected Methods
 
+    /**
+     * Gets the sided proxy.
+     *
+     * @return The sided proxy.
+     */
     public static IProxy getProxy() {
         return proxy;
     }
 
+    /**
+     * Gets the mod instance.
+     *
+     * @return The mod instance.
+     */
     public static WolfArmorMod getInstance() {
         return instance;
     }

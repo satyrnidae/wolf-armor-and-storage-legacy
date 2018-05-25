@@ -1,6 +1,5 @@
 package com.attributestudios.wolfarmor.common.network.packets;
 
-import com.attributestudios.wolfarmor.api.util.annotation.DynamicallyUsed;
 import com.attributestudios.wolfarmor.common.network.MessageBase.ClientMessageBase;
 
 import java.io.IOException;
@@ -21,7 +20,6 @@ public class WolfEatMessage extends ClientMessageBase<WolfEatMessage> {
     private int entityId;
     private ItemStack foodItem;
 
-    @DynamicallyUsed
     public WolfEatMessage() {}
 
     public WolfEatMessage(int entityId, ItemStack foodItem) {

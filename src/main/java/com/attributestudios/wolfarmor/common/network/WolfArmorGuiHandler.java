@@ -1,5 +1,6 @@
 package com.attributestudios.wolfarmor.common.network;
 
+import com.attributestudios.wolfarmor.api.util.Capabilities;
 import com.attributestudios.wolfarmor.client.gui.GuiWolfInventory;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
@@ -40,8 +41,8 @@ public class WolfArmorGuiHandler implements IGuiHandler {
                                       int z) {
         Entity entity = world.getEntityByID(ID);
 
-        if (entity != null && entity.hasCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null)) {
-            IWolfArmorCapability wolfArmor = entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+        if (entity != null && entity.hasCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null)) {
+            IWolfArmorCapability wolfArmor = entity.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
             if (wolfArmor != null) {
                 return new ContainerWolfInventory(player.inventory, wolfArmor.getInventory(), (EntityWolf) entity, player);
             }
@@ -72,8 +73,8 @@ public class WolfArmorGuiHandler implements IGuiHandler {
                                       int z) {
         Entity entity = world.getEntityByID(ID);
 
-        if (entity != null && entity.hasCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null)) {
-            IWolfArmorCapability wolfArmor = entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+        if (entity != null && entity.hasCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null)) {
+            IWolfArmorCapability wolfArmor = entity.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
             if (wolfArmor != null) {
                 return new GuiWolfInventory(player.inventory, wolfArmor.getInventory(), (EntityWolf) entity, player);
             }

@@ -1,7 +1,10 @@
 package com.attributestudios.wolfarmor.common;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.api.util.IProxy;
+import com.attributestudios.wolfarmor.advancements.EquipWolfArmorTrigger;
+import com.attributestudios.wolfarmor.api.IProxy;
+import com.attributestudios.wolfarmor.api.util.Criteria;
+import com.attributestudios.wolfarmor.api.util.Resources;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.common.loot.LootHandler;
 import com.attributestudios.wolfarmor.common.network.WolfArmorGuiHandler;
@@ -50,17 +53,8 @@ public class CommonProxy implements IProxy {
 
     @Override
     public void registerCriteriaTriggers() {
-        Method method = ReflectionCache.getMethod(CriteriaTriggers.class, "register", "func_192118_a", ICriterionTrigger.class);
-
-        if(method == null) {
-            throw new RuntimeException("Failed to register criteria: method not found", ReflectionCache.getLastError());
-        }
-
-        try {
-            method.invoke(null, com.attributestudios.wolfarmor.advancements.CriteriaTriggers.EQUIP_WOLF_ARMOR);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("Failed to register criteria: Unable to access method.", e);
-        }
+        Criteria.EQUIP_WOLF_ARMOR = new EquipWolfArmorTrigger(Resources.CRITERIA_TRIGGER_EQUIP_WOLF_ARMOR);
+        CriteriaTriggers.register(Criteria.EQUIP_WOLF_ARMOR);
     }
     @Override
     public void registerPackets() {

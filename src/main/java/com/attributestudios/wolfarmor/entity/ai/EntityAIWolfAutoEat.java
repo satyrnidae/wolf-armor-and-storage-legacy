@@ -2,6 +2,7 @@ package com.attributestudios.wolfarmor.entity.ai;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
+import com.attributestudios.wolfarmor.api.util.Capabilities;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.common.network.PacketHandler;
 import com.attributestudios.wolfarmor.common.network.packets.WolfEatMessage;
@@ -34,7 +35,7 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
 
     public EntityAIWolfAutoEat(@Nonnull EntityWolf entity) {
         this.entity = entity;
-        this.capability = this.entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+        this.capability = this.entity.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
         this.inventoryInit();
     }
 
@@ -54,7 +55,7 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
             return false;
         }
         if (capability == null) {
-            this.capability = this.entity.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+            this.capability = this.entity.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
             return false;
         }
 

@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Replacement entity for EntityWolf that supports armor
+ * @deprecated Since 2.1.0
  */
 @Deprecated
 public class EntityWolfArmored extends EntityWolf implements IInventoryChangedListener, IWolfArmorCapability {

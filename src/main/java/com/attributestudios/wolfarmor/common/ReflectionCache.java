@@ -1,7 +1,6 @@
 package com.attributestudios.wolfarmor.common;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.api.util.annotation.Future;
 import com.google.common.collect.Maps;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
@@ -66,7 +65,6 @@ public abstract class ReflectionCache {
      * @param <E>           The instance or class type
      * @return The method
      */
-    @Future
     @Nullable
     public static <E> Method getMethod(@Nonnull Class<? super E> clazz,
                                        @Nonnull String methodName,

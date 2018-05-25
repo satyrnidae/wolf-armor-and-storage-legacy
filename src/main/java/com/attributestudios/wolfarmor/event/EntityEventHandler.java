@@ -2,6 +2,7 @@ package com.attributestudios.wolfarmor.event;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
+import com.attributestudios.wolfarmor.api.util.Capabilities;
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.entity.ai.EntityAIWolfAutoEat;
 import com.attributestudios.wolfarmor.entity.ai.EntityAIWolfHowl;
@@ -41,7 +42,7 @@ public class EntityEventHandler {
 
                 EntityWolfArmored entityWolfArmored = (EntityWolfArmored) entity;
                 EntityWolf entityWolf = new EntityWolf(world);
-                IWolfArmorCapability wolfArmorCapability = entityWolf.getCapability(CapabilityWolfArmor.WOLF_ARMOR_CAPABILITY, null);
+                IWolfArmorCapability wolfArmorCapability = entityWolf.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
                 if(wolfArmorCapability == null) {
                     throw new RuntimeException("Failed to replace entity: Capabilities were not properly registered!");
                 }

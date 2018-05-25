@@ -12,21 +12,26 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the nessasary things for Forge to be setup.
 
 def versioningFile = file('versioning.properties')
+def apiVersioningFile = file('api/versioning.properties')
 def mcversion = '0.0'
 def majormod = '0'
 def majorapi = '0'
 def minor = '0'
-def patch = 0
+def patchmod = 0
+def patchapi = 0
 def extended = ''
 
-if(versioningFile.canRead()) {
+if(versioningFile.canRead() && apiVersioningFile.canRead()) {
 	Properties versionProperties = new Properties()
+    Properties apiVersionProperties = new Properties()
 	versionProperties.load(new FileInputStream(versioningFile))
+    apiVersionProperties.load(new FileInputStream(apiVersioningFile))
 	mcversion = versionProperties['MCVERSION'].toString()
-    majormod = versionProperties['MAJORMOD'].toString()
-    majorapi = versionProperties['MAJORAPI'].toString()
+    majormod = versionProperties['MAJOR'].toString()
+    majorapi = apiVersionProperties['MAJOR'].toString()
     minor = versionProperties['MINOR'].toString()
-    patch = versionProperties['PATCH'].toInteger()
+    patchmod = versionProperties['PATCH'].toInteger()
+    patchapi = apiVersionProperties['PATCH'].toInteger()
     extended = versionProperties['EXTENDED'].toString()
 }
 sourceSets.api {
@@ -46,8 +51,8 @@ build {
 		if (versioningFile.canRead()) {
 			Properties versionProps = new Properties()
 			versionProps.load(new FileInputStream(versioningFile))
-			patch = versionProps['PATCH'].toInteger() + 1
-			versionProps['PATCH'] = patch.toString()
+			patchmod = versionProps['PATCH'].toInteger() + 1
+			versionProps['PATCH'] = patchmod.toString()
 			versionProps.store(versioningFile.newWriter(), null)
 		} else {
 			throw new GradleException("Could not read versioning.properties!")
@@ -65,7 +70,7 @@ build {
     return 0
 }
 
-version = mcversion + "-" + majormod + "." + majorapi + "." + minor + "." + patch + extended
+version = mcversion + "-" + majormod + "." + majorapi + "." + minor + "." + (patchmod | (patchapi<<8)) + extended
 logger.quiet("Current version is " + version)
 group= "com.attributestudios.wolfarmor" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 //noinspection GroovyUnusedAssignment
