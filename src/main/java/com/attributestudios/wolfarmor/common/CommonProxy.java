@@ -1,7 +1,7 @@
 package com.attributestudios.wolfarmor.common;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.advancements.EquipWolfArmorTrigger;
+import com.attributestudios.wolfarmor.advancements.WolfArmorTrigger;
 import com.attributestudios.wolfarmor.api.IProxy;
 import com.attributestudios.wolfarmor.api.util.Criteria;
 import com.attributestudios.wolfarmor.api.util.Resources;
@@ -13,7 +13,6 @@ import com.attributestudios.wolfarmor.event.EntityEventHandler;
 import com.attributestudios.wolfarmor.event.PlayerEventHandler;
 import com.attributestudios.wolfarmor.event.RegistrationEventHandler;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.common.MinecraftForge;
@@ -24,8 +23,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class CommonProxy implements IProxy {
 
@@ -53,8 +50,10 @@ public class CommonProxy implements IProxy {
 
     @Override
     public void registerCriteriaTriggers() {
-        Criteria.EQUIP_WOLF_ARMOR = new EquipWolfArmorTrigger(Resources.CRITERIA_TRIGGER_EQUIP_WOLF_ARMOR);
+        Criteria.EQUIP_WOLF_ARMOR = new WolfArmorTrigger(Resources.CRITERIA_TRIGGER_EQUIP_WOLF_ARMOR);
+        Criteria.EQUIP_WOLF_CHEST = new WolfArmorTrigger(Resources.CRITERIA_TRIGGER_EQUIP_WOLF_CHEST);
         CriteriaTriggers.register(Criteria.EQUIP_WOLF_ARMOR);
+        CriteriaTriggers.register(Criteria.EQUIP_WOLF_CHEST);
     }
     @Override
     public void registerPackets() {

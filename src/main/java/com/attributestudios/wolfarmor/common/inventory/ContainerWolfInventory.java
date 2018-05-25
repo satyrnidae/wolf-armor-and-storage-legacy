@@ -1,6 +1,6 @@
 package com.attributestudios.wolfarmor.common.inventory;
 
-import com.attributestudios.wolfarmor.advancements.EquipWolfArmorTrigger;
+import com.attributestudios.wolfarmor.advancements.WolfArmorTrigger;
 import com.attributestudios.wolfarmor.api.util.Capabilities;
 import com.attributestudios.wolfarmor.api.util.Criteria;
 import net.minecraft.entity.passive.EntityWolf;
@@ -72,7 +72,7 @@ public class ContainerWolfInventory extends Container {
 
                 ItemStack stack = this.getStack();
                 if(player instanceof EntityPlayerMP && !stack.isEmpty() && CapabilityWolfArmor.isValidWolfArmor(stack.getItem())) {
-                    ((EquipWolfArmorTrigger)Criteria.EQUIP_WOLF_ARMOR).trigger((EntityPlayerMP)player, theWolf);
+                    ((WolfArmorTrigger)Criteria.EQUIP_WOLF_ARMOR).trigger((EntityPlayerMP)player, theWolf);
                 }
             }
         });

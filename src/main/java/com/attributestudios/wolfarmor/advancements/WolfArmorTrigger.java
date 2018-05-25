@@ -1,6 +1,5 @@
 package com.attributestudios.wolfarmor.advancements;
 
-import com.attributestudios.wolfarmor.api.util.Resources;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -19,15 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class EquipWolfArmorTrigger implements ICriterionTrigger<EquipWolfArmorTrigger.Instance> {
+public class WolfArmorTrigger implements ICriterionTrigger<WolfArmorTrigger.Instance> {
 
     private final Map<PlayerAdvancements, Listeners> listeners = Maps.newHashMap();
     private final ResourceLocation id;
 
-    public static final EquipWolfArmorTrigger EQUIP_WOLF_ARMOR =
-            new EquipWolfArmorTrigger(Resources.CRITERIA_TRIGGER_EQUIP_WOLF_ARMOR);
-
-    public EquipWolfArmorTrigger(ResourceLocation id) {
+    public WolfArmorTrigger(ResourceLocation id) {
         this.id = id;
     }
 

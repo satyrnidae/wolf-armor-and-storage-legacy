@@ -1,8 +1,10 @@
 package com.attributestudios.wolfarmor.common.capabilities;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.advancements.WolfArmorTrigger;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import com.attributestudios.wolfarmor.api.util.Capabilities;
+import com.attributestudios.wolfarmor.api.util.Criteria;
 import com.attributestudios.wolfarmor.api.util.Resources;
 import com.attributestudios.wolfarmor.item.ItemWolfArmor;
 import com.google.common.collect.Multimap;
@@ -13,6 +15,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.*;
@@ -343,6 +346,9 @@ public class CapabilityWolfArmor {
                     this.setHasChest(true);
                     if (!player.capabilities.isCreativeMode) {
                         itemInHand.shrink(1);
+                    }
+                    if(player instanceof EntityPlayerMP) {
+                        ((WolfArmorTrigger) Criteria.EQUIP_WOLF_CHEST).trigger((EntityPlayerMP)player, this.wolf);
                     }
                     return true;
                 }

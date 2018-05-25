@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:chest"
+    },
+    "title": {
+      "translate": "advancements.husbandry.wolf_pack.title"
+    },
+    "description": {
+      "translate": "advancements.husbandry.wolf_pack.description"
+    }
+  },
+  "parent": "minecraft:husbandry/tame_an_animal",
+  "criteria": {
+    "wolf_backpack": {
+      "trigger": "wolfarmor:equip_wolf_backpack"
+    }
+  },
+  "requirements": [
+    [
+      "wolf_backpack"
+    ]
+  ]
+}
