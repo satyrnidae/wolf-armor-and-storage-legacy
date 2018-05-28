@@ -1,6 +1,7 @@
 package com.attributestudios.wolfarmor.compatibility.loader;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
+import com.attributestudios.wolfarmor.api.client.RenderLayerFactory;
 import com.attributestudios.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
 import com.attributestudios.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
 import com.attributestudios.wolfarmor.compatibility.CompatibilityHelper;
@@ -55,8 +56,13 @@ public class SophisticatedWolvesLoader implements CompatibilityHelper.ICompatabi
                 throw new Exception("Failed to load renderer for entity class sophisticated_wolves.entity.EntitySophisticatedWolf!");
             }
         }
-        renderLiving.addLayer(new LayerWolfArmor(renderLiving));
-        renderLiving.addLayer(new LayerWolfBackpack(renderLiving));
+
+        LayerWolfArmor wolfArmorLayer = (LayerWolfArmor)RenderLayerFactory.createArmorLayer(renderLiving);
+        LayerWolfBackpack wolfBackpackLayer = (LayerWolfBackpack)RenderLayerFactory.createBackpackLayer(renderLiving);
+        if(wolfArmorLayer == null || wolfBackpackLayer == null) throw new Exception("Unable to instantiate required wolf armor render layers.");
+
+        renderLiving.addLayer(wolfArmorLayer);
+        renderLiving.addLayer(wolfBackpackLayer);
     }
 
     @Override
