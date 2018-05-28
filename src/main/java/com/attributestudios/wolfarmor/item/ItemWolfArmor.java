@@ -9,9 +9,12 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -65,6 +68,7 @@ public class ItemWolfArmor extends Item {
         this.material = material;
         this.maxStackSize = 1;
         this.canRepair = true;
+
         this.setMaxDamage(material.getDurability());
 
         this.setCreativeTab(CreativeTabs.MISC);
@@ -143,6 +147,14 @@ public class ItemWolfArmor extends Item {
     @Override
     public int getItemEnchantability() {
         return this.getMaterial().getEnchantability();
+    }
+
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack itemStack, Enchantment enchantment) {
+        if(enchantment == Enchantments.SWEEPING) return false;
+
+        return enchantment.type == EnumEnchantmentType.BREAKABLE || enchantment.type == EnumEnchantmentType.WEAPON ||
+                enchantment.type == EnumEnchantmentType.ARMOR || enchantment.type == EnumEnchantmentType.ARMOR_FEET;
     }
 
     /**

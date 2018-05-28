@@ -50,7 +50,7 @@ public class EntityAIWolfHowl extends EntityAIBase {
      */
     @Override
     public void startExecuting() {
-        soundTimer = 600 + random.nextInt(600)  + random.nextInt(120) + random.nextInt(120) + random.nextInt(120);
+        soundTimer = 300 + random.nextInt(600)  + random.nextInt(600) + random.nextInt(600) + random.nextInt(600);
     }
 
     /**
@@ -59,6 +59,14 @@ public class EntityAIWolfHowl extends EntityAIBase {
      */
     @Override
     public boolean shouldContinueExecuting() {
+
+        World entityWorld = entity.getEntityWorld();
+        int phase = entityWorld.provider.getMoonPhase(entityWorld.getWorldTime());
+
+        if(entity.isTamed() || phase != 0 || entityWorld.isDaytime()) {
+            return false;
+        }
+
         return soundTimer > 0;
     }
 
@@ -77,6 +85,11 @@ public class EntityAIWolfHowl extends EntityAIBase {
      */
     @Override
     public void resetTask() {
-        this.entity.playSound(SoundEvents.ENTITY_WOLF_HOWL, 5.0F, 0.75f + (random.nextFloat() * (entity.isChild() ? 1.25F : 0.25F)));
+        World entityWorld = entity.getEntityWorld();
+        int phase = entityWorld.provider.getMoonPhase(entityWorld.getWorldTime());
+
+        if (!entity.isTamed() && phase == 0 && !entityWorld.isDaytime()) {
+            this.entity.playSound(SoundEvents.ENTITY_WOLF_HOWL, 5.0F, 0.75f + (random.nextFloat() * (entity.isChild() ? 1.25F : 0.25F)));
+        }
     }
 }

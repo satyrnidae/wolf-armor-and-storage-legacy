@@ -10,9 +10,17 @@
     "authorList": [
       "CenturionFox"
     ],
-    "credits": "Copyright (C) 2014-2017 Bridger Maskrey (CenturionFox). Licensed under MIT",
+    "credits": "Copyright (C) 2014-2018 Bridger Maskrey. Licensed under MIT.",
     "logoFile": "assets/wolfarmor/logo.png",
-    "screenshots": [],
-    "dependencies": []
+    "screenshots": [
+        "assets/wolfarmor/screenshots/dispenser.png",
+        "assets/wolfarmor/screenshots/inventory.png",
+        "assets/wolfarmor/screenshots/wolves.png"
+    ],
+    "useDependencyInformation": true,
+    "dependencies": [
+        "sophisticatedwolves",
+        "twilightforest"
+    ]
   }
 ]

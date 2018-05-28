@@ -3,6 +3,7 @@ package com.attributestudios.wolfarmor.common.inventory;
 import com.attributestudios.wolfarmor.advancements.WolfArmorTrigger;
 import com.attributestudios.wolfarmor.api.util.Capabilities;
 import com.attributestudios.wolfarmor.api.util.Criteria;
+import com.attributestudios.wolfarmor.item.ItemWolfArmor;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,6 +16,7 @@ import javax.annotation.Nonnull;
 
 import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
+import net.minecraft.util.SoundEvent;
 
 /**
  * Models a container for a wolf's inventory.
@@ -74,7 +76,14 @@ public class ContainerWolfInventory extends Container {
                 if(player instanceof EntityPlayerMP && !stack.isEmpty() && CapabilityWolfArmor.isValidWolfArmor(stack.getItem())) {
                     ((WolfArmorTrigger)Criteria.EQUIP_WOLF_ARMOR).trigger((EntityPlayerMP)player, theWolf);
                 }
+                if (stack.getItem() instanceof ItemWolfArmor && !theWolf.getEntityWorld().isRemote) {
+                    ItemWolfArmor wolfArmor = (ItemWolfArmor) stack.getItem();
+                    SoundEvent sound = wolfArmor.getMaterial().getEquipSound();
+                    theWolf.playSound(sound, 1, (theWolf.getRNG().nextFloat() - theWolf.getRNG().nextFloat()) * 0.2F + 1);
+                }
             }
+
+
         });
 
         IWolfArmorCapability wolfArmor = theWolf.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);

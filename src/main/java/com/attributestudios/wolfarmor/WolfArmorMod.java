@@ -5,6 +5,7 @@ import com.attributestudios.wolfarmor.api.IProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -14,15 +15,18 @@ import javax.annotation.Nonnull;
  * WolfArmorMod main class
  */
 @SuppressWarnings("WeakerAccess")
-@Mod(modid = Resources.MOD_ID,
+@Mod(useMetadata = true,
+        modid = Resources.MOD_ID,
         name = Resources.MOD_NAME,
         version = WolfArmorMod.MOD_VERSION,
-        guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory",
-        dependencies = "after: sophisticatedwolves")
+        guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory")
 public class WolfArmorMod {
     //region Fields
 
-    public static final String MOD_VERSION = "1.12.2-2.1.0-RELEASE";
+    /**
+     * The version for the mod
+     */
+    public static final String MOD_VERSION = "${version}";
 
     @SidedProxy(clientSide = "com.attributestudios.wolfarmor.client.ClientProxy",
                 serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
@@ -88,6 +92,11 @@ public class WolfArmorMod {
     @Mod.EventHandler
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
         proxy.postInit(postInitializationEvent);
+    }
+
+    @Mod.EventHandler
+    public void loadComplete(@Nonnull FMLLoadCompleteEvent loadCompleteEvent) {
+        proxy.loadComplete(loadCompleteEvent);
     }
 
     //endregion Public / Protected Methods

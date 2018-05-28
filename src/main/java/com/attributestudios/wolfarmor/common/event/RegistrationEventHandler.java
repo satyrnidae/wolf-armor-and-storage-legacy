@@ -1,4 +1,4 @@
-package com.attributestudios.wolfarmor.event;
+package com.attributestudios.wolfarmor.common.event;
 
 import com.attributestudios.wolfarmor.api.IWolfArmorMaterial;
 import com.attributestudios.wolfarmor.api.util.Resources;

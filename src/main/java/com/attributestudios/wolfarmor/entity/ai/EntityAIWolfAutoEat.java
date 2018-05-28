@@ -136,7 +136,7 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
     private ItemStack getMostEfficientFood() {
         final float healthDiff = this.entity.getMaxHealth() - this.entity.getHealth();
 
-        ItemStack mostEfficient = this.inventoryContents.stream()
+        return this.inventoryContents.stream()
                 .filter(itemStack -> !itemStack.isEmpty() &&
                         entity.isBreedingItem(itemStack) &&
                         itemStack.getItem() instanceof ItemFood)
@@ -145,6 +145,5 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
                     return Math.abs(healthDiff - food.getHealAmount(itemStack));
                 }))
                 .orElse(ItemStack.EMPTY);
-        return mostEfficient;
     }
 }

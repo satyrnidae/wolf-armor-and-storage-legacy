@@ -1,6 +1,7 @@
 package com.attributestudios.wolfarmor.common.network;
 
 import com.attributestudios.wolfarmor.api.util.Resources;
+import com.attributestudios.wolfarmor.common.network.packets.WolfArmorCapabilityDataMessage;
 import com.attributestudios.wolfarmor.common.network.packets.WolfEatMessage;
 import com.attributestudios.wolfarmor.common.network.packets.WolfHealMessage;
 import com.attributestudios.wolfarmor.common.network.MessageBase.ClientMessageBase;
@@ -18,6 +19,7 @@ public abstract class PacketHandler {
     public static void initialize() {
         registerMessage(WolfEatMessage.class);
         registerMessage(WolfHealMessage.class);
+        registerMessage(WolfArmorCapabilityDataMessage.class);
     }
 
     private static <T extends MessageBase<T> & IMessageHandler<T, IMessage>>void registerMessage(Class<T> clazz) {

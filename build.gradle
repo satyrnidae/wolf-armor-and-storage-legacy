@@ -1,3 +1,4 @@
+import org.apache.tools.ant.filters.ReplaceTokens
 buildscript {
     repositories {
         jcenter()
@@ -20,6 +21,7 @@ def minor = '0'
 def patchmod = 0
 def patchapi = 0
 def extended = ''
+def shortVersion = ''
 
 if(versioningFile.canRead() && apiVersioningFile.canRead()) {
 	Properties versionProperties = new Properties()
@@ -30,8 +32,8 @@ if(versioningFile.canRead() && apiVersioningFile.canRead()) {
     majormod = versionProperties['MAJOR'].toString()
     majorapi = apiVersionProperties['MAJOR'].toString()
     minor = versionProperties['MINOR'].toString()
-    patchmod = versionProperties['PATCH'].toInteger()
-    patchapi = apiVersionProperties['PATCH'].toInteger()
+    patchmod = versionProperties['PATCH'].toShort()
+    patchapi = apiVersionProperties['PATCH'].toShort()
     extended = versionProperties['EXTENDED'].toString()
 }
 sourceSets.api {
@@ -70,11 +72,25 @@ build {
     return 0
 }
 
-version = mcversion + "-" + majormod + "." + majorapi + "." + minor + "." + (patchmod | (patchapi<<8)) + extended
-logger.quiet("Current version is " + version)
+def comboPatch = (patchmod | (patchapi<<8))
+
+version = mcversion + "-" + majormod + "." + majorapi + "." + minor + "." + comboPatch + extended
+shortVersion = majormod + "." + majorapi + "." + minor + "." + patchmod
+logger.info("Current version is " + version + " (" + shortVersion + ")")
 group= "com.attributestudios.wolfarmor" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 //noinspection GroovyUnusedAssignment
 archivesBaseName = "wolfarmor"
+
+
+task updateModVersion(type:Copy) {
+    from('src/main/java') {
+        exclude 'mcmod.info'
+    }
+    into 'build/sources/main/java'
+    expand 'version':shortVersion
+}
+
+compileJava.dependsOn updateModVersion
 
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
@@ -129,7 +145,7 @@ processResources {
         include 'mcmod.info'
                 
         // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version':shortVersion, 'mcversion':project.minecraft.version
     }
         
     // copy everything else, thats not the mcmod.info

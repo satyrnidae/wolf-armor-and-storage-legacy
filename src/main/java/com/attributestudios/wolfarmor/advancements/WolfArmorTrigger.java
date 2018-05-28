@@ -77,10 +77,10 @@ public class WolfArmorTrigger implements ICriterionTrigger<WolfArmorTrigger.Inst
         }
     }
 
-    public static final class Instance extends AbstractCriterionInstance {
+    static final class Instance extends AbstractCriterionInstance {
         private EntityPredicate target;
 
-        public Instance(ResourceLocation criterion, EntityPredicate target) {
+        Instance(ResourceLocation criterion, EntityPredicate target) {
             super(criterion);
             this.target = target;
         }

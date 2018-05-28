@@ -1,5 +1,6 @@
 package com.attributestudios.wolfarmor.client;
 
+import com.attributestudios.wolfarmor.api.client.RenderLayerFactory;
 import com.attributestudios.wolfarmor.api.util.Items;
 import com.attributestudios.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
 import com.attributestudios.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
@@ -31,14 +32,17 @@ import javax.annotation.Nullable;
 public class ClientProxy extends CommonProxy {
     //region Public / Protected Methods
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void registerEntityRenderingHandlers() {
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
         RenderWolf renderWolf = (RenderWolf) renderManager.entityRenderMap.get(EntityWolf.class);
 
-        renderWolf.addLayer(new LayerWolfArmor(renderWolf));
-        renderWolf.addLayer(new LayerWolfBackpack(renderWolf));
+        LayerWolfArmor armor = (LayerWolfArmor) RenderLayerFactory.createArmorLayer(renderWolf);
+        LayerWolfBackpack backpack = (LayerWolfBackpack) RenderLayerFactory.createBackpackLayer(renderWolf);
+        if(armor == null || backpack == null) throw new RuntimeException("Armor layer factory failed initialization!");
+
+        renderWolf.addLayer(armor);
+        renderWolf.addLayer(backpack);
     }
 
     /**
@@ -87,6 +91,11 @@ public class ClientProxy extends CommonProxy {
     @Override
     public EntityPlayer getPlayerFromContext(MessageContext context) {
         return context.side.isClient()? Minecraft.getMinecraft().player : super.getPlayerFromContext(context);
+    }
+
+    @Override
+    public Side getCurrentSide() {
+        return Side.CLIENT;
     }
 
     //endregion Public / Protected Methods

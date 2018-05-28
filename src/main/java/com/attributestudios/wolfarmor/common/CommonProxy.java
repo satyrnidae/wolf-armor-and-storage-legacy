@@ -9,18 +9,21 @@ import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import com.attributestudios.wolfarmor.common.loot.LootHandler;
 import com.attributestudios.wolfarmor.common.network.WolfArmorGuiHandler;
 import com.attributestudios.wolfarmor.common.network.PacketHandler;
-import com.attributestudios.wolfarmor.event.EntityEventHandler;
-import com.attributestudios.wolfarmor.event.PlayerEventHandler;
-import com.attributestudios.wolfarmor.event.RegistrationEventHandler;
+import com.attributestudios.wolfarmor.compatibility.CompatibilityHelper;
+import com.attributestudios.wolfarmor.common.event.EntityEventHandler;
+import com.attributestudios.wolfarmor.common.event.PlayerEventHandler;
+import com.attributestudios.wolfarmor.common.event.RegistrationEventHandler;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
 
@@ -30,6 +33,7 @@ public class CommonProxy implements IProxy {
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
         registerEventListeners();
         registerCriteriaTriggers();
+        CompatibilityHelper.preInit();
     }
 
     @Override
@@ -43,6 +47,7 @@ public class CommonProxy implements IProxy {
         registerItemRenders(initializationEvent);
         registerItemColorHandlers(initializationEvent);
         registerCapabilities();
+        CompatibilityHelper.init();
     }
 
     @Override
@@ -78,6 +83,12 @@ public class CommonProxy implements IProxy {
         this.registerPackets();
         this.registerLootTables();
         this.registerEntityRenderingHandlers();
+        CompatibilityHelper.postInit();
+    }
+
+    @Override
+    public void loadComplete(@Nonnull FMLLoadCompleteEvent loadCompleteEvent) {
+        CompatibilityHelper.loadComplete();
     }
 
     @Override
@@ -98,5 +109,10 @@ public class CommonProxy implements IProxy {
     @Override
     public EntityPlayer getPlayerFromContext(MessageContext context) {
         return context.getServerHandler().player;
+    }
+
+    @Override
+    public Side getCurrentSide() {
+        return Side.SERVER;
     }
 }

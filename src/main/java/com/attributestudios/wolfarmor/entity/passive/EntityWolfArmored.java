@@ -278,6 +278,10 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
         return this.inventory;
     }
 
+    @Override
+    public void setInventoryItem(int index, @Nonnull ItemStack itemStack) {
+    }
+
     /**
      * Gets the entity's armor item from the data watcher.
      *

@@ -1,23 +1,27 @@
-package com.attributestudios.wolfarmor.event;
+package com.attributestudios.wolfarmor.common.event;
 
 import com.attributestudios.wolfarmor.WolfArmorMod;
 import com.attributestudios.wolfarmor.api.IWolfArmorCapability;
 import com.attributestudios.wolfarmor.api.util.Capabilities;
-import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import com.attributestudios.wolfarmor.common.ReflectionCache;
 import com.attributestudios.wolfarmor.entity.ai.EntityAIWolfAutoEat;
 import com.attributestudios.wolfarmor.entity.ai.EntityAIWolfHowl;
 import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 /**
  * Contains all forge subscribed events for entities
@@ -72,6 +76,24 @@ public class EntityEventHandler {
                 world.spawnEntity(entityWolf);
                 entityWolfArmored.setDead();
                 event.setCanceled(true);
+            }
+            else if(entity instanceof EntityWolf){
+                Field inventoryHandsDropChances = ReflectionCache.getField(EntityLiving.class, "inventoryHandsDropChances", "field_82174_bp");
+                Field inventoryArmorDropChances = ReflectionCache.getField(EntityLiving.class, "inventoryArmorDropChances", "field_184655_bs");
+                if(inventoryHandsDropChances != null) {
+                    try {
+                        Arrays.fill((float[])inventoryHandsDropChances.get(entity), 0.0F);
+                    } catch (IllegalAccessException e) {
+                        WolfArmorMod.getLogger().error(e);
+                    }
+                }
+                if(inventoryArmorDropChances != null) {
+                    try {
+                        Arrays.fill((float[])inventoryArmorDropChances.get(entity), 0.0F);
+                    } catch (IllegalAccessException e) {
+                        WolfArmorMod.getLogger().error(e);
+                    }
+                }
             }
         }
     }
