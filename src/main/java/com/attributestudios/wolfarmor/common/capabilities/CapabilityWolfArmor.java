@@ -324,11 +324,7 @@ public class CapabilityWolfArmor implements IWolfArmorCapability, ICapabilitySer
     public void onInventoryChanged(@Nonnull IInventory inventory) {
         if(!this.wolf.getEntityWorld().isRemote) {
             @Nonnull ItemStack armorItemStack = inventory.getStackInSlot(INVENTORY_SLOT_ARMOR);
-            @Nonnull ItemStack previousArmorItem = this.getArmorItemStack();
             this.setArmorItemStack(armorItemStack);
-            if(armorItemStack != previousArmorItem && previousArmorItem.isEmpty()) {
-                this.playEquipSound(armorItemStack);
-            }
 
             applyArmorModifiers(this.wolf.getEntityAttribute(SharedMonsterAttributes.ARMOR), armorItemStack);
             applyArmorModifiers(this.wolf.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS), armorItemStack);
@@ -413,7 +409,7 @@ public class CapabilityWolfArmor implements IWolfArmorCapability, ICapabilitySer
         NBTTagCompound armorTags = tags.getCompoundTag(Storage.NBT_TAG_ARMOR_ITEM);
         if (!armorTags.hasNoTags()) {
             @Nonnull ItemStack armorItemStack = new ItemStack(armorTags);
-            this.setArmorItemStack(armorItemStack);
+            this.equipArmor(armorItemStack);
         }
     }
 
