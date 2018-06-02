@@ -2,12 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "X  ",
-    "XXX",
-    "X X"
+    "XIX",
+    "I I"
   ],
   "key": {
     "X": {
       "item": "minecraft:iron_nugget"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
     }
   },
   "result": {
