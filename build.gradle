@@ -1,16 +1,17 @@
-import org.apache.tools.ant.filters.ReplaceTokens
 buildscript {
     repositories {
         jcenter()
         maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "http://repo.spongepowered.org/maven"}
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6+'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-//Only edit below this line, the above code adds and enables the nessasary things for Forge to be setup.
+apply plugin: 'org.spongepowered.mixin'
 
 def versioningFile = file('versioning.properties')
 def apiVersioningFile = file('api/versioning.properties')
@@ -111,6 +112,10 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
+repositories {
+    maven { url = 'http://repo.spongepowered.org/maven' }
+}
+
 dependencies {
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
@@ -132,7 +137,7 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    compile 'org.spongepowered:mixin:0.7.5-SNAPSHOT'
 }
 
 processResources {
