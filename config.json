@@ -1,0 +1,16 @@
+{
+    "forge": {
+        "gradle": "2.3-SNAPSHOT",
+        "version": "14.23.4.2705"
+    },
+    "mcp": {
+        "version": "stable_39"
+    },
+    "version": {
+        "extension": "SNAPSHOT",
+        "major": 3,
+        "minecraft": "1.12.2",
+        "minor": 0,
+        "patch": 2
+    }
+}

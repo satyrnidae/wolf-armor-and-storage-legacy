@@ -13,30 +13,17 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 
-def versioningFile = file('versioning.properties')
-def apiVersioningFile = file('api/versioning.properties')
-def mcversion = '0.0'
-def majormod = '0'
-def majorapi = '0'
-def minor = '0'
-def patchmod = 0
-def patchapi = 0
-def extended = ''
-def shortVersion = ''
+def modConfig
+def apiConfig
 
-if(versioningFile.canRead() && apiVersioningFile.canRead()) {
-	Properties versionProperties = new Properties()
-    Properties apiVersionProperties = new Properties()
-	versionProperties.load(new FileInputStream(versioningFile))
-    apiVersionProperties.load(new FileInputStream(apiVersioningFile))
-	mcversion = versionProperties['MCVERSION'].toString()
-    majormod = versionProperties['MAJOR'].toString()
-    majorapi = apiVersionProperties['MAJOR'].toString()
-    minor = versionProperties['MINOR'].toString()
-    patchmod = versionProperties['PATCH'].toShort()
-    patchapi = apiVersionProperties['PATCH'].toShort()
-    extended = versionProperties['EXTENDED'].toString()
+file "./config.json" withReader {
+    modConfig = new groovy.json.JsonSlurper().parseText(it.text)
 }
+
+file "./api/config.json" withReader {
+    apiConfig = new groovy.json.JsonSlurper().parseText(it.text)
+}
+
 sourceSets.api {
     java {
         srcDirs 'api/'
@@ -44,54 +31,42 @@ sourceSets.api {
 }
 sourceSets.main {
     java {
-        srcDirs 'api/'
         srcDirs 'src/main/java'
     }
 }
-
-build {
-	ext.autoIncrementBuildNumber = {
-		if (versioningFile.canRead()) {
-			Properties versionProps = new Properties()
-			versionProps.load(new FileInputStream(versioningFile))
-			patchmod = versionProps['PATCH'].toInteger() + 1
-			versionProps['PATCH'] = patchmod.toString()
-			versionProps.store(versioningFile.newWriter(), null)
-		} else {
-			throw new GradleException("Could not read versioning.properties!")
-		}
-	}
-	
-	gradle.taskGraph.whenReady {taskGraph ->
-		if(taskGraph.hasTask(compileJava) &&
-           taskGraph.hasTask(assemble) &&
-           taskGraph.hasTask(build)) {
-			autoIncrementBuildNumber()
-		}
-	}
-
-    return 0
+sourceSets.test {
+    java {
+        srcDirs 'tests/'
+    }
 }
 
-def comboPatch = (patchmod | (patchapi<<8))
+def combinedMinorVersion = (modConfig.version.minor | (apiConfig.version.minor<<8))
 
-version = mcversion + "-" + majormod + "." + majorapi + "." + minor + "." + comboPatch + extended
-shortVersion = majormod + "." + majorapi + "." + minor + "." + patchmod
-logger.info("Current version is " + version + " (" + shortVersion + ")")
-group= "com.attributestudios.wolfarmor" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-//noinspection GroovyUnusedAssignment
+def shortVersion = "${modConfig.version.major}.${apiConfig.version.major}.${combinedMinorVersion}.${modConfig.version.patch}"
+version = "${modConfig.version.minecraft}-${shortVersion}"
+
+println "Current version is ${version}"
+group= "dev.satyrn.wolfarmor"
 archivesBaseName = "wolfarmor"
-
 
 task updateModVersion(type:Copy) {
     from('src/main/java') {
         exclude 'mcmod.info'
     }
     into 'build/sources/main/java'
-    expand 'version':shortVersion
+    expand 'version':shortVersion, 'mcversion':project.minecraft.version
+}
+
+task updatePatchNumber() {
+    modConfig.version.patch += 1
+    def configFile = file('./config.json')
+    configFile.delete()
+    configFile.write(new groovy.json.JsonBuilder(modConfig).toPrettyString())
+    println "Patch number updated to ${modConfig.version.patch}"
 }
 
 compileJava.dependsOn updateModVersion
+updatePatchNumber.shouldRunAfter build
 
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
@@ -99,8 +74,11 @@ compileJava {
     sourceCompatibility = targetCompatibility = "1.8"
 }
 
+build {
+}
+
 minecraft {
-    version = "1.12.2-14.23.4.2705"
+    version = "${modConfig.version.minecraft}-${modConfig.forge.version}"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -108,7 +86,7 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20180601"
+    mappings = modConfig.mcp.version
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
@@ -117,26 +95,6 @@ repositories {
 }
 
 dependencies {
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-      
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // the 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    //provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // the deobf configurations:  'deobfCompile' and 'deobfProvided' are the same as the normal compile and provided,
-    // except that these dependencies get remapped to your current MCP mappings
-    //deobfCompile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-    //deobfProvided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
     compile 'org.spongepowered:mixin:0.7.5-SNAPSHOT'
 }
 
