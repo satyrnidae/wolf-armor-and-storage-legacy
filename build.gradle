@@ -5,24 +5,13 @@ buildscript {
         maven { url = "http://repo.spongepowered.org/maven"}
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6+'
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath "org.spongepowered:mixingradle:0.6+"
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
-
-def modConfig
-def apiConfig
-
-file "./config.json" withReader {
-    modConfig = new groovy.json.JsonSlurper().parseText(it.text)
-}
-
-file "./api/config.json" withReader {
-    apiConfig = new groovy.json.JsonSlurper().parseText(it.text)
-}
 
 sourceSets.api {
     java {
@@ -39,6 +28,18 @@ sourceSets.test {
         srcDirs 'tests/'
     }
 }
+
+def modConfig
+def apiConfig
+
+file "./config.json" withReader {
+    modConfig = new groovy.json.JsonSlurper().parseText(it.text)
+}
+
+file "./api/config.json" withReader {
+    apiConfig = new groovy.json.JsonSlurper().parseText(it.text)
+}
+
 
 def combinedMinorVersion = (modConfig.version.minor | (apiConfig.version.minor<<8))
 
@@ -102,7 +103,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.spongepowered:mixin:0.7.5-SNAPSHOT'
+    compile "org.spongepowered:mixin:${modConfig.sponge.version}"
 }
 
 processResources {

@@ -1,6 +1,5 @@
 {
     "forge": {
-        "gradle": "2.3-SNAPSHOT",
         "version": "14.23.4.2705"
     },
     "mcp": {
@@ -12,5 +11,8 @@
         "minecraft": "1.12.2",
         "minor": 0,
         "patch": 3
+    },
+    "sponge": {
+        "version": "0.7.5-SNAPSHOT"
     }
 }
