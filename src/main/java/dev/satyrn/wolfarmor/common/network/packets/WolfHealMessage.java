@@ -1,8 +1,8 @@
-package com.attributestudios.wolfarmor.common.network.packets;
+package dev.satyrn.wolfarmor.common.network.packets;
 
 import java.io.IOException;
 
-import com.attributestudios.wolfarmor.common.network.MessageBase.ClientMessageBase;
+import dev.satyrn.wolfarmor.common.network.MessageBase.ClientMessageBase;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

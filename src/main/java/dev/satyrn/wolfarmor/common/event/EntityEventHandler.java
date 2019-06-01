@@ -1,12 +1,12 @@
-package com.attributestudios.wolfarmor.common.event;
+package dev.satyrn.wolfarmor.common.event;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
 import dev.satyrn.wolfarmor.api.util.Capabilities;
-import com.attributestudios.wolfarmor.common.ReflectionCache;
-import com.attributestudios.wolfarmor.entity.ai.EntityAIWolfAutoEat;
-import com.attributestudios.wolfarmor.entity.ai.EntityAIWolfHowl;
-import com.attributestudios.wolfarmor.entity.passive.EntityWolfArmored;
+import dev.satyrn.wolfarmor.common.ReflectionCache;
+import dev.satyrn.wolfarmor.entity.ai.EntityAIWolfAutoEat;
+import dev.satyrn.wolfarmor.entity.ai.EntityAIWolfHowl;
+import dev.satyrn.wolfarmor.entity.passive.EntityWolfArmored;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.passive.EntityWolf;

@@ -1,8 +1,8 @@
-package com.attributestudios.wolfarmor.entity.passive;
+package dev.satyrn.wolfarmor.entity.passive;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
-import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import dev.satyrn.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerHorseChest;

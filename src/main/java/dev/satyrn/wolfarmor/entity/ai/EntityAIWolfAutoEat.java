@@ -1,12 +1,12 @@
-package com.attributestudios.wolfarmor.entity.ai;
+package dev.satyrn.wolfarmor.entity.ai;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
 import dev.satyrn.wolfarmor.api.util.Capabilities;
-import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
-import com.attributestudios.wolfarmor.common.network.PacketHandler;
-import com.attributestudios.wolfarmor.common.network.packets.WolfEatMessage;
-import com.attributestudios.wolfarmor.common.network.packets.WolfHealMessage;
+import dev.satyrn.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import dev.satyrn.wolfarmor.common.network.PacketHandler;
+import dev.satyrn.wolfarmor.common.network.packets.WolfEatMessage;
+import dev.satyrn.wolfarmor.common.network.packets.WolfHealMessage;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.passive.EntityWolf;

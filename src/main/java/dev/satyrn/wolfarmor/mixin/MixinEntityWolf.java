@@ -1,6 +1,6 @@
 package dev.satyrn.wolfarmor.mixin;
 
-import com.attributestudios.wolfarmor.common.DataHelper;
+import dev.satyrn.wolfarmor.common.DataHelper;
 import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.network.datasync.DataSerializers;

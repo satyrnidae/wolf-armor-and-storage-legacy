@@ -1,7 +1,7 @@
-package com.attributestudios.wolfarmor.compatibility;
+package dev.satyrn.wolfarmor.compatibility;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.compatibility.loader.SophisticatedWolvesLoader;
+import dev.satyrn.wolfarmor.compatibility.loader.SophisticatedWolvesLoader;
 import com.google.common.collect.Maps;
 
 import java.util.HashMap;

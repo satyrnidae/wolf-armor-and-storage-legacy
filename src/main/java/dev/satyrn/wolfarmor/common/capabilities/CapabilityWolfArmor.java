@@ -1,13 +1,13 @@
-package com.attributestudios.wolfarmor.common.capabilities;
+package dev.satyrn.wolfarmor.common.capabilities;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.advancements.WolfArmorTrigger;
+import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
 import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
 import dev.satyrn.wolfarmor.api.util.Capabilities;
 import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.api.util.Resources;
-import com.attributestudios.wolfarmor.common.network.PacketHandler;
-import com.attributestudios.wolfarmor.common.network.packets.WolfArmorCapabilityDataMessage;
+import dev.satyrn.wolfarmor.common.network.PacketHandler;
+import dev.satyrn.wolfarmor.common.network.packets.WolfArmorCapabilityDataMessage;
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.Block;

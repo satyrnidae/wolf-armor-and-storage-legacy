@@ -1,7 +1,7 @@
-package com.attributestudios.wolfarmor.client.model;
+package dev.satyrn.wolfarmor.client.model;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
-import com.attributestudios.wolfarmor.common.ReflectionCache;
+import dev.satyrn.wolfarmor.common.ReflectionCache;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelWolf;
 import net.minecraftforge.fml.relauncher.Side;

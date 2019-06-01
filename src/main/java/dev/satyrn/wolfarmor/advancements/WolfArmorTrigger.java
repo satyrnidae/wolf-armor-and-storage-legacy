@@ -1,4 +1,4 @@
-package com.attributestudios.wolfarmor.advancements;
+package dev.satyrn.wolfarmor.advancements;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

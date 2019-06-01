@@ -1,8 +1,8 @@
-package com.attributestudios.wolfarmor.common.network.packets;
+package dev.satyrn.wolfarmor.common.network.packets;
 
 import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
 import dev.satyrn.wolfarmor.api.util.Capabilities;
-import com.attributestudios.wolfarmor.common.network.MessageBase;
+import dev.satyrn.wolfarmor.common.network.MessageBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;

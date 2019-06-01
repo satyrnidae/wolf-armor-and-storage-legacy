@@ -1,4 +1,4 @@
-package com.attributestudios.wolfarmor.client.model;
+package dev.satyrn.wolfarmor.client.model;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;

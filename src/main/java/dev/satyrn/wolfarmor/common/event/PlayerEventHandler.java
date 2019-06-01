@@ -1,4 +1,4 @@
-package com.attributestudios.wolfarmor.common.event;
+package dev.satyrn.wolfarmor.common.event;
 
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import net.minecraft.block.Block;

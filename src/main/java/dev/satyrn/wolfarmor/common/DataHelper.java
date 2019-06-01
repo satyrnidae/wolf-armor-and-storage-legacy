@@ -1,4 +1,4 @@
-package com.attributestudios.wolfarmor.common;
+package dev.satyrn.wolfarmor.common;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;

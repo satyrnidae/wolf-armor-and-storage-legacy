@@ -1,9 +1,9 @@
-package com.attributestudios.wolfarmor.common.network;
+package dev.satyrn.wolfarmor.common.network;
 
 import dev.satyrn.wolfarmor.api.util.Capabilities;
-import com.attributestudios.wolfarmor.client.gui.GuiWolfInventory;
+import dev.satyrn.wolfarmor.client.gui.GuiWolfInventory;
 import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
-import com.attributestudios.wolfarmor.common.inventory.ContainerWolfInventory;
+import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;

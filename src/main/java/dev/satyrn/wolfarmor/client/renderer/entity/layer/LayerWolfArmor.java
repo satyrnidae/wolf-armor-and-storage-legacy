@@ -1,9 +1,9 @@
-package com.attributestudios.wolfarmor.client.renderer.entity.layer;
+package dev.satyrn.wolfarmor.client.renderer.entity.layer;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.util.Capabilities;
 import dev.satyrn.wolfarmor.api.util.Resources;
-import com.attributestudios.wolfarmor.client.model.ModelWolfArmor;
+import dev.satyrn.wolfarmor.client.model.ModelWolfArmor;
 import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import com.google.common.collect.Maps;

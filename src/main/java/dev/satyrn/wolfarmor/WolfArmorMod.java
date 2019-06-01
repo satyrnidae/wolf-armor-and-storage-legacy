@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
         modid = Resources.MOD_ID,
         name = Resources.MOD_NAME,
         version = WolfArmorMod.MOD_VERSION,
-        guiFactory = "com.attributestudios.wolfarmor.client.gui.config.WolfArmorGuiFactory")
+        guiFactory = "dev.satyrn.wolfarmor.client.gui.config.WolfArmorGuiFactory")
 public class WolfArmorMod {
     //region Fields
 
@@ -28,8 +28,8 @@ public class WolfArmorMod {
      */
     public static final String MOD_VERSION = "${version}";
 
-    @SidedProxy(clientSide = "com.attributestudios.wolfarmor.client.ClientProxy",
-                serverSide = "com.attributestudios.wolfarmor.common.CommonProxy")
+    @SidedProxy(clientSide = "dev.satyrn.wolfarmor.client.ClientProxy",
+                serverSide = "dev.satyrn.wolfarmor.common.CommonProxy")
     public static IProxy proxy;
 
     @Mod.Instance(Resources.MOD_ID)

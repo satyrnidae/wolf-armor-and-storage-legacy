@@ -1,11 +1,11 @@
-package com.attributestudios.wolfarmor.client.gui;
+package dev.satyrn.wolfarmor.client.gui;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.IWolfArmorMaterial;
 import dev.satyrn.wolfarmor.api.util.Capabilities;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
-import com.attributestudios.wolfarmor.common.inventory.ContainerWolfInventory;
+import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;

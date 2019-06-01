@@ -1,11 +1,11 @@
-package com.attributestudios.wolfarmor.common.network;
+package dev.satyrn.wolfarmor.common.network;
 
 import dev.satyrn.wolfarmor.api.util.Resources;
-import com.attributestudios.wolfarmor.common.network.packets.WolfArmorCapabilityDataMessage;
-import com.attributestudios.wolfarmor.common.network.packets.WolfEatMessage;
-import com.attributestudios.wolfarmor.common.network.packets.WolfHealMessage;
-import com.attributestudios.wolfarmor.common.network.MessageBase.ClientMessageBase;
-import com.attributestudios.wolfarmor.common.network.MessageBase.ServerMessageBase;
+import dev.satyrn.wolfarmor.common.network.packets.WolfArmorCapabilityDataMessage;
+import dev.satyrn.wolfarmor.common.network.packets.WolfEatMessage;
+import dev.satyrn.wolfarmor.common.network.packets.WolfHealMessage;
+import dev.satyrn.wolfarmor.common.network.MessageBase.ClientMessageBase;
+import dev.satyrn.wolfarmor.common.network.MessageBase.ServerMessageBase;
 
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

@@ -1,4 +1,4 @@
-package com.attributestudios.wolfarmor.common;
+package dev.satyrn.wolfarmor.common;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import com.google.common.collect.Maps;

@@ -1,10 +1,10 @@
-package com.attributestudios.wolfarmor.client.renderer.entity.layer;
+package dev.satyrn.wolfarmor.client.renderer.entity.layer;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.util.Capabilities;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
-import com.attributestudios.wolfarmor.client.model.ModelWolfBackpack;
+import dev.satyrn.wolfarmor.client.model.ModelWolfBackpack;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;

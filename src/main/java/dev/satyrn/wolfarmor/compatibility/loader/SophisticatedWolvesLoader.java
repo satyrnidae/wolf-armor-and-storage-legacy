@@ -1,10 +1,10 @@
-package com.attributestudios.wolfarmor.compatibility.loader;
+package dev.satyrn.wolfarmor.compatibility.loader;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.client.RenderLayerFactory;
-import com.attributestudios.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
-import com.attributestudios.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
-import com.attributestudios.wolfarmor.compatibility.CompatibilityHelper;
+import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
+import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
+import dev.satyrn.wolfarmor.compatibility.CompatibilityHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;

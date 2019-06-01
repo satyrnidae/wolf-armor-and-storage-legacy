@@ -1,4 +1,4 @@
-package com.attributestudios.wolfarmor.client.gui.config;
+package dev.satyrn.wolfarmor.client.gui.config;
 
 import dev.satyrn.wolfarmor.WolfArmorConfiguration;
 import dev.satyrn.wolfarmor.WolfArmorMod;

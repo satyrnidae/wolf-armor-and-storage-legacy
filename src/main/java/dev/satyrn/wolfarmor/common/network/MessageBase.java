@@ -1,4 +1,4 @@
-package com.attributestudios.wolfarmor.common.network;
+package dev.satyrn.wolfarmor.common.network;
 
 import java.io.IOException;
 

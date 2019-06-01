@@ -1,4 +1,4 @@
-package com.attributestudios.wolfarmor.common.loot;
+package dev.satyrn.wolfarmor.common.loot;
 
 import dev.satyrn.wolfarmor.api.util.Resources;
 import net.minecraft.util.ResourceLocation;

@@ -1,4 +1,4 @@
-package com.attributestudios.wolfarmor.client.gui.config;
+package dev.satyrn.wolfarmor.client.gui.config;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;

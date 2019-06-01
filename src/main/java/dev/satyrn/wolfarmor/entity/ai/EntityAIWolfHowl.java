@@ -1,4 +1,4 @@
-package com.attributestudios.wolfarmor.entity.ai;
+package dev.satyrn.wolfarmor.entity.ai;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import net.minecraft.entity.ai.EntityAIBase;

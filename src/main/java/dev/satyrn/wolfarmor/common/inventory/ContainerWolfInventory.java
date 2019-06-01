@@ -1,6 +1,6 @@
-package com.attributestudios.wolfarmor.common.inventory;
+package dev.satyrn.wolfarmor.common.inventory;
 
-import com.attributestudios.wolfarmor.advancements.WolfArmorTrigger;
+import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
 import dev.satyrn.wolfarmor.api.util.Capabilities;
 import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-import com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import dev.satyrn.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
 import net.minecraft.util.SoundEvent;
 
