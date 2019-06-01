@@ -58,11 +58,18 @@ task updateModVersion(type:Copy) {
 }
 
 task updatePatchNumber() {
-    modConfig.version.patch += 1
-    def configFile = file('./config.json')
-    configFile.delete()
-    configFile.write(new groovy.json.JsonBuilder(modConfig).toPrettyString())
-    println "Patch number updated to ${modConfig.version.patch}"
+    dependsOn build
+    gradle.taskGraph.whenReady {taskGraph ->
+        if(taskGraph.hasTask(compileJava) &&
+           taskGraph.hasTask(assemble) &&
+           taskGraph.hasTask(build)) {
+            modConfig.version.patch += 1
+            def configFile = new File('./config.json')
+            configFile.delete()
+            configFile.write(new groovy.json.JsonBuilder(modConfig).toPrettyString())
+            println "Patch number updated to ${modConfig.version.patch}"
+        }
+    }
 }
 
 compileJava.dependsOn updateModVersion
@@ -80,7 +87,7 @@ build {
 minecraft {
     version = "${modConfig.version.minecraft}-${modConfig.forge.version}"
     runDir = "run"
-    
+
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
@@ -106,16 +113,16 @@ processResources {
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
+
         // replace version and mcversion
         expand 'version':shortVersion, 'mcversion':project.minecraft.version
     }
-        
+
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-	
+
 	// copy LICENSE
     from('/') {
         include 'LICENSE'
