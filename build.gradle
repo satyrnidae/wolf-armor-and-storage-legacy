@@ -47,10 +47,10 @@ file "./api/config.json" withReader {
 }
 
 
-def combinedMinorVersion = (modConfig.version.minor | (apiConfig.version.minor<<8))
+def combinedPatchAndApiVersion = (modConfig.version.patch | (apiConfig.version.minor<<8))
 
-def shortVersion = "${modConfig.version.major}.${apiConfig.version.major}.${combinedMinorVersion}.${modConfig.version.patch}"
-version = "${modConfig.version.minecraft}-${shortVersion}"
+def shortVersion = "${modConfig.version.major}.${apiConfig.version.major}.${modConfig.version.minor}.${combinedPatchAndApiVersion}"
+version = "${modConfig.version.minecraft}-${shortVersion}-${modConfig.version.extension}"
 
 println "Current version is ${version}"
 group= "dev.satyrn.wolfarmor"
