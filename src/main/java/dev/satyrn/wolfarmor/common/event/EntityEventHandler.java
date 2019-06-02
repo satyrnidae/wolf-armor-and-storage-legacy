@@ -2,12 +2,10 @@ package dev.satyrn.wolfarmor.common.event;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.IArmoredWolf;
-import dev.satyrn.wolfarmor.common.ReflectionCache;
 import dev.satyrn.wolfarmor.entity.ai.EntityAIWolfAutoEat;
 import dev.satyrn.wolfarmor.entity.ai.EntityAIWolfHowl;
 import dev.satyrn.wolfarmor.entity.passive.EntityWolfArmored;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -18,7 +16,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 
 /**
@@ -76,22 +73,10 @@ public class EntityEventHandler {
                 event.setCanceled(true);
             }
             else if(entity instanceof EntityWolf){
-                Field inventoryHandsDropChances = ReflectionCache.getField(EntityLiving.class, "inventoryHandsDropChances", "field_82174_bp");
-                Field inventoryArmorDropChances = ReflectionCache.getField(EntityLiving.class, "inventoryArmorDropChances", "field_184655_bs");
-                if(inventoryHandsDropChances != null) {
-                    try {
-                        Arrays.fill((float[])inventoryHandsDropChances.get(entity), 0.0F);
-                    } catch (IllegalAccessException e) {
-                        WolfArmorMod.getLogger().error(e);
-                    }
-                }
-                if(inventoryArmorDropChances != null) {
-                    try {
-                        Arrays.fill((float[])inventoryArmorDropChances.get(entity), 0.0F);
-                    } catch (IllegalAccessException e) {
-                        WolfArmorMod.getLogger().error(e);
-                    }
-                }
+                EntityWolf wolf = (EntityWolf) entity;
+
+                Arrays.fill(wolf.inventoryHandsDropChances, 0.0F);
+                Arrays.fill(wolf.inventoryArmorDropChances, 0.0F);
             }
         }
     }
