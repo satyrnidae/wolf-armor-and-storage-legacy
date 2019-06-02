@@ -1,11 +1,10 @@
 package dev.satyrn.wolfarmor.client.renderer.entity.layer;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
+import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.ItemWolfArmor;
-import dev.satyrn.wolfarmor.api.util.Capabilities;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.client.model.ModelWolfArmor;
-import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
 import com.google.common.collect.Maps;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
@@ -84,10 +83,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
             return;
         }
 
-        IWolfArmorCapability wolfArmor = entityWolf.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
-        if(wolfArmor == null) {
-            return;
-        }
+        IArmoredWolf wolfArmor = (IArmoredWolf)entityWolf;
 
         ItemStack itemStack = wolfArmor.getArmorItemStack();
 

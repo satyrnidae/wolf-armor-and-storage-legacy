@@ -1,9 +1,8 @@
 package dev.satyrn.wolfarmor.entity.ai;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
-import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
-import dev.satyrn.wolfarmor.api.util.Capabilities;
-import dev.satyrn.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import dev.satyrn.wolfarmor.api.IArmoredWolf;
+import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import dev.satyrn.wolfarmor.common.network.PacketHandler;
 import dev.satyrn.wolfarmor.common.network.packets.WolfEatMessage;
 import dev.satyrn.wolfarmor.common.network.packets.WolfHealMessage;
@@ -24,7 +23,7 @@ import java.util.Comparator;
 
 public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChangedListener {
     private final EntityWolf entity;
-    private IWolfArmorCapability capability;
+    private final IArmoredWolf armoredWolf;
 
     private NonNullList<ItemStack> inventoryContents = NonNullList.create();
     private ItemStack eatingFood = ItemStack.EMPTY;
@@ -35,16 +34,14 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
 
     public EntityAIWolfAutoEat(@Nonnull EntityWolf entity) {
         this.entity = entity;
-        this.capability = this.entity.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
+        this.armoredWolf = (IArmoredWolf)entity;
         this.inventoryInit();
     }
 
     private void inventoryInit() {
-        if(capability != null) {
-            capability.getInventory().removeInventoryChangeListener(this);
-            capability.getInventory().addInventoryChangeListener(this);
-            refreshInventoryContents(capability.getInventory());
-        }
+        armoredWolf.getInventory().removeInventoryChangeListener(this);
+        armoredWolf.getInventory().addInventoryChangeListener(this);
+        refreshInventoryContents(armoredWolf.getInventory());
     }
 
 
@@ -54,12 +51,8 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
                 !WolfArmorMod.getConfiguration().getShouldWolvesEatWhenDamaged()) {
             return false;
         }
-        if (capability == null) {
-            this.capability = this.entity.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
-            return false;
-        }
 
-        return capability.getHasChest() &&
+        return armoredWolf.getHasChest() &&
                 !entity.getIsInvulnerable() &&
                 entity.hurtTime == 0 &&
                 (entity.getMaxHealth() - entity.getHealth()) >= 1.0F;
@@ -125,8 +118,8 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
 
     private void refreshInventoryContents(IInventory invBasic) {
         this.inventoryContents.clear();
-        for(int slotIndex = CapabilityWolfArmor.INVENTORY_SLOT_CHEST_START;
-            slotIndex < CapabilityWolfArmor.INVENTORY_SLOT_CHEST_START + CapabilityWolfArmor.INVENTORY_SLOT_CHEST_LENGTH;
+        for(int slotIndex = ContainerWolfInventory.INVENTORY_SLOT_CHEST_START;
+            slotIndex < ContainerWolfInventory.INVENTORY_SLOT_CHEST_START + ContainerWolfInventory.INVENTORY_SLOT_CHEST_LENGTH;
             ++slotIndex) {
             this.inventoryContents.add(invBasic.getStackInSlot(slotIndex));
         }

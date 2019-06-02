@@ -1,9 +1,10 @@
 package dev.satyrn.wolfarmor.common.inventory;
 
 import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
+import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.ItemWolfArmor;
-import dev.satyrn.wolfarmor.api.util.Capabilities;
 import dev.satyrn.wolfarmor.api.util.Criteria;
+import dev.satyrn.wolfarmor.api.util.Items;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -14,8 +15,6 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-import dev.satyrn.wolfarmor.common.capabilities.CapabilityWolfArmor;
-import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
 import net.minecraft.util.SoundEvent;
 
 /**
@@ -23,6 +22,11 @@ import net.minecraft.util.SoundEvent;
  */
 public class ContainerWolfInventory extends Container {
     //region Fields
+
+    public static final int MAX_SIZE_INVENTORY = 7;
+    public static final int INVENTORY_SLOT_ARMOR = 0;
+    public static final int INVENTORY_SLOT_CHEST_START = 1;
+    public static final int INVENTORY_SLOT_CHEST_LENGTH = MAX_SIZE_INVENTORY - INVENTORY_SLOT_CHEST_START;
 
     private IInventory wolfInventory;
     private EntityWolf theWolf;
@@ -65,7 +69,7 @@ public class ContainerWolfInventory extends Container {
              */
             @Override
             public boolean isItemValid(@Nonnull ItemStack stack) {
-                return stack.isEmpty() || (super.isItemValid(stack) && CapabilityWolfArmor.isValidWolfArmor(stack.getItem()));
+                return stack.isEmpty() || (super.isItemValid(stack) && Items.isValidWolfArmor(stack.getItem()));
             }
 
             @Override
@@ -73,7 +77,7 @@ public class ContainerWolfInventory extends Container {
                 super.onSlotChanged();
 
                 ItemStack stack = this.getStack();
-                if(player instanceof EntityPlayerMP && !stack.isEmpty() && CapabilityWolfArmor.isValidWolfArmor(stack.getItem())) {
+                if(player instanceof EntityPlayerMP && !stack.isEmpty() && Items.isValidWolfArmor(stack.getItem())) {
                     ((WolfArmorTrigger)Criteria.EQUIP_WOLF_ARMOR).trigger((EntityPlayerMP)player, theWolf);
                 }
                 if (stack.getItem() instanceof ItemWolfArmor && !theWolf.getEntityWorld().isRemote) {
@@ -86,11 +90,11 @@ public class ContainerWolfInventory extends Container {
 
         });
 
-        IWolfArmorCapability wolfArmor = theWolf.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
+        IArmoredWolf wolfArmor = (IArmoredWolf)theWolf;
 
         int x;
         int y;
-        if (wolfArmor != null && wolfArmor.getHasChest()) {
+        if (wolfArmor.getHasChest()) {
             for (y = 0; y < 2; y++) {
                 for (x = 0; x < 3; x++) {
                     this.addSlotToContainer(new Slot(wolfInventory, 1 + x + y * 3, 98 + x * 18, 18 + y * 18));

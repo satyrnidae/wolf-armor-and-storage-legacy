@@ -1,9 +1,8 @@
 package dev.satyrn.wolfarmor.client.renderer.entity.layer;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
-import dev.satyrn.wolfarmor.api.util.Capabilities;
+import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.util.Resources;
-import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
 import dev.satyrn.wolfarmor.client.model.ModelWolfBackpack;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
@@ -69,8 +68,8 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
         if (!WolfArmorMod.getConfiguration().getIsWolfChestRenderEnabled()) {
             return;
         }
-        IWolfArmorCapability wolfArmor = entityWolf.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
-        if (wolfArmor != null && wolfArmor.getHasChest()) {
+        IArmoredWolf wolfArmor = (IArmoredWolf)entityWolf;
+        if (wolfArmor.getHasChest()) {
             this.modelWolfBackpack.setModelAttributes(renderer.getMainModel());
             this.modelWolfBackpack.setLivingAnimations(entityWolf, limbSwing, limbSwingAmount, partialTicks);
 

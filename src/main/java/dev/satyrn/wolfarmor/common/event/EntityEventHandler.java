@@ -1,8 +1,7 @@
 package dev.satyrn.wolfarmor.common.event;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
-import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
-import dev.satyrn.wolfarmor.api.util.Capabilities;
+import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.common.ReflectionCache;
 import dev.satyrn.wolfarmor.entity.ai.EntityAIWolfAutoEat;
 import dev.satyrn.wolfarmor.entity.ai.EntityAIWolfHowl;
@@ -41,17 +40,17 @@ public class EntityEventHandler {
             Entity entity = event.getEntity();
 
             if (entity.getClass() == EntityWolfArmored.class) {
-                WolfArmorMod.getLogger().warning("Replacing EntityWolfArmored with new capable wolf");
+                WolfArmorMod.getLogger().warning("Replacing EntityWolfArmored with new mixed wolf");
 
                 EntityWolfArmored entityWolfArmored = (EntityWolfArmored) entity;
                 EntityWolf entityWolf = new EntityWolf(world);
-                IWolfArmorCapability wolfArmorCapability = entityWolf.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
-                if(wolfArmorCapability == null) {
-                    throw new RuntimeException("Failed to replace entity: Capabilities were not properly registered!");
+                IArmoredWolf armoredWolf = (IArmoredWolf)entityWolf;
+                if(armoredWolf == null) {
+                    throw new RuntimeException("Failed to replace entity: Mixins were not properly registered!");
                 }
 
                 IInventory wolfInventory = entityWolfArmored.getInventory();
-                IInventory capabilityInventory = wolfArmorCapability.getInventory();
+                IInventory capabilityInventory = armoredWolf.getInventory();
                 for (int i = 0; i < wolfInventory.getSizeInventory(); i++) {
                     ItemStack stack = wolfInventory.getStackInSlot(i);
 
@@ -59,11 +58,11 @@ public class EntityEventHandler {
                 }
 
                 if (entityWolfArmored.getHasArmor()) {
-                    wolfArmorCapability.setArmorItemStack(entityWolfArmored.getArmorItemStack());
+                    armoredWolf.setArmorItemStack(entityWolfArmored.getArmorItemStack());
                 }
 
                 if (entityWolfArmored.getHasChest()) {
-                    wolfArmorCapability.setHasChest(true);
+                    armoredWolf.setHasChest(true);
                 }
 
                 NBTTagCompound compound = new NBTTagCompound();

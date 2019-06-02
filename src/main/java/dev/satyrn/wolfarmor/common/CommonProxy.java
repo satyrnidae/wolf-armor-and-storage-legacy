@@ -5,7 +5,6 @@ import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
 import dev.satyrn.wolfarmor.api.IProxy;
 import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.api.util.Resources;
-import dev.satyrn.wolfarmor.common.capabilities.CapabilityWolfArmor;
 import dev.satyrn.wolfarmor.common.loot.LootHandler;
 import dev.satyrn.wolfarmor.common.network.WolfArmorGuiHandler;
 import dev.satyrn.wolfarmor.common.network.PacketHandler;
@@ -46,7 +45,6 @@ public class CommonProxy implements IProxy {
     public void init(@Nonnull FMLInitializationEvent initializationEvent) {
         registerItemRenders(initializationEvent);
         registerItemColorHandlers(initializationEvent);
-        registerCapabilities();
         CompatibilityHelper.init();
     }
 
@@ -94,11 +92,6 @@ public class CommonProxy implements IProxy {
     @Override
     public void registerGuiHandlers() {
         NetworkRegistry.INSTANCE.registerGuiHandler(WolfArmorMod.getInstance(), new WolfArmorGuiHandler());
-    }
-
-    @Override
-    public void registerCapabilities() {
-        CapabilityWolfArmor.register();
     }
 
 	@Override

@@ -1,8 +1,7 @@
 package dev.satyrn.wolfarmor.common.network;
 
-import dev.satyrn.wolfarmor.api.util.Capabilities;
+import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.client.gui.GuiWolfInventory;
-import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityWolf;
@@ -40,11 +39,8 @@ public class WolfArmorGuiHandler implements IGuiHandler {
                                       int z) {
         Entity entity = world.getEntityByID(ID);
 
-        if (entity != null && entity.hasCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null)) {
-            IWolfArmorCapability wolfArmor = entity.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
-            if (wolfArmor != null) {
-                return new ContainerWolfInventory(player.inventory, wolfArmor.getInventory(), (EntityWolf) entity, player);
-            }
+        if (entity != null && entity instanceof EntityWolf) {
+            return new ContainerWolfInventory(player.inventory, ((IArmoredWolf) entity).getInventory(), (EntityWolf) entity, player);
         }
         return null;
     }
@@ -72,11 +68,8 @@ public class WolfArmorGuiHandler implements IGuiHandler {
                                       int z) {
         Entity entity = world.getEntityByID(ID);
 
-        if (entity != null && entity.hasCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null)) {
-            IWolfArmorCapability wolfArmor = entity.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
-            if (wolfArmor != null) {
-                return new GuiWolfInventory(player.inventory, wolfArmor.getInventory(), (EntityWolf) entity, player);
-            }
+        if (entity != null && entity instanceof EntityWolf) {
+            return new GuiWolfInventory(player.inventory, ((IArmoredWolf)entity).getInventory(), (EntityWolf) entity, player);
         }
         return null;
     }

@@ -1,10 +1,9 @@
 package dev.satyrn.wolfarmor.client.gui;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
+import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.IWolfArmorMaterial;
-import dev.satyrn.wolfarmor.api.util.Capabilities;
 import dev.satyrn.wolfarmor.api.util.Resources;
-import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -34,7 +33,7 @@ public class GuiWolfInventory extends GuiContainer {
     private float screenPositionX;
     private float screenPositionY;
 
-    private final IWolfArmorCapability wolfArmor;
+    private final IArmoredWolf wolfArmor;
 
     //endregion Fields
 
@@ -53,7 +52,7 @@ public class GuiWolfInventory extends GuiContainer {
                             @Nonnull EntityWolf theWolf,
                             @Nonnull EntityPlayer player) {
         super(new ContainerWolfInventory(playerInventory, wolfInventory, theWolf, player));
-        this.wolfArmor = theWolf.getCapability(Capabilities.CAPABILITY_WOLF_ARMOR, null);
+        this.wolfArmor = (IArmoredWolf)theWolf;
         this.wolfInventory = wolfInventory;
         this.playerInventory = playerInventory;
         this.theWolf = theWolf;

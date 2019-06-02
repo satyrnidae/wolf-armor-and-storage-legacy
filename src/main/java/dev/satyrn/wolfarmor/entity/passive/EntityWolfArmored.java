@@ -1,8 +1,8 @@
 package dev.satyrn.wolfarmor.entity.passive;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
-import dev.satyrn.wolfarmor.api.IWolfArmorCapability;
-import dev.satyrn.wolfarmor.common.capabilities.CapabilityWolfArmor;
+import dev.satyrn.wolfarmor.api.IArmoredWolf;
+import dev.satyrn.wolfarmor.api.util.Items;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerHorseChest;
@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
  * @deprecated Since 2.1.0
  */
 @Deprecated
-public class EntityWolfArmored extends EntityWolf implements IInventoryChangedListener, IWolfArmorCapability {
+public class EntityWolfArmored extends EntityWolf implements IInventoryChangedListener, IArmoredWolf {
     //region Fields
 
     private ContainerHorseChest inventory;
@@ -213,7 +213,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
 
     @Override
     public boolean canEquipItem(@Nonnull ItemStack armorItemStack) {
-        return CapabilityWolfArmor.isValidWolfArmor(armorItemStack) && (!this.getHasArmor() || armorItemStack.isEmpty());
+        return Items.isValidWolfArmor(armorItemStack) && (!this.getHasArmor() || armorItemStack.isEmpty());
     }
 
     @Override
@@ -233,6 +233,9 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
 
     @Override
     public void dropInventoryContents() { }
+
+    @Override
+    public void dropEquipment() { }
 
     //endregion Public / Protected Methods
 
@@ -292,7 +295,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
     public ItemStack getArmorItemStack() {
         ItemStack itemStack = this.dataManager.get(ARMOR_ITEM);
 
-        if(!CapabilityWolfArmor.isValidWolfArmor(itemStack)) {
+        if(!Items.isValidWolfArmor(itemStack)) {
             this.dataManager.set(ARMOR_ITEM, ItemStack.EMPTY);
             return ItemStack.EMPTY;
         }
@@ -307,7 +310,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
      */
     @Override
     public void setArmorItemStack(@Nonnull ItemStack itemStack) {
-        if(itemStack.isEmpty() || !CapabilityWolfArmor.isValidWolfArmor(itemStack)) {
+        if(itemStack.isEmpty() || !Items.isValidWolfArmor(itemStack)) {
             return;
         }
         ItemStack currentArmor = getArmorItemStack();
