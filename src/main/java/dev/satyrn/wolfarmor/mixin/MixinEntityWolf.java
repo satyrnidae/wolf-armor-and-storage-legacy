@@ -8,6 +8,7 @@ import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.api.util.DataHelper;
 import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.util.Items;
+import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -48,11 +49,6 @@ import javax.annotation.Nullable;
 @Mixin(EntityWolf.class)
 public abstract class MixinEntityWolf extends MixinEntityTameable implements IArmoredWolf, IInventoryChangedListener {
 
-    private static final int MAX_SIZE_INVENTORY = 7;
-    private static final int INVENTORY_SLOT_ARMOR = 0;
-    private static final int INVENTORY_SLOT_CHEST_START = 1;
-    private static final int INVENTORY_SLOT_CHEST_LENGTH = MAX_SIZE_INVENTORY - INVENTORY_SLOT_CHEST_START;
-
     static {
         DataHelper.HAS_CHEST = EntityDataManager.createKey(EntityWolf.class, DataSerializers.BOOLEAN);
         DataHelper.ARMOR_ITEM = EntityDataManager.createKey(EntityWolf.class, DataSerializers.ITEM_STACK);
@@ -62,13 +58,13 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
     @Override
     public int getMaxSizeInventory() {
-        return MAX_SIZE_INVENTORY;
+        return ContainerWolfInventory.MAX_SIZE_INVENTORY;
     }
 
     @Override
     public void onInventoryChanged(@Nonnull IInventory invBasic) {
         if(!this.getEntityWorld().isRemote) {
-            @Nonnull ItemStack armorItemStack = inventory.getStackInSlot(INVENTORY_SLOT_ARMOR);
+            @Nonnull ItemStack armorItemStack = inventory.getStackInSlot(ContainerWolfInventory.INVENTORY_SLOT_ARMOR);
             this.setArmorItemStack(armorItemStack);
 
             applyArmorModifiers(this.getEntityAttribute(SharedMonsterAttributes.ARMOR), armorItemStack);
@@ -132,7 +128,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
     @Override
     public void equipArmor(@Nonnull ItemStack armorItemStack) {
         if (canEquipItem(armorItemStack)) {
-            this.inventory.setInventorySlotContents(INVENTORY_SLOT_ARMOR, armorItemStack);
+            this.inventory.setInventorySlotContents(ContainerWolfInventory.INVENTORY_SLOT_ARMOR, armorItemStack);
         }
     }
 
@@ -163,7 +159,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
     @Override
     public void dropInventoryContents() {
-        for(int slotIndex = INVENTORY_SLOT_CHEST_START; slotIndex < INVENTORY_SLOT_CHEST_LENGTH; ++slotIndex) {
+        for(int slotIndex = ContainerWolfInventory.INVENTORY_SLOT_CHEST_START; slotIndex < ContainerWolfInventory.INVENTORY_SLOT_CHEST_LENGTH; ++slotIndex) {
             @Nonnull ItemStack stackInSlot = this.inventory.getStackInSlot(slotIndex);
             if(!stackInSlot.isEmpty()) {
                 this.entityDropItem(stackInSlot, 0);
@@ -176,7 +172,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
     @Override
     protected void damageArmor(float damage) {
         if (this.getHasArmor()) {
-            ItemStack stackInSlot = this.inventory.getStackInSlot(INVENTORY_SLOT_ARMOR);
+            ItemStack stackInSlot = this.inventory.getStackInSlot(ContainerWolfInventory.INVENTORY_SLOT_ARMOR);
             if (!stackInSlot.isEmpty()) {
                 stackInSlot.damageItem((int) Math.ceil(damage), (EntityLivingBase) (Object) this);
                 if (stackInSlot.getCount() == 0) {
@@ -270,6 +266,14 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
     @Inject(method = "readEntityFromNBT", at = @At("RETURN"))
     private void onReadEntityFromNBT(NBTTagCompound compound, CallbackInfo ci) {
+        if(compound.hasKey("ForgeCaps")) {
+            NBTTagCompound capabilities = compound.getCompoundTag("ForgeCaps");
+            if(capabilities.hasKey("wolfarmor:wolf_armor")) {
+                this.processLegacyDataTags(capabilities.getCompoundTag("wolfarmor:wolf_armor"));
+                return;
+            }
+        }
+
         boolean hasChest = compound.getBoolean("HasChest");
         this.setHasChest(hasChest);
 
@@ -398,6 +402,33 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
                     MathHelper.floor(this.posX),
                     MathHelper.floor(this.posY),
                     MathHelper.floor(this.posZ));
+        }
+    }
+
+    private void processLegacyDataTags(NBTTagCompound compound) {
+        WolfArmorMod.getLogger().log(Level.INFO, "[NBT LOAD] Updating capable wolf to mixin wolf...");
+        boolean hasChest = compound.getBoolean("hasChest");
+        this.setHasChest(hasChest);
+
+        if (hasChest) {
+            this.inventoryInit();
+            NBTTagList inventoryTagList = compound.getTagList("inventory", 10);
+
+            for (int index = 0; index < inventoryTagList.tagCount(); ++index) {
+                NBTTagCompound compoundTagAt = inventoryTagList.getCompoundTagAt(index);
+                byte slotIndex = compoundTagAt.getByte("slot");
+                if (slotIndex >= 0 && slotIndex < this.inventory.getSizeInventory()) {
+                    this.inventory.setInventorySlotContents(slotIndex, new ItemStack(compoundTagAt));
+                } else {
+                    WolfArmorMod.getLogger().log(Level.WARN, String.format("[NBT LOAD] Discarded invalid slot information at index %d", slotIndex));
+                }
+            }
+        }
+
+        NBTTagCompound armorTags = compound.getCompoundTag("armorItem");
+        if (!armorTags.isEmpty()) {
+            @Nonnull ItemStack armorItemStack = new ItemStack(armorTags);
+            this.equipArmor(armorItemStack);
         }
     }
 }
