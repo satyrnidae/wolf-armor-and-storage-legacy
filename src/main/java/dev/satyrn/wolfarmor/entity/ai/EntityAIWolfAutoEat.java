@@ -12,6 +12,7 @@ import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.IInventoryChangedListener;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -81,7 +82,7 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
     @Override
     public void updateTask() {
         --eatCooldown;
-        if(eatingFood != ItemStack.EMPTY) {
+        if(!eatingFood.isEmpty() && eatingFood.getItem() instanceof ItemFood) {
             if (foodEatTime > 0) {
                 if (--foodEatTime % 4 == 0) {
                     PacketHandler.getChannel().sendToAllAround(
