@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(EntityLiving.class)
 public abstract class MixinEntityLiving extends MixinEntityLivingBase {
 
+    @Shadow public int livingSoundTime;
+
     @Shadow
     public abstract void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack);
 

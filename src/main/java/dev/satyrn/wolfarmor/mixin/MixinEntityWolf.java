@@ -2,16 +2,25 @@ package dev.satyrn.wolfarmor.mixin;
 
 import com.google.common.collect.Multimap;
 import dev.satyrn.wolfarmor.WolfArmorMod;
+import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
 import dev.satyrn.wolfarmor.api.ItemWolfArmor;
+import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.api.util.DataHelper;
 import dev.satyrn.wolfarmor.api.IArmoredWolf;
+import dev.satyrn.wolfarmor.api.util.Items;
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
@@ -19,13 +28,19 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Level;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,8 +48,10 @@ import javax.annotation.Nullable;
 @Mixin(EntityWolf.class)
 public abstract class MixinEntityWolf extends MixinEntityTameable implements IArmoredWolf, IInventoryChangedListener {
 
-    private static final int INVENTORY_SLOT_ARMOR = 0;
     private static final int MAX_SIZE_INVENTORY = 7;
+    private static final int INVENTORY_SLOT_ARMOR = 0;
+    private static final int INVENTORY_SLOT_CHEST_START = 1;
+    private static final int INVENTORY_SLOT_CHEST_LENGTH = MAX_SIZE_INVENTORY - INVENTORY_SLOT_CHEST_START;
 
     static {
         DataHelper.HAS_CHEST = EntityDataManager.createKey(EntityWolf.class, DataSerializers.BOOLEAN);
@@ -49,7 +66,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
     }
 
     @Override
-    public void onInventoryChanged(IInventory invBasic) {
+    public void onInventoryChanged(@Nonnull IInventory invBasic) {
         if(!this.getEntityWorld().isRemote) {
             @Nonnull ItemStack armorItemStack = inventory.getStackInSlot(INVENTORY_SLOT_ARMOR);
             this.setArmorItemStack(armorItemStack);
@@ -124,6 +141,86 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         return armorItemStack.isEmpty() || (!this.getHasArmor() && armorItemStack.getItem() instanceof ItemWolfArmor);
     }
 
+    @Override
+    public void onDeath(DamageSource damageSource) {
+        super.onDeath(damageSource);
+        this.dropEquipment();
+    }
+
+    @Override
+    public void dropEquipment() {
+        if(this.getHasArmor()) {
+            @Nonnull ItemStack armorItemStack = this.getArmorItemStack();
+            this.entityDropItem(armorItemStack, 0);
+            this.equipArmor(ItemStack.EMPTY);
+        }
+
+        if(this.getHasChest()) {
+            this.entityDropItem(new ItemStack(Blocks.CHEST, 1), 0);
+            this.dropInventoryContents();
+        }
+    }
+
+    @Override
+    public void dropInventoryContents() {
+        for(int slotIndex = INVENTORY_SLOT_CHEST_START; slotIndex < INVENTORY_SLOT_CHEST_LENGTH; ++slotIndex) {
+            @Nonnull ItemStack stackInSlot = this.inventory.getStackInSlot(slotIndex);
+            if(!stackInSlot.isEmpty()) {
+                this.entityDropItem(stackInSlot, 0);
+                this.setInventoryItem(slotIndex, ItemStack.EMPTY);
+            }
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Override
+    protected void damageArmor(float damage) {
+        if (this.getHasArmor()) {
+            ItemStack stackInSlot = this.inventory.getStackInSlot(INVENTORY_SLOT_ARMOR);
+            if (!stackInSlot.isEmpty()) {
+                stackInSlot.damageItem((int) Math.ceil(damage), (EntityLivingBase) (Object) this);
+                if (stackInSlot.getCount() == 0) {
+                    @Nonnull ItemStack particleStack = stackInSlot.copy();
+                    particleStack.setCount(1);
+                    this.equipArmor(ItemStack.EMPTY);
+                    this.renderBrokenItemStack(particleStack);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Inject(method = "attackEntityAsMob", at = @At("HEAD"), cancellable = true)
+    private void onAttackEntityAsMob(Entity entityIn, CallbackInfoReturnable<Boolean> cir) {
+        float damage = (int)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
+        int knockback = 0;
+
+        if(entityIn instanceof EntityLivingBase) {
+            damage += EnchantmentHelper.getModifierForCreature(this.getArmorItemStack(), ((EntityLivingBase)entityIn).getCreatureAttribute());
+            knockback += EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.KNOCKBACK, (EntityLivingBase)(Object)this);
+        }
+
+        boolean atkFlag = entityIn.attackEntityFrom(DamageSource.causeMobDamage((EntityLivingBase)(Object)this), damage);
+
+        if(atkFlag) {
+            if(knockback > 0) {
+                ((EntityLivingBase)entityIn).knockBack((Entity)(Object)this, knockback * 0.5F, MathHelper.sin(this.rotationYaw * (float)(Math.PI / 180)), -MathHelper.cos(this.rotationYaw * (float)(Math.PI / 180)));
+                this.motionX *= 0.6f;
+                this.motionZ *= 0.6f;
+            }
+
+            int fireAspect = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.FIRE_ASPECT, (EntityLivingBase)(Object)this);
+            if(fireAspect > 0) {
+                entityIn.setFire(fireAspect * 4);
+            }
+
+            this.applyEnchantments((EntityLivingBase)(Object)this, entityIn);
+        }
+
+        cir.setReturnValue(atkFlag);
+        cir.cancel();
+    }
+
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onConstructed(CallbackInfo ci) {
         this.inventoryInit();
@@ -172,7 +269,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
     }
 
     @Inject(method = "readEntityFromNBT", at = @At("RETURN"))
-    public void onReadEntityFromNBT(NBTTagCompound compound, CallbackInfo ci) {
+    private void onReadEntityFromNBT(NBTTagCompound compound, CallbackInfo ci) {
         boolean hasChest = compound.getBoolean("HasChest");
         this.setHasChest(hasChest);
 
@@ -195,6 +292,47 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         if (!armorTags.isEmpty()) {
             @Nonnull ItemStack armorItemStack = new ItemStack(armorTags);
             this.equipArmor(armorItemStack);
+        }
+    }
+
+    @Inject(method = "processInteract", at = @At("HEAD"), cancellable = true)
+    private void onProcessInteract(EntityPlayer player, EnumHand hand, CallbackInfoReturnable<Boolean> cir) {
+        if(this.isChild() || !(this.isTamed() && this.isOwner(player))) {
+            return;
+        }
+
+        if(player.isSneaking()) {
+            this.openWolfInventory(player);
+
+            // Return true and cancel
+            cir.setReturnValue(true);
+            cir.cancel();
+        } else {
+            @Nonnull ItemStack itemInHand = player.getHeldItem(hand);
+
+            if (!itemInHand.isEmpty()) {
+                boolean isWolfChestEnabled = WolfArmorMod.getConfiguration().getIsWolfChestEnabled();
+                if (isWolfChestEnabled && !this.getHasChest() && (Block.getBlockFromItem(itemInHand.getItem()) == Blocks.CHEST ||
+                        OreDictionary.containsMatch(false, OreDictionary.getOres("chest"), itemInHand))) {
+                    if (!this.getEntityWorld().isRemote) {
+                        this.playEquipSound(itemInHand);
+                        this.setHasChest(true);
+                        if (!player.capabilities.isCreativeMode) {
+                            itemInHand.shrink(1);
+                        }
+                        if (player instanceof EntityPlayerMP) {
+                            ((WolfArmorTrigger) Criteria.EQUIP_WOLF_CHEST).trigger((EntityPlayerMP) player, (EntityWolf) (Object) this);
+                        }
+                    }
+
+                    cir.setReturnValue(true);
+                    cir.cancel();
+                } else if (Items.isValidWolfArmor(itemInHand)) {
+                    this.openWolfInventory(player);
+                    cir.setReturnValue(true);
+                    cir.cancel();
+                }
+            }
         }
     }
 

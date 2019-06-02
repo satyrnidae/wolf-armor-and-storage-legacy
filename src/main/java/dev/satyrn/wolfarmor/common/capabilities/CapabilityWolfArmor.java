@@ -65,7 +65,7 @@ public class CapabilityWolfArmor implements IWolfArmorCapability, ICapabilitySer
             }
          });
 
-        MinecraftForge.EVENT_BUS.register(new EventHandlers());
+        //MinecraftForge.EVENT_BUS.register(new EventHandlers());
     }
 
     /**
@@ -562,6 +562,8 @@ public class CapabilityWolfArmor implements IWolfArmorCapability, ICapabilitySer
                 }
             }
         }
+
+
     }
 
     @SuppressWarnings("unchecked")

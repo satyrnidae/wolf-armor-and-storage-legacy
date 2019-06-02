@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixins;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-@IFMLLoadingPlugin.MCVersion("@MCVERSION@")
+@IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.TransformerExclusions("dev.satyrn.wolfarmor.core")
 public class WolfArmorCore implements IFMLLoadingPlugin {
 
