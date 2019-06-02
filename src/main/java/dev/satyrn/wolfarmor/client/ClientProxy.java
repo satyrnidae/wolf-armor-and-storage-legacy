@@ -1,11 +1,11 @@
 package dev.satyrn.wolfarmor.client;
 
+import dev.satyrn.wolfarmor.api.ItemWolfArmor;
 import dev.satyrn.wolfarmor.api.client.RenderLayerFactory;
 import dev.satyrn.wolfarmor.api.util.Items;
 import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
 import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
 import dev.satyrn.wolfarmor.common.CommonProxy;
-import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.IItemColor;
