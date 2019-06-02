@@ -1,7 +1,7 @@
 package dev.satyrn.wolfarmor.item.crafting;
 
 import com.google.common.collect.Lists;
-import dev.satyrn.wolfarmor.api.ItemWolfArmor;
+import dev.satyrn.wolfarmor.api.common.ItemWolfArmor;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;

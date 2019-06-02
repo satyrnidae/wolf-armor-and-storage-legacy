@@ -1,7 +1,7 @@
 package dev.satyrn.wolfarmor.common.event;
 
 import dev.satyrn.wolfarmor.api.IWolfArmorMaterial;
-import dev.satyrn.wolfarmor.api.ItemWolfArmor;
+import dev.satyrn.wolfarmor.api.common.ItemWolfArmor;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.entity.passive.EntityWolfArmored;
 import dev.satyrn.wolfarmor.item.crafting.RecipeWolfArmorDyes;

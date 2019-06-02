@@ -3,14 +3,13 @@ package dev.satyrn.wolfarmor.mixin;
 import com.google.common.collect.Multimap;
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
-import dev.satyrn.wolfarmor.api.ItemWolfArmor;
+import dev.satyrn.wolfarmor.api.common.ItemWolfArmor;
 import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.api.util.DataHelper;
 import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.util.Items;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import net.minecraft.block.Block;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -36,12 +35,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Level;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -147,12 +144,16 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
     public void dropEquipment() {
         if(this.getHasArmor()) {
             @Nonnull ItemStack armorItemStack = this.getArmorItemStack();
-            this.entityDropItem(armorItemStack, 0);
+            if(!this.getEntityWorld().isRemote) {
+                this.entityDropItem(armorItemStack, 0);
+            }
             this.equipArmor(ItemStack.EMPTY);
         }
 
         if(this.getHasChest()) {
-            this.entityDropItem(new ItemStack(Blocks.CHEST, 1), 0);
+            if(!this.getEntityWorld().isRemote) {
+                this.entityDropItem(new ItemStack(Blocks.CHEST, 1), 0);
+            }
             this.dropInventoryContents();
         }
     }
@@ -162,7 +163,9 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         for(int slotIndex = ContainerWolfInventory.INVENTORY_SLOT_CHEST_START; slotIndex < ContainerWolfInventory.INVENTORY_SLOT_CHEST_LENGTH; ++slotIndex) {
             @Nonnull ItemStack stackInSlot = this.inventory.getStackInSlot(slotIndex);
             if(!stackInSlot.isEmpty()) {
-                this.entityDropItem(stackInSlot, 0);
+                if(!this.getEntityWorld().isRemote) {
+                    this.entityDropItem(stackInSlot, 0);
+                }
                 this.setInventoryItem(slotIndex, ItemStack.EMPTY);
             }
         }
@@ -229,7 +232,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
     }
 
     @Inject(method = "writeEntityToNBT", at = @At("RETURN"))
-    private void onWriteEntityToNBT(NBTTagCompound compound, CallbackInfo ci) {
+    private void onWriteEntityToNBT(@Nonnull NBTTagCompound compound, CallbackInfo ci) {
         boolean hasChest = this.getHasChest();
         compound.setBoolean("HasChest", hasChest);
 
@@ -265,7 +268,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
     }
 
     @Inject(method = "readEntityFromNBT", at = @At("RETURN"))
-    private void onReadEntityFromNBT(NBTTagCompound compound, CallbackInfo ci) {
+    private void onReadEntityFromNBT(@Nonnull NBTTagCompound compound, CallbackInfo ci) {
         if(compound.hasKey("ForgeCaps")) {
             NBTTagCompound capabilities = compound.getCompoundTag("ForgeCaps");
             if(capabilities.hasKey("wolfarmor:wolf_armor")) {
@@ -405,7 +408,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
     }
 
-    private void processLegacyDataTags(NBTTagCompound compound) {
+    private void processLegacyDataTags(@Nonnull NBTTagCompound compound) {
         WolfArmorMod.getLogger().log(Level.INFO, "[NBT LOAD] Updating capable wolf to mixin wolf...");
         boolean hasChest = compound.getBoolean("hasChest");
         this.setHasChest(hasChest);
