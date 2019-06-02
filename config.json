@@ -1,18 +1,20 @@
 {
+    "name": "Wolf Armor and Storage",
+    "modid": "wolfarmor",
     "forge": {
         "version": "14.23.4.2705"
     },
     "mcp": {
         "version": "stable_39"
     },
+    "sponge": {
+        "version": "0.7.5-SNAPSHOT"
+    },
     "version": {
         "extension": "SNAPSHOT",
         "major": 3,
         "minecraft": "1.12.2",
         "minor": 0,
-        "patch": 3
-    },
-    "sponge": {
-        "version": "0.7.5-SNAPSHOT"
+        "patch": 5
     }
 }
