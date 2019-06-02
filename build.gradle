@@ -21,6 +21,7 @@ sourceSets.api {
 sourceSets.main {
     java {
         srcDirs 'src/main/java'
+        srcDirs 'api/'
     }
 }
 sourceSets.test {
