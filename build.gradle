@@ -1,41 +1,23 @@
-import org.apache.tools.ant.filters.ReplaceTokens
 buildscript {
     repositories {
         jcenter()
         maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "http://repo.spongepowered.org/maven"}
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath "org.spongepowered:mixingradle:0.6+"
     }
+}
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-//Only edit below this line, the above code adds and enables the nessasary things for Forge to be setup.
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
 
-def versioningFile = file('versioning.properties')
-def apiVersioningFile = file('api/versioning.properties')
-def mcversion = '0.0'
-def majormod = '0'
-def majorapi = '0'
-def minor = '0'
-def patchmod = 0
-def patchapi = 0
-def extended = ''
-def shortVersion = ''
-
-if(versioningFile.canRead() && apiVersioningFile.canRead()) {
-	Properties versionProperties = new Properties()
-    Properties apiVersionProperties = new Properties()
-	versionProperties.load(new FileInputStream(versioningFile))
-    apiVersionProperties.load(new FileInputStream(apiVersioningFile))
-	mcversion = versionProperties['MCVERSION'].toString()
-    majormod = versionProperties['MAJOR'].toString()
-    majorapi = apiVersionProperties['MAJOR'].toString()
-    minor = versionProperties['MINOR'].toString()
-    patchmod = versionProperties['PATCH'].toShort()
-    patchapi = apiVersionProperties['PATCH'].toShort()
-    extended = versionProperties['EXTENDED'].toString()
-}
 sourceSets.api {
     java {
         srcDirs 'api/'
@@ -43,54 +25,36 @@ sourceSets.api {
 }
 sourceSets.main {
     java {
-        srcDirs 'api/'
         srcDirs 'src/main/java'
+        srcDirs 'api/'
+    }
+}
+sourceSets.test {
+    java {
+        srcDirs 'tests/'
     }
 }
 
-build {
-	ext.autoIncrementBuildNumber = {
-		if (versioningFile.canRead()) {
-			Properties versionProps = new Properties()
-			versionProps.load(new FileInputStream(versioningFile))
-			patchmod = versionProps['PATCH'].toInteger() + 1
-			versionProps['PATCH'] = patchmod.toString()
-			versionProps.store(versioningFile.newWriter(), null)
-		} else {
-			throw new GradleException("Could not read versioning.properties!")
-		}
-	}
-	
-	gradle.taskGraph.whenReady {taskGraph ->
-		if(taskGraph.hasTask(compileJava) &&
-           taskGraph.hasTask(assemble) &&
-           taskGraph.hasTask(build)) {
-			autoIncrementBuildNumber()
-		}
-	}
+def modConfig
+def apiConfig
 
-    return 0
+file "./config.json" withReader {
+    modConfig = new groovy.json.JsonSlurper().parseText(it.text)
 }
 
-def comboPatch = (patchmod | (patchapi<<8))
+file "./api/config.json" withReader {
+    apiConfig = new groovy.json.JsonSlurper().parseText(it.text)
+}
 
-version = mcversion + "-" + majormod + "." + majorapi + "." + minor + "." + comboPatch + extended
-shortVersion = majormod + "." + majorapi + "." + minor + "." + patchmod
-logger.info("Current version is " + version + " (" + shortVersion + ")")
-group= "com.attributestudios.wolfarmor" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-//noinspection GroovyUnusedAssignment
+
+def combinedPatchAndApiVersion = (modConfig.version.patch | (apiConfig.version.minor<<8))
+
+def shortVersion = "${modConfig.version.major}.${apiConfig.version.major}.${modConfig.version.minor}.${combinedPatchAndApiVersion}"
+version = "${modConfig.version.minecraft}-${shortVersion}-${modConfig.version.extension}"
+
+println "Current version is ${version}"
+group= "dev.satyrn.wolfarmor"
 archivesBaseName = "wolfarmor"
-
-
-task updateModVersion(type:Copy) {
-    from('src/main/java') {
-        exclude 'mcmod.info'
-    }
-    into 'build/sources/main/java'
-    expand 'version':shortVersion
-}
-
-compileJava.dependsOn updateModVersion
 
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
@@ -98,41 +62,61 @@ compileJava {
     sourceCompatibility = targetCompatibility = "1.8"
 }
 
+build {
+}
+
+artifacts {
+    archives shadowJar
+}
+
+shadowJar {
+    mainSpec.sourcePaths.clear()
+    dependsOn reobfJar
+    dependencies {
+        include dependency('org.spongepowered:mixin')
+    }
+
+    manifest.attributes(
+    'FMLCorePluginContainsFMLMod': true
+    )
+
+    exclude 'dummyThing'
+    exclude 'LICENSES*'
+
+    afterEvaluate {
+        from zipTree(reobfJar.jar)
+    }
+}
+
 minecraft {
-    version = "1.12.2-14.23.4.2705"
+    version = "${modConfig.version.minecraft}-${modConfig.forge.version}"
     runDir = "run"
-    
+
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20180601"
+    mappings = modConfig.mcp.version
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+
+    replace '@NAME@', modConfig.name
+    replace '@MODID@', modConfig.modid
+    replace '@VERSION@', shortVersion
+    replace '@MCVERSION@', modConfig.version.minecraft
+}
+
+repositories {
+    maven { url = 'http://repo.spongepowered.org/maven' }
 }
 
 dependencies {
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-      
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // the 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    //provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // the deobf configurations:  'deobfCompile' and 'deobfProvided' are the same as the normal compile and provided,
-    // except that these dependencies get remapped to your current MCP mappings
-    //deobfCompile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-    //deobfProvided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    compile("org.spongepowered:mixin:${modConfig.sponge.version}"){
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
 }
 
 processResources {
@@ -143,19 +127,66 @@ processResources {
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
+
         // replace version and mcversion
         expand 'version':shortVersion, 'mcversion':project.minecraft.version
     }
-        
+
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-	
+
 	// copy LICENSE
     from('/') {
         include 'LICENSE'
         include 'CREDITS'
     }
 }
+
+mixin {
+    add sourceSets.main, "mixins.wolfarmor.refmap.json"
+}
+
+jar {
+    manifest.attributes(
+            'Built-By': System.properties['user.name'],
+            'Created-By': "${System.properties['java.vm.version']} (${System.properties['java.vm.vendor']})",
+            'Implementation-Title': project.name,
+            'Implementation-Version': version,
+            'Implementation-Vendor': 'https://satyrn.dev',
+            'FMLCorePlugin': "${project.group}.coremod.WolfArmorCore",
+            'ForceLoadAsMod': true,
+            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'TweakOrder': 0,
+            'MixinConfigs': 'mixins.wolfarmor.core.json',
+            'FMLAT': 'wolfarmor_at.cfg'
+    )
+}
+
+task updatePatchNumber() {
+    dependsOn build
+    gradle.taskGraph.whenReady {taskGraph ->
+        if(taskGraph.hasTask(compileJava) &&
+                taskGraph.hasTask(assemble) &&
+                taskGraph.hasTask(build)) {
+            modConfig.version.patch += 1
+            def configFile = new File('./config.json')
+            configFile.delete()
+            configFile.write(new groovy.json.JsonBuilder(modConfig).toPrettyString())
+            println "Patch number updated to ${modConfig.version.patch}"
+        }
+    }
+}
+
+task updateModVersion(type:Copy) {
+    from('src/main/java') {
+        exclude 'mcmod.info'
+    }
+    into 'build/sources/main/java'
+    expand 'version':shortVersion, 'mcversion':project.minecraft.version
+}
+
+
+compileJava.dependsOn updateModVersion
+updatePatchNumber.shouldRunAfter build
