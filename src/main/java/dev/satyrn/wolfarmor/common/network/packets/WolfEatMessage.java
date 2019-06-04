@@ -20,6 +20,7 @@ public class WolfEatMessage extends ClientMessageBase<WolfEatMessage> {
     private int entityId;
     private ItemStack foodItem;
 
+    @SuppressWarnings("unused")
     public WolfEatMessage() {}
 
     public WolfEatMessage(int entityId, ItemStack foodItem) {
@@ -34,7 +35,7 @@ public class WolfEatMessage extends ClientMessageBase<WolfEatMessage> {
 	}
 
 	@Override
-	protected void write(PacketBuffer buffer) throws IOException {
+	protected void write(PacketBuffer buffer) {
         buffer.writeInt(this.entityId);
         buffer.writeItemStack(this.foodItem);
 	}
@@ -42,7 +43,7 @@ public class WolfEatMessage extends ClientMessageBase<WolfEatMessage> {
 	@Override
 	protected IMessage process(EntityPlayer player, Side side) {
         World world = player.getEntityWorld();
-        Entity entity = player.getEntityWorld().getEntityByID(this.entityId);
+        Entity entity = world.getEntityByID(this.entityId);
         if(entity != null) {
             Vec3d velocity = new Vec3d((world.rand.nextFloat() - 0.5D) * 0.1D, world.rand.nextFloat() * 0.1D + 0.1D, 0.0D);
             velocity = velocity.rotatePitch(-entity.rotationPitch * (float)(Math.PI / 180));

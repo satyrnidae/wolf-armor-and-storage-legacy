@@ -5,18 +5,26 @@ import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.IWolfArmorMaterial;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
+import dev.satyrn.wolfarmor.common.network.PacketHandler;
+import dev.satyrn.wolfarmor.common.network.packets.WolfDropChestMessage;
+import dev.satyrn.wolfarmor.common.network.packets.WolfHealMessage;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.IInventoryChangedListener;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 
 /**
  * Graphical user interface for wolf inventories.
@@ -62,6 +70,21 @@ public class GuiWolfInventory extends GuiContainer {
     //endregion Constructors
 
     //region Public / Protected Methods
+
+
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+        int positionX = (this.width - this.xSize) / 2;
+        int positionY = (this.height - this.ySize) / 2;
+        int mouseLocX = mouseX - positionX;
+        int mouseLocY = mouseY - positionY;
+
+        if (mouseLocX >= 8 && mouseLocY >= 37 && mouseLocX < 8 + 16 && mouseLocY < 37 + 16) {
+            PacketHandler.getChannel().sendToServer(new WolfDropChestMessage(theWolf.getEntityId()));
+            this.mc.player.closeScreen();
+        }
+    }
 
     /**
      * Draws the foreground layer of the GUI
@@ -112,14 +135,15 @@ public class GuiWolfInventory extends GuiContainer {
      */
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+        int positionX = (this.width - this.xSize) / 2;
+        int positionY = (this.height - this.ySize) / 2;
+
         GlStateManager.pushMatrix();
         {
             GlStateManager.color(1, 1, 1, 1);
 
             this.mc.getTextureManager().bindTexture(Resources.TEXTURE_GUI_WOLF_INVENTORY);
 
-            int positionX = (this.width - this.xSize) / 2;
-            int positionY = (this.height - this.ySize) / 2;
             this.drawTexturedModalRect(positionX, positionY, 0, 0, this.xSize, this.ySize);
 
             if (this.wolfArmor.getHasArmor()) {
@@ -135,6 +159,26 @@ public class GuiWolfInventory extends GuiContainer {
 
         }
         GlStateManager.popMatrix();
+        if(((IArmoredWolf)theWolf).getHasChest()) {
+            GlStateManager.pushMatrix();
+            {
+                // draw button at 7,35
+                int mouseLocX = mouseX - positionX;
+                int mouseLocY = mouseY - positionY;
+
+                GlStateManager.color(1, 1, 1, 1);
+
+                int textureY = 166;
+
+                if (mouseLocX >= 8 && mouseLocY >= 37 && mouseLocX < 8 + 16 && mouseLocY < 37 + 16) {
+                    textureY += 18;
+                }
+
+                this.mc.getTextureManager().bindTexture(Resources.TEXTURE_GUI_WOLF_INVENTORY);
+                this.drawTexturedModalRect(positionX + 7, positionY + 35, 0, textureY, 18, 18);
+            }
+            GlStateManager.popMatrix();
+        }
     }
 
     //endregion Public / Protected Methods

@@ -16,6 +16,7 @@ public class WolfHealMessage extends ClientMessageBase<WolfHealMessage> {
 
     private int entityId;
 
+    @SuppressWarnings("unused")
     public WolfHealMessage() {}
 
     public WolfHealMessage(int entityId) {

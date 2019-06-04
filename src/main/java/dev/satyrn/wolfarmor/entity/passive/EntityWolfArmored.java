@@ -326,6 +326,10 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
         return MAX_SIZE_INVENTORY;
     }
 
+    @Override
+    public void dropChest() {
+
+    }
 
     //endregion Accessors / Mutators
 }

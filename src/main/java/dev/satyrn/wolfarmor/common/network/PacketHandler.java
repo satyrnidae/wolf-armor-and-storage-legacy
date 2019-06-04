@@ -1,6 +1,7 @@
 package dev.satyrn.wolfarmor.common.network;
 
 import dev.satyrn.wolfarmor.api.util.Resources;
+import dev.satyrn.wolfarmor.common.network.packets.WolfDropChestMessage;
 import dev.satyrn.wolfarmor.common.network.packets.WolfEatMessage;
 import dev.satyrn.wolfarmor.common.network.packets.WolfHealMessage;
 import dev.satyrn.wolfarmor.common.network.MessageBase.ClientMessageBase;
@@ -18,6 +19,7 @@ public abstract class PacketHandler {
     public static void initialize() {
         registerMessage(WolfEatMessage.class);
         registerMessage(WolfHealMessage.class);
+        registerMessage(WolfDropChestMessage.class);
     }
 
     private static <T extends MessageBase<T> & IMessageHandler<T, IMessage>>void registerMessage(Class<T> clazz) {

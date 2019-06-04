@@ -117,6 +117,7 @@ public class ContainerWolfInventory extends Container {
 
     //region Public / Protected Methods
 
+
     /**
      * Transfers an item stack.
      *

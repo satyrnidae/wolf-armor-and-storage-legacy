@@ -160,7 +160,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
     @Override
     public void dropInventoryContents() {
-        for(int slotIndex = ContainerWolfInventory.INVENTORY_SLOT_CHEST_START; slotIndex < ContainerWolfInventory.INVENTORY_SLOT_CHEST_LENGTH; ++slotIndex) {
+        for(int slotIndex = ContainerWolfInventory.INVENTORY_SLOT_CHEST_START; slotIndex <= ContainerWolfInventory.INVENTORY_SLOT_CHEST_LENGTH; ++slotIndex) {
             @Nonnull ItemStack stackInSlot = this.inventory.getStackInSlot(slotIndex);
             if(!stackInSlot.isEmpty()) {
                 if(!this.getEntityWorld().isRemote) {
@@ -184,6 +184,17 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
                     this.equipArmor(ItemStack.EMPTY);
                     this.renderBrokenItemStack(particleStack);
                 }
+            }
+        }
+    }
+
+    @Override
+    public void dropChest() {
+        if(this.getHasChest()) {
+            this.dropInventoryContents();
+            this.setHasChest(false);
+            if (!this.getEntityWorld().isRemote) {
+                this.entityDropItem(new ItemStack(Blocks.CHEST, 1), 0);
             }
         }
     }
