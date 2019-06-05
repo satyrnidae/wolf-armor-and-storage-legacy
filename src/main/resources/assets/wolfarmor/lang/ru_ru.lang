@@ -1,4 +1,3 @@
-
 item.wolfarmor.leatherWolfArmor.name=Кожаная волчья броня
 item.wolfarmor.chainWolfArmor.name=Кольчужная волчья броня
 item.wolfarmor.ironWolfArmor.name=Железная волчья броня
@@ -20,19 +19,21 @@ config.wolfarmor.behavior.enableHowlingUntamedWolves.comment=Включает и
 config.wolfarmor.behavior.shouldWolvesEatWhenDamaged=Включить автоматическое исцеление волков
 config.wolfarmor.behavior.shouldWolvesEatWhenDamaged.comment=Если опция активирована, волки автоматически съедят любое мясо, которое хранится в их рюкзаке.
 
-advancements.adventure.armor_up.title=Защитите своего волка
-advancements.adventure.armor_up.description=Экипируйте вашего волка бронёй
+advancements.husbandry.armor_up.title=Защитите своего волка
+advancements.husbandry.armor_up.description=Экипируйте вашего волка бронёй
 advancements.husbandry.wolf_pack.title=Волчий рюкзак
 advancements.husbandry.wolf_pack.description=Экипируйте вашего волка рюкзаком
 
 inventory.wolfarmor.wolf=%1$s
 
 gui.wolfarmor.config=Мод "Wolf Armor"
-gui.wolfarmor.configSubtitle=Конфигурационные параметры
+gui.wolfarmor.config.subtitle=Конфигурационные параметры
 gui.wolfarmor.config.category.general=Общие настройки
 gui.wolfarmor.config.category.client=Настройки только для клиента
 gui.wolfarmor.config.category.client.render=Настройки рендеринга
 gui.wolfarmor.config.category.client.gui=Настройки пользовательского интерфейса
 gui.wolfarmor.config.category.behavior=Поведение волка
+#TODO: Add russian translation for "Remove Chest" tooltip
+gui.wolfarmor.inventory.remove_chest=Remove Chest
 
 entity.wolfarmor.wolf_armored.name=Волк
