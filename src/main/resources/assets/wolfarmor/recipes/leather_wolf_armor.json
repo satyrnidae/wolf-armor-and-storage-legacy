@@ -1,13 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "X  ",
-    "XXX",
-    "X X"
+    " H ",
+    "XBX",
+    " B "
   ],
   "key": {
     "X": {
       "item": "minecraft:leather"
+    },
+    "H": {
+      "item": "minecraft:leather_helmet"
+    },
+    "B": {
+      "item": "minecraft:leather_boots"
     }
   },
   "result": {

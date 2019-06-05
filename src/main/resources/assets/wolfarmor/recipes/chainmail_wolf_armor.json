@@ -1,16 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "X  ",
-    "XIX",
-    "I I"
+    " H ",
+    "XBX",
+    " B "
   ],
   "key": {
     "X": {
       "item": "minecraft:iron_nugget"
     },
-    "I": {
-      "item": "minecraft:iron_ingot"
+    "H": {
+      "item": "minecraft:chainmail_helmet"
+    },
+    "B": {
+      "item": "minecraft:chainmail_boots"
     }
   },
   "result": {

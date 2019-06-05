@@ -1,13 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "X  ",
-    "XXX",
-    "X X"
+    " H ",
+    "XBX",
+    " B "
   ],
   "key": {
     "X": {
       "item": "minecraft:iron_ingot"
+    },
+    "H": {
+      "item": "minecraft:iron_helmet"
+    },
+    "B": {
+      "item": "minecraft:iron_boots"
     }
   },
   "result": {

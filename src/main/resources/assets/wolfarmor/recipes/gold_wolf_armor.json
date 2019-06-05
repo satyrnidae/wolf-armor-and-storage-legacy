@@ -1,13 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "X  ",
-    "XXX",
-    "X X"
+    " H ",
+    "XBX",
+    " B "
   ],
   "key": {
     "X": {
       "item": "minecraft:gold_ingot"
+    },
+    "H": {
+      "item": "minecraft:golden_helmet"
+    },
+    "B": {
+      "item": "minecraft:golden_boots"
     }
   },
   "result": {
