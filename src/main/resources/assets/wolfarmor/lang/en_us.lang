@@ -33,5 +33,6 @@ gui.wolfarmor.config.category.client=Client-Side Settings
 gui.wolfarmor.config.category.client.render=Rendering Settings
 gui.wolfarmor.config.category.client.gui=UI Settings
 gui.wolfarmor.config.category.behavior=Custom Behaviors
+gui.wolfarmor.inventory.remove_chest=Remove Chest
 
 entity.wolfarmor.wolf_armored.name=Wolf
