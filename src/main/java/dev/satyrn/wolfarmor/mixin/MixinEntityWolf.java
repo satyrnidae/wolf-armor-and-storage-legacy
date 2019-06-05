@@ -23,6 +23,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.*;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -42,6 +43,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.crypto.Data;
 
 @Mixin(EntityWolf.class)
 public abstract class MixinEntityWolf extends MixinEntityTameable implements IArmoredWolf, IInventoryChangedListener {
@@ -49,6 +51,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
     static {
         DataHelper.HAS_CHEST = EntityDataManager.createKey(EntityWolf.class, DataSerializers.BOOLEAN);
         DataHelper.ARMOR_ITEM = EntityDataManager.createKey(EntityWolf.class, DataSerializers.ITEM_STACK);
+        DataHelper.CHEST_TYPE = EntityDataManager.createKey(EntityWolf.class, DataSerializers.ITEM_STACK);
     }
 
     private ContainerHorseChest inventory;
@@ -105,6 +108,21 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
     @Override
     public void setHasChest(boolean value) {
         this.dataManager.set(DataHelper.HAS_CHEST, value);
+        if(!value) this.dataManager.set(DataHelper.CHEST_TYPE, ItemStack.EMPTY);
+    }
+
+    @Override
+    public void setChestType(@Nonnull ItemStack stack) {
+        ItemStack chestType = stack.copy();
+        if(!chestType.isEmpty())
+            chestType.setCount(1);
+        this.dataManager.set(DataHelper.CHEST_TYPE, chestType);
+    }
+
+    @Override
+    public Item getChestType() {
+        ItemStack chestType = this.dataManager.get(DataHelper.CHEST_TYPE);
+        return chestType.isEmpty() ? null : chestType.getItem();
     }
 
     @Nonnull
@@ -150,12 +168,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
             this.equipArmor(ItemStack.EMPTY);
         }
 
-        if(this.getHasChest()) {
-            if(!this.getEntityWorld().isRemote) {
-                this.entityDropItem(new ItemStack(Blocks.CHEST, 1), 0);
-            }
-            this.dropInventoryContents();
-        }
+        this.dropChest();
     }
 
     @Override
@@ -192,10 +205,11 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
     public void dropChest() {
         if(this.getHasChest()) {
             this.dropInventoryContents();
-            this.setHasChest(false);
             if (!this.getEntityWorld().isRemote) {
-                this.entityDropItem(new ItemStack(Blocks.CHEST, 1), 0);
+                Item chestItem = this.getChestType();
+                this.entityDropItem(new ItemStack(chestItem == null ? Item.getItemFromBlock(Blocks.CHEST) : chestItem, 1), 0);
             }
+            this.setHasChest(false);
         }
     }
 
@@ -240,6 +254,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
     private void onEntityInit(CallbackInfo ci) {
         this.dataManager.register(DataHelper.HAS_CHEST, false);
         this.dataManager.register(DataHelper.ARMOR_ITEM, ItemStack.EMPTY);
+        this.dataManager.register(DataHelper.CHEST_TYPE, ItemStack.EMPTY);
     }
 
     @Inject(method = "writeEntityToNBT", at = @At("RETURN"))
@@ -248,6 +263,11 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         compound.setBoolean("HasChest", hasChest);
 
         if(hasChest) {
+            ItemStack chestInSlot = this.dataManager.get(DataHelper.CHEST_TYPE);
+            NBTTagCompound chestItem = new NBTTagCompound();
+            chestInSlot.writeToNBT(chestItem);
+            compound.setTag("ChestType", chestItem);
+
             NBTTagList inventoryItems = new NBTTagList();
             IInventory inventory = this.getInventory();
 
@@ -293,6 +313,10 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
         if (hasChest) {
             this.inventoryInit();
+
+            ItemStack chestTypeStack = new ItemStack(compound.getCompoundTag("ChestType"));
+            this.dataManager.set(DataHelper.CHEST_TYPE, chestTypeStack);
+
             NBTTagList inventoryTagList = compound.getTagList("Inventory", 10);
 
             for (int index = 0; index < inventoryTagList.tagCount(); ++index) {
@@ -330,11 +354,13 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
             if (!itemInHand.isEmpty()) {
                 boolean isWolfChestEnabled = WolfArmorMod.getConfiguration().getIsWolfChestEnabled();
-                if (isWolfChestEnabled && !this.getHasChest() && (Block.getBlockFromItem(itemInHand.getItem()) == Blocks.CHEST ||
-                        OreDictionary.containsMatch(false, OreDictionary.getOres("chest"), itemInHand))) {
+                if (isWolfChestEnabled && !this.getHasChest() && Block.getBlockFromItem(itemInHand.getItem()) != Blocks.ENDER_CHEST &&
+                        (Block.getBlockFromItem(itemInHand.getItem()) == Blocks.CHEST ||
+                                OreDictionary.containsMatch(false, OreDictionary.getOres("chestWood"), itemInHand))) {
                     if (!this.getEntityWorld().isRemote) {
                         this.playEquipSound(itemInHand);
                         this.setHasChest(true);
+                        this.setChestType(itemInHand);
                         if (!player.capabilities.isCreativeMode) {
                             itemInHand.shrink(1);
                         }
@@ -398,7 +424,8 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
             return;
         }
         SoundEvent sound = null;
-        if (Block.getBlockFromItem(itemStack.getItem()) == Blocks.CHEST) {
+        if (Block.getBlockFromItem(itemStack.getItem()) == Blocks.CHEST ||
+                OreDictionary.containsMatch(false, OreDictionary.getOres("chest"), itemStack)) {
             sound = SoundEvents.ENTITY_CHICKEN_EGG;
         }
 
@@ -426,6 +453,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
         if (hasChest) {
             this.inventoryInit();
+            this.dataManager.set(DataHelper.CHEST_TYPE, new ItemStack(Blocks.CHEST, 1));
             NBTTagList inventoryTagList = compound.getTagList("inventory", 10);
 
             for (int index = 0; index < inventoryTagList.tagCount(); ++index) {

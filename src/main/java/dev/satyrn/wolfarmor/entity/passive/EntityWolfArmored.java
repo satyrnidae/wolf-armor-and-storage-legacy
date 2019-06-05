@@ -5,10 +5,12 @@ import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.util.Items;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ContainerHorseChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.IInventoryChangedListener;
 import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -327,8 +329,14 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
     }
 
     @Override
-    public void dropChest() {
+    public void dropChest() {}
 
+    @Override
+    public void setChestType(@Nonnull ItemStack stack) {}
+
+    @Override
+    public Item getChestType() {
+        return Item.getItemFromBlock(Blocks.CHEST);
     }
 
     //endregion Accessors / Mutators
