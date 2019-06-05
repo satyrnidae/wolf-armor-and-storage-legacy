@@ -124,7 +124,7 @@ public class GuiWolfInventory extends GuiContainer {
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
         super.renderHoveredToolTip(mouseX, mouseY);
 
-        if(((IArmoredWolf)this.theWolf).getHasChest() && this.isChestButtonHovered(mouseX, mouseY)) {
+        if(this.wolfArmor.getHasChest() && this.isChestButtonHovered(mouseX, mouseY)) {
             List<String> displayText = new ArrayList<>();
             displayText.add(I18n.format("gui.wolfarmor.inventory.remove_chest"));
             this.drawHoveringText(displayText, mouseX, mouseY, fontRenderer);
@@ -164,7 +164,7 @@ public class GuiWolfInventory extends GuiContainer {
 
         }
         GlStateManager.popMatrix();
-        if(((IArmoredWolf)theWolf).getHasChest()) {
+        if(this.wolfArmor.getHasChest()) {
             GlStateManager.pushMatrix();
             {
                 // draw button at 7,35
