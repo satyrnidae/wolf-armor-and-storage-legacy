@@ -7,24 +7,22 @@ import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import dev.satyrn.wolfarmor.common.network.PacketHandler;
 import dev.satyrn.wolfarmor.common.network.packets.WolfDropChestMessage;
-import dev.satyrn.wolfarmor.common.network.packets.WolfHealMessage;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.IInventoryChangedListener;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Point;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Graphical user interface for wolf inventories.
@@ -75,12 +73,8 @@ public class GuiWolfInventory extends GuiContainer {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        int positionX = (this.width - this.xSize) / 2;
-        int positionY = (this.height - this.ySize) / 2;
-        int mouseLocX = mouseX - positionX;
-        int mouseLocY = mouseY - positionY;
 
-        if (mouseLocX >= 8 && mouseLocY >= 37 && mouseLocX < 8 + 16 && mouseLocY < 37 + 16) {
+        if(isChestButtonHovered(mouseX, mouseY)) {
             PacketHandler.getChannel().sendToServer(new WolfDropChestMessage(theWolf.getEntityId()));
             this.mc.player.closeScreen();
         }
@@ -126,6 +120,17 @@ public class GuiWolfInventory extends GuiContainer {
         this.renderHoveredToolTip(mouseX, mouseY);
     }
 
+    @Override
+    protected void renderHoveredToolTip(int mouseX, int mouseY) {
+        super.renderHoveredToolTip(mouseX, mouseY);
+
+        if(((IArmoredWolf)this.theWolf).getHasChest() && this.isChestButtonHovered(mouseX, mouseY)) {
+            List<String> displayText = new ArrayList<>();
+            displayText.add(I18n.format("gui.wolfarmor.inventory.remove_chest"));
+            this.drawHoveringText(displayText, mouseX, mouseY, fontRenderer);
+        }
+    }
+
     /**
      * Draws the background layer of the inventory.
      *
@@ -135,8 +140,7 @@ public class GuiWolfInventory extends GuiContainer {
      */
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        int positionX = (this.width - this.xSize) / 2;
-        int positionY = (this.height - this.ySize) / 2;
+        Point origin = this.getOrigin();
 
         GlStateManager.pushMatrix();
         {
@@ -144,18 +148,19 @@ public class GuiWolfInventory extends GuiContainer {
 
             this.mc.getTextureManager().bindTexture(Resources.TEXTURE_GUI_WOLF_INVENTORY);
 
-            this.drawTexturedModalRect(positionX, positionY, 0, 0, this.xSize, this.ySize);
+            this.drawTexturedModalRect(origin.getX(), origin.getY(), 0, 0, this.xSize, this.ySize);
 
             if (this.wolfArmor.getHasArmor()) {
-                this.drawTexturedModalRect(positionX + 7, positionY + 17, this.xSize, 36, 18, 18);
+                this.drawTexturedModalRect(origin.getX() + 7, origin.getY() + 17, this.xSize, 36, 18, 18);
             }
 
             if (this.wolfArmor.getHasChest()) {
-                this.drawTexturedModalRect(positionX + 97, positionY + 17, this.xSize, 0, 54, 36);
+                this.drawTexturedModalRect(origin.getX() + 97, origin.getY() + 17, this.xSize, 0, 54, 36);
             }
 
-            GuiInventory.drawEntityOnScreen(positionX + 51, positionY + 60, 30, (float) (positionX + 51) - this.screenPositionX,
-                    (float) (positionY - 50) - this.screenPositionY, this.theWolf);
+            GuiInventory.drawEntityOnScreen(origin.getX() + 51, origin.getY() + 60, 30,
+                    (float) (origin.getX() + 51) - this.screenPositionX,
+                    (float) (origin.getY() - 50) - this.screenPositionY, this.theWolf);
 
         }
         GlStateManager.popMatrix();
@@ -163,19 +168,17 @@ public class GuiWolfInventory extends GuiContainer {
             GlStateManager.pushMatrix();
             {
                 // draw button at 7,35
-                int mouseLocX = mouseX - positionX;
-                int mouseLocY = mouseY - positionY;
 
                 GlStateManager.color(1, 1, 1, 1);
 
                 int textureY = 166;
 
-                if (mouseLocX >= 8 && mouseLocY >= 37 && mouseLocX < 8 + 16 && mouseLocY < 37 + 16) {
+                if (this.isChestButtonHovered(mouseX, mouseY)) {
                     textureY += 18;
                 }
 
                 this.mc.getTextureManager().bindTexture(Resources.TEXTURE_GUI_WOLF_INVENTORY);
-                this.drawTexturedModalRect(positionX + 7, positionY + 35, 0, textureY, 18, 18);
+                this.drawTexturedModalRect(origin.getX() + 7, origin.getY() + 35, 0, textureY, 18, 18);
             }
             GlStateManager.popMatrix();
         }
@@ -260,6 +263,25 @@ public class GuiWolfInventory extends GuiContainer {
             }
         }
         GlStateManager.popMatrix();
+    }
+
+    private Point getOrigin() {
+        return new Point((this.width - this.xSize) / 2, (this.height - this.ySize) / 2);
+    }
+    
+    private Point getLocalFromScreen(int x, int y) {
+        Point origin = getOrigin();
+        int mouseLocX = x - origin.getX();
+        int mouseLocY = y - origin.getY();
+
+        return new Point(mouseLocX, mouseLocY);
+    }
+
+
+    private boolean isChestButtonHovered(int mouseX, int mouseY) {
+        Point mouseLoc = getLocalFromScreen(mouseX, mouseY);
+
+        return mouseLoc.getX() >= 8 && mouseLoc.getY() >= 37 && mouseLoc.getX() < 8 + 16 && mouseLoc.getY() < 37 + 16;
     }
 
     //endregion Private Methods
