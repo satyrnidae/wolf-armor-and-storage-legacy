@@ -97,7 +97,7 @@ public class ContainerWolfInventory extends Container {
         if (wolfArmor.getHasChest()) {
             for (y = 0; y < 2; y++) {
                 for (x = 0; x < 3; x++) {
-                    this.addSlotToContainer(new Slot(wolfInventory, 1 + x + y * 3, 98 + x * 18, 18 + y * 18));
+                    this.addSlotToContainer(new Slot(wolfInventory, 1 + x + y * 3, 98 + x * 18, 27 + y * 18));
                 }
             }
         }
