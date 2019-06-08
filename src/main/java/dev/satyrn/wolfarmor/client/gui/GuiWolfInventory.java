@@ -18,6 +18,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.Point;
+import org.lwjgl.util.Rectangle;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -41,6 +42,15 @@ public class GuiWolfInventory extends GuiContainer {
 
     private final IArmoredWolf wolfArmor;
 
+    // Empty Slot Graphic
+    private final Rectangle EMPTY_SLOT = new Rectangle(7, 83, 18, 18);
+
+    // Button Effective Area
+    private final Rectangle BUTTON_AREA = new Rectangle(7, 35, 18, 18);
+
+    // Button Graphic
+    private final Rectangle BUTTON_TEXTURE = new Rectangle(0, 166, 18, 18);
+
     //endregion Fields
 
     //region Constructors
@@ -52,13 +62,12 @@ public class GuiWolfInventory extends GuiContainer {
      * @param wolfInventory   The wolf's inventory
      * @param theWolf         The wolf in question
      */
-    @SuppressWarnings("ConstantConditions")
     public GuiWolfInventory(@Nonnull IInventory playerInventory,
                             @Nonnull IInventory wolfInventory,
                             @Nonnull EntityWolf theWolf,
                             @Nonnull EntityPlayer player) {
         super(new ContainerWolfInventory(playerInventory, wolfInventory, theWolf, player));
-        this.wolfArmor = (IArmoredWolf)theWolf;
+        this.wolfArmor = (IArmoredWolf) theWolf;
         this.wolfInventory = wolfInventory;
         this.playerInventory = playerInventory;
         this.theWolf = theWolf;
@@ -74,7 +83,7 @@ public class GuiWolfInventory extends GuiContainer {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
-        if(isChestButtonHovered(mouseX, mouseY)) {
+        if (isChestButtonHovered(mouseX, mouseY)) {
             PacketHandler.getChannel().sendToServer(new WolfDropChestMessage(theWolf.getEntityId()));
             this.mc.player.closeScreen();
         }
@@ -124,7 +133,7 @@ public class GuiWolfInventory extends GuiContainer {
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
         super.renderHoveredToolTip(mouseX, mouseY);
 
-        if(this.wolfArmor.getHasChest() && this.isChestButtonHovered(mouseX, mouseY)) {
+        if (this.wolfArmor.getHasChest() && this.isChestButtonHovered(mouseX, mouseY)) {
             List<String> displayText = new ArrayList<>();
             displayText.add(I18n.format("gui.wolfarmor.inventory.remove_chest"));
             this.drawHoveringText(displayText, mouseX, mouseY, fontRenderer);
@@ -148,37 +157,54 @@ public class GuiWolfInventory extends GuiContainer {
 
             this.mc.getTextureManager().bindTexture(Resources.TEXTURE_GUI_WOLF_INVENTORY);
 
+            // Draw screen background
             this.drawTexturedModalRect(origin.getX(), origin.getY(), 0, 0, this.xSize, this.ySize);
 
             if (this.wolfArmor.getHasArmor()) {
-                this.drawTexturedModalRect(origin.getX() + 7, origin.getY() + 17, this.xSize, 36, 18, 18);
+                // Draw unlined wolf armor slot
+                this.drawTexturedModalRect(
+                        origin.getX() + 7,
+                        origin.getY() + 17,
+                        EMPTY_SLOT.getX(),
+                        EMPTY_SLOT.getY(),
+                        EMPTY_SLOT.getWidth(),
+                        EMPTY_SLOT.getHeight());
             }
 
             if (this.wolfArmor.getHasChest()) {
-                this.drawTexturedModalRect(origin.getX() + 97, origin.getY() + 17, this.xSize, 0, 54, 36);
+                for (int xOffset = 0; xOffset < 3; xOffset++) {
+                    for (int yOffset = 0; yOffset < 2; yOffset++) {
+                        this.drawTexturedModalRect(
+                                origin.getX() + 97 + (EMPTY_SLOT.getWidth() * xOffset),
+                                origin.getY() + 17 + (EMPTY_SLOT.getHeight() * yOffset),
+                                EMPTY_SLOT.getX(),
+                                EMPTY_SLOT.getY(),
+                                EMPTY_SLOT.getWidth(),
+                                EMPTY_SLOT.getHeight());
+                    }
+                }
             }
 
             GuiInventory.drawEntityOnScreen(origin.getX() + 51, origin.getY() + 60, 30,
                     (float) (origin.getX() + 51) - this.screenPositionX,
                     (float) (origin.getY() - 50) - this.screenPositionY, this.theWolf);
-
         }
         GlStateManager.popMatrix();
-        if(this.wolfArmor.getHasChest()) {
+        if (this.wolfArmor.getHasChest()) {
             GlStateManager.pushMatrix();
             {
                 // draw button at 7,35
 
                 GlStateManager.color(1, 1, 1, 1);
 
-                int textureY = 166;
-
-                if (this.isChestButtonHovered(mouseX, mouseY)) {
-                    textureY += 18;
-                }
-
                 this.mc.getTextureManager().bindTexture(Resources.TEXTURE_GUI_WOLF_INVENTORY);
-                this.drawTexturedModalRect(origin.getX() + 7, origin.getY() + 35, 0, textureY, 18, 18);
+                this.drawTexturedModalRect(
+                        origin.getX() + BUTTON_AREA.getX(),
+                        origin.getY() + BUTTON_AREA.getY(),
+                        BUTTON_TEXTURE.getX() + (this.isChestButtonHovered(mouseX, mouseY) ? BUTTON_TEXTURE.getWidth() : 0),
+                        BUTTON_TEXTURE.getY(),
+                        BUTTON_TEXTURE.getWidth(),
+                        BUTTON_TEXTURE.getHeight());
             }
             GlStateManager.popMatrix();
         }
@@ -205,7 +231,7 @@ public class GuiWolfInventory extends GuiContainer {
                 float maxHealth = this.theWolf.getMaxHealth();
                 int rowOffset = (int) Math.min((maxHealth + 0.5F) / 2, 30);
 
-                int yPosition = 56;
+                int yPosition = 55;
 
                 if (!WolfArmorMod.getConfiguration().getIsWolfArmorDisplayEnabled() || !this.wolfArmor.getHasArmor()) {
                     yPosition += 5;
@@ -216,7 +242,7 @@ public class GuiWolfInventory extends GuiContainer {
                     rowOffset -= rowIterate;
 
                     for (int row = rowIterate - 1; row >= 0; row--) {
-                        int xPosition = (this.xSize / 2) + row * 8 - 4;
+                        int xPosition = (this.xSize / 2) + row * 8 - 3;
 
                         this.drawTexturedModalRect(xPosition, yPosition, 16, 0, 9, 9);
 
@@ -232,7 +258,7 @@ public class GuiWolfInventory extends GuiContainer {
             }
 
             if (WolfArmorMod.getConfiguration().getIsWolfArmorDisplayEnabled() && this.wolfArmor.getHasArmor()) {
-                int yPosition = 66;
+                int yPosition = 65;
 
                 if (!WolfArmorMod.getConfiguration().getIsWolfHealthDisplayEnabled()) {
                     yPosition -= 5;
@@ -247,7 +273,7 @@ public class GuiWolfInventory extends GuiContainer {
                     rowOffset -= rowIterate;
 
                     for (int row = rowIterate - 1; row >= 0; row--) {
-                        int xPosition = (this.xSize / 2) + row * 8 - 4;
+                        int xPosition = (this.xSize / 2) + row * 8 - 3;
 
                         this.drawTexturedModalRect(xPosition, yPosition, 16, 9, 9, 9);
 
@@ -268,7 +294,7 @@ public class GuiWolfInventory extends GuiContainer {
     private Point getOrigin() {
         return new Point((this.width - this.xSize) / 2, (this.height - this.ySize) / 2);
     }
-    
+
     private Point getLocalFromScreen(int x, int y) {
         Point origin = getOrigin();
         int mouseLocX = x - origin.getX();
@@ -281,7 +307,10 @@ public class GuiWolfInventory extends GuiContainer {
     private boolean isChestButtonHovered(int mouseX, int mouseY) {
         Point mouseLoc = getLocalFromScreen(mouseX, mouseY);
 
-        return mouseLoc.getX() >= 8 && mouseLoc.getY() >= 37 && mouseLoc.getX() < 8 + 16 && mouseLoc.getY() < 37 + 16;
+        return mouseLoc.getX() >= BUTTON_AREA.getX() &&
+                mouseLoc.getY() >= BUTTON_AREA.getY() &&
+                mouseLoc.getX() < BUTTON_AREA.getX() + BUTTON_AREA.getWidth() &&
+                mouseLoc.getY() < BUTTON_AREA.getY() + BUTTON_AREA.getHeight();
     }
 
     //endregion Private Methods
