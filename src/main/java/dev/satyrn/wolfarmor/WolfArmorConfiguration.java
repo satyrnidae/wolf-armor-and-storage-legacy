@@ -27,12 +27,18 @@ public final class WolfArmorConfiguration {
     private boolean isWolfArmorDisplayEnabled = DEFAULT_WOLF_ARMOR_DISPLAY_ENABLED;
     private boolean areHowlingUntamedWolvesEnabled = DEFAULT_HOWLING_UNTAMED_WOLVES_ENABLED;
     private boolean shouldWolvesEatWhenDamaged = DEFAULT_WOLVES_EAT_FOOD_IN_INVENTORY;
+    private int wolfChestSizeHorizontal = DEFAULT_WOLF_CHEST_HORIZONTAL;
+    private int wolfChestSizeVertical = DEFAULT_WOLF_CHEST_VERTICAL;
 
     //region Common Config Settings
 
     private static final String SETTING_WOLF_CHEST_ENABLED = "config.wolfarmor.general.enableChests";
+    private static final String SETTING_WOLF_CHEST_HORIZONTAL = "config.wolfarmor.general.chestSize.horizontal";
+    private static final String SETTING_WOLF_CHEST_VERTICAL = "config.wolfarmor.general.chestSize.vertical";
 
     private static final Boolean DEFAULT_WOLF_CHEST_ENABLED = true;
+    private static final int DEFAULT_WOLF_CHEST_HORIZONTAL = 3;
+    private static final int DEFAULT_WOLF_CHEST_VERTICAL = 2;
 
     //endregion Common Config Settings
 
@@ -135,6 +141,11 @@ public final class WolfArmorConfiguration {
         shouldWolvesEatWhenDamaged = getSettingWolvesEatWhenDamaged().getBoolean();
     }
 
+    private void syncWolfChestSize() {
+        wolfChestSizeHorizontal = getSettingWolfChestSizeHorizontal().getInt();
+        wolfChestSizeVertical = getSettingWolfChestSizeVertical().getInt();
+    }
+
     /**
      * Synchronizes config values.
      *
@@ -142,6 +153,7 @@ public final class WolfArmorConfiguration {
      */
     private void syncConfig(boolean isClientSide) {
         syncIsWolfChestEnabled();
+        syncWolfChestSize();
 
         if (isClientSide) {
             syncIsWolfArmorRenderEnabled();
@@ -218,6 +230,10 @@ public final class WolfArmorConfiguration {
 
     public boolean getShouldWolvesEatWhenDamaged() { return shouldWolvesEatWhenDamaged; }
 
+    public int getWolfChestSizeHorizontal() { return wolfChestSizeHorizontal; }
+
+    public int getWolfChestSizeVertical() { return wolfChestSizeVertical; }
+
     //endregion Generic Accessors
 
     //region Property Accessors
@@ -276,6 +292,24 @@ public final class WolfArmorConfiguration {
                 SETTING_WOLVES_EAT_FOOD_IN_INVENTORY,
                 DEFAULT_WOLVES_EAT_FOOD_IN_INVENTORY,
                 "Enables or disables wolves eating food in their inventories when their health is low.");
+    }
+
+    @Nonnull
+    public Property getSettingWolfChestSizeHorizontal() {
+        return config.get(Configuration.CATEGORY_GENERAL,
+                SETTING_WOLF_CHEST_HORIZONTAL,
+                DEFAULT_WOLF_CHEST_HORIZONTAL,
+                "Sets the horizontal size of the wolf chest",
+                1, 5);
+    }
+
+    @Nonnull
+    public Property getSettingWolfChestSizeVertical() {
+        return config.get(Configuration.CATEGORY_GENERAL,
+                SETTING_WOLF_CHEST_VERTICAL,
+                DEFAULT_WOLF_CHEST_VERTICAL,
+                "Sets the vertical size of the wolf chest",
+                1, 3);
     }
 
     //endregion Property Accessors

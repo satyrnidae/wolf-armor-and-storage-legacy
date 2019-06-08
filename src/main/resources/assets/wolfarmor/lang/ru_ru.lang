@@ -18,6 +18,10 @@ config.wolfarmor.behavior.enableHowlingUntamedWolves=Включить вой д�
 config.wolfarmor.behavior.enableHowlingUntamedWolves.comment=Включает или отключает вой диких волков в полнолуние
 config.wolfarmor.behavior.shouldWolvesEatWhenDamaged=Включить автоматическое исцеление волков
 config.wolfarmor.behavior.shouldWolvesEatWhenDamaged.comment=Если опция активирована, волки автоматически съедят любое мясо, которое хранится в их рюкзаке.
+config.wolfarmor.general.chestSize.horizontal=Horizontal Chest Size
+config.wolfarmor.general.chestSize.horizontal.comment=Sets the horizontal size of the wolf chest
+config.wolfarmor.general.chestSize.vertical=Vertical Chest Size
+config.wolfarmor.general.chestSize.vertical.comment=Sets the vertical size of the wolf chest
 
 advancements.husbandry.armor_up.title=Защитите своего волка
 advancements.husbandry.armor_up.description=Экипируйте вашего волка бронёй
@@ -33,7 +37,7 @@ gui.wolfarmor.config.category.client=Настройки только для кл
 gui.wolfarmor.config.category.client.render=Настройки рендеринга
 gui.wolfarmor.config.category.client.gui=Настройки пользовательского интерфейса
 gui.wolfarmor.config.category.behavior=Поведение волка
-#TODO: Add russian translation for "Remove Chest" tooltip
+# TODO: Add russian translation for "Remove Chest" tooltip
 gui.wolfarmor.inventory.remove_chest=Remove Chest
 
 entity.wolfarmor.wolf_armored.name=Волк
