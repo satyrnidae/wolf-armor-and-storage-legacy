@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-
+//FIXME: This is disgusting.  Get it the fuck fixed
 /**
  * Configuration settings for WolfArmor
  */
