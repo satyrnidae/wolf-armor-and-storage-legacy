@@ -49,7 +49,7 @@ public class WolfArmorGuiConfig extends GuiConfig {
      */
     @Nonnull
     private static List<IConfigElement> getConfigurationElements() {
-        List<IConfigElement> list = new ArrayList<IConfigElement>();
+        List<IConfigElement> list = new ArrayList<>();
 
         WolfArmorConfiguration configuration = WolfArmorMod.getConfiguration();
 
@@ -59,6 +59,16 @@ public class WolfArmorGuiConfig extends GuiConfig {
             wolfChestsEnabled.setRequiresWorldRestart(true);
             wolfChestsEnabled.setComment(I18n.format(wolfChestsEnabled.getName() + ".comment"));
             general.put(wolfChestsEnabled.getName(), wolfChestsEnabled);
+
+            Property wolfChestHorizontal = configuration.getSettingWolfChestSizeHorizontal();
+            wolfChestHorizontal.setRequiresWorldRestart(true);
+            wolfChestHorizontal.setComment(I18n.format(wolfChestHorizontal.getName() + ".comment"));
+            general.put(wolfChestHorizontal.getName(), wolfChestHorizontal);
+
+            Property wolfChestVertical = configuration.getSettingWolfChestSizeVertical();
+            wolfChestVertical.setRequiresWorldRestart(true);
+            wolfChestVertical.setComment(I18n.format(wolfChestHorizontal.getName() + ".comment"));
+            general.put(wolfChestVertical.getName(), wolfChestVertical);
 
             Property howlingUntamedWolvesEnabled = configuration.getSettingHowlingUntamedWolvesEnabled();
             howlingUntamedWolvesEnabled.setRequiresWorldRestart(false);

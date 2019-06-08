@@ -51,6 +51,8 @@ public class GuiWolfInventory extends GuiContainer {
     // Button Graphic
     private final Rectangle BUTTON_TEXTURE = new Rectangle(0, 173, 18, 18);
 
+    private final Rectangle EMPTY_CHEST_BG = new Rectangle(176, 0, 18, 18);
+
     //endregion Fields
 
     //region Constructors
@@ -172,16 +174,38 @@ public class GuiWolfInventory extends GuiContainer {
                         EMPTY_SLOT.getHeight());
             }
 
+
+            int wolfInventorySizeX = WolfArmorMod.getConfiguration().getWolfChestSizeHorizontal();
+            int wolfInventorySizeY = WolfArmorMod.getConfiguration().getWolfChestSizeVertical();
+
+            Point chestOrigin = new Point((5 - wolfInventorySizeX) * 9 + 79, (3 - wolfInventorySizeY) * 9 + 17);
+
             if (this.wolfArmor.getHasChest()) {
-                for (int xOffset = 0; xOffset < 3; xOffset++) {
-                    for (int yOffset = 0; yOffset < 2; yOffset++) {
+                //draw chest slots
+                for (int xOffset = 0; xOffset < wolfInventorySizeX; xOffset++) {
+                    for (int yOffset = 0; yOffset < wolfInventorySizeY; yOffset++) {
                         this.drawTexturedModalRect(
-                                origin.getX() + 97 + (EMPTY_SLOT.getWidth() * xOffset),
-                                origin.getY() + 26 + (EMPTY_SLOT.getHeight() * yOffset),
+                                origin.getX() + chestOrigin.getX() + (EMPTY_SLOT.getWidth() * xOffset),
+                                origin.getY() + chestOrigin.getY() + (EMPTY_SLOT.getHeight() * yOffset),
                                 EMPTY_SLOT.getX(),
                                 EMPTY_SLOT.getY(),
                                 EMPTY_SLOT.getWidth(),
                                 EMPTY_SLOT.getHeight());
+                    }
+                }
+            } else {
+                for (int xSlot = 0; xSlot < wolfInventorySizeX; xSlot++) {
+                    for (int ySlot = 0; ySlot < wolfInventorySizeY; ySlot++) {
+                        int textureXOffset = (wolfInventorySizeX > 1 ? 1 : 0) + (xSlot > 0 ? (xSlot == wolfInventorySizeX - 1 ? 2 : 1) : 0);
+                        int textureYOffset = (wolfInventorySizeY > 1 ? 1 : 0) + (ySlot > 0 ? (ySlot == wolfInventorySizeY - 1 ? 2 : 1) : 0);
+
+                        drawTexturedModalRect(
+                                origin.getX() + chestOrigin.getX() + (EMPTY_CHEST_BG.getWidth() * xSlot),
+                                origin.getY() + chestOrigin.getY() + (EMPTY_CHEST_BG.getHeight() * ySlot),
+                                textureXOffset * EMPTY_CHEST_BG.getWidth() + EMPTY_CHEST_BG.getX(),
+                                textureYOffset * EMPTY_CHEST_BG.getHeight() + EMPTY_CHEST_BG.getY(),
+                                EMPTY_CHEST_BG.getWidth(),
+                                EMPTY_CHEST_BG.getHeight());
                     }
                 }
             }

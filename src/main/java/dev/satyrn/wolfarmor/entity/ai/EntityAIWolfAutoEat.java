@@ -120,7 +120,7 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
     private void refreshInventoryContents(IInventory invBasic) {
         this.inventoryContents.clear();
         for(int slotIndex = ContainerWolfInventory.INVENTORY_SLOT_CHEST_START;
-            slotIndex < ContainerWolfInventory.INVENTORY_SLOT_CHEST_START + ContainerWolfInventory.INVENTORY_SLOT_CHEST_LENGTH;
+            slotIndex < ContainerWolfInventory.INVENTORY_SLOT_CHEST_START + this.armoredWolf.getMaxSizeInventory() - 1;
             ++slotIndex) {
             this.inventoryContents.add(invBasic.getStackInSlot(slotIndex));
         }

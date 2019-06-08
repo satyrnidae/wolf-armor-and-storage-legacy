@@ -58,7 +58,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
     @Override
     public int getMaxSizeInventory() {
-        return ContainerWolfInventory.MAX_SIZE_INVENTORY;
+        return 1 + (WolfArmorMod.getConfiguration().getWolfChestSizeHorizontal() * WolfArmorMod.getConfiguration().getWolfChestSizeVertical());
     }
 
     @Override
@@ -173,7 +173,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
     @Override
     public void dropInventoryContents() {
-        for(int slotIndex = ContainerWolfInventory.INVENTORY_SLOT_CHEST_START; slotIndex <= ContainerWolfInventory.INVENTORY_SLOT_CHEST_LENGTH; ++slotIndex) {
+        for(int slotIndex = ContainerWolfInventory.INVENTORY_SLOT_CHEST_START; slotIndex <= this.getMaxSizeInventory() - 1; ++slotIndex) {
             @Nonnull ItemStack stackInSlot = this.inventory.getStackInSlot(slotIndex);
             if(!stackInSlot.isEmpty()) {
                 if(!this.getEntityWorld().isRemote) {

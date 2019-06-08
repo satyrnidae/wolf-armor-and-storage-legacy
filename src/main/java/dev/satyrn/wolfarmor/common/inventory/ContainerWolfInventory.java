@@ -1,5 +1,6 @@
 package dev.satyrn.wolfarmor.common.inventory;
 
+import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
 import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.common.ItemWolfArmor;
@@ -23,10 +24,8 @@ import net.minecraft.util.SoundEvent;
 public class ContainerWolfInventory extends Container {
     //region Fields
 
-    public static final int MAX_SIZE_INVENTORY = 7;
     public static final int INVENTORY_SLOT_ARMOR = 0;
     public static final int INVENTORY_SLOT_CHEST_START = 1;
-    public static final int INVENTORY_SLOT_CHEST_LENGTH = MAX_SIZE_INVENTORY - INVENTORY_SLOT_CHEST_START;
 
     private IInventory wolfInventory;
     private EntityWolf theWolf;
@@ -92,12 +91,17 @@ public class ContainerWolfInventory extends Container {
 
         IArmoredWolf wolfArmor = (IArmoredWolf)theWolf;
 
+        int wolfInventorySizeX = WolfArmorMod.getConfiguration().getWolfChestSizeHorizontal();
+        int wolfInventorySizeY = WolfArmorMod.getConfiguration().getWolfChestSizeVertical();
+        int xItemOffset = (5 - wolfInventorySizeX) * 9;
+        int yItemOffset = (3 - wolfInventorySizeY) * 9;
+
         int x;
         int y;
         if (wolfArmor.getHasChest()) {
-            for (y = 0; y < 2; y++) {
-                for (x = 0; x < 3; x++) {
-                    this.addSlotToContainer(new Slot(wolfInventory, 1 + x + y * 3, 98 + x * 18, 27 + y * 18));
+            for (y = 0; y < wolfInventorySizeY; y++) {
+                for (x = 0; x < wolfInventorySizeX; x++) {
+                    this.addSlotToContainer(new Slot(wolfInventory, 1 + x + y * wolfInventorySizeX, 80 + xItemOffset + x * 18, 18 + yItemOffset + y * 18));
                 }
             }
         }
