@@ -16,9 +16,7 @@ $tf
 
 # Gradle Wrapper
 .gradle/
-gradle/
-gradlew*
-gradle.properties
+!gradle-wrapper.jar
 
 # Build Output / Temp Directories
 build/
