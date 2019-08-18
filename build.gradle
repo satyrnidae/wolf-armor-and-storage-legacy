@@ -49,10 +49,7 @@ file "./api/config.json" withReader {
     apiConfig = new JsonSlurper().parseText(it.text)
 }
 
-
-def combinedPatchAndApiVersion = (modConfig.version.patch | (apiConfig.version.minor<<8))
-
-def shortVersion = "${modConfig.version.major}.${apiConfig.version.major}.${modConfig.version.minor}.${combinedPatchAndApiVersion}"
+def shortVersion = "${modConfig.version.major}.${apiConfig.version.major}.${modConfig.version.minor}.${modConfig.version.patch}"
 version = "${modConfig.version.minecraft}-${shortVersion}-${modConfig.version.extension}"
 
 println "Current version is ${version}"
@@ -172,7 +169,7 @@ task updatePatchNumber() {
     gradle.taskGraph.whenReady {taskGraph ->
         if(taskGraph.hasTask(compileJava) &&
                 taskGraph.hasTask(assemble) &&
-                taskGraph.hasTask('build')) {
+                taskGraph.hasTask(build)) {
             modConfig.version.patch += 1
             def configFile = new File('./config.json')
             configFile.delete()
