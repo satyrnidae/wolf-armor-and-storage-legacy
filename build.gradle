@@ -14,7 +14,7 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '1.2.4'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -164,17 +164,31 @@ jar {
     )
 }
 
+void updateSemVer(String value, modConfig, apiConfig) {
+    switch (value) {
+        case 'patch':
+            modConfig.version.patch += 1
+            break
+        case 'minor':
+            modConfig.version.minor += 1
+            break
+        case 'major':
+            modConfig.version.major += 1
+            break
+    }
+    def configFile = new File('./config.json')
+    configFile.delete()
+    configFile.write(new JsonBuilder(modConfig).toPrettyString())
+    println "Semantic version updated to ${modConfig.version.major}.${apiConfig.version.major}.${modConfig.version.minor}.${modConfig.version.patch}"
+}
+
 task updatePatchNumber() {
     dependsOn build
     gradle.taskGraph.whenReady {taskGraph ->
         if(taskGraph.hasTask(compileJava) &&
                 taskGraph.hasTask(assemble) &&
                 taskGraph.hasTask(build)) {
-            modConfig.version.patch += 1
-            def configFile = new File('./config.json')
-            configFile.delete()
-            configFile.write(new JsonBuilder(modConfig).toPrettyString())
-            println "Patch number updated to ${modConfig.version.patch}"
+            updateSemVer('patch', modConfig, apiConfig)
         }
     }
 }
@@ -186,7 +200,6 @@ task updateModVersion(type:Copy) {
     into 'build/sources/main/java'
     expand 'version':shortVersion, 'mcversion':project.minecraft.version
 }
-
 
 compileJava.dependsOn updateModVersion
 updatePatchNumber.shouldRunAfter build
