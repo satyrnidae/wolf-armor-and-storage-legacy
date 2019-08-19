@@ -125,6 +125,7 @@ public class GuiWolfInventory extends GuiContainer {
      */
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        this.drawDefaultBackground();
         this.screenPositionX = mouseX;
         this.screenPositionY = mouseY;
         super.drawScreen(mouseX, mouseY, partialTicks);
