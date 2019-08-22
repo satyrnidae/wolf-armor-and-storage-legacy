@@ -1,7 +1,7 @@
 package dev.satyrn.wolfarmor.common.event;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
-import dev.satyrn.wolfarmor.api.IArmoredWolf;
+import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
 import dev.satyrn.wolfarmor.entity.ai.EntityAIWolfAutoEat;
 import dev.satyrn.wolfarmor.entity.ai.EntityAIWolfHowl;
 import dev.satyrn.wolfarmor.entity.passive.EntityWolfArmored;

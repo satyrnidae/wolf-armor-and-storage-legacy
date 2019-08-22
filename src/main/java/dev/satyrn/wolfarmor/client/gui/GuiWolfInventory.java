@@ -1,8 +1,8 @@
 package dev.satyrn.wolfarmor.client.gui;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
-import dev.satyrn.wolfarmor.api.IArmoredWolf;
-import dev.satyrn.wolfarmor.api.IWolfArmorMaterial;
+import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
+import dev.satyrn.wolfarmor.api.item.IWolfArmorMaterial;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import dev.satyrn.wolfarmor.common.network.PacketHandler;

@@ -1,7 +1,7 @@
 package dev.satyrn.wolfarmor.client.renderer.entity.layer;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
-import dev.satyrn.wolfarmor.api.IArmoredWolf;
+import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.client.model.ModelWolfBackpack;
 import net.minecraft.client.renderer.GlStateManager;

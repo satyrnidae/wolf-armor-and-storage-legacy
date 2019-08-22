@@ -1,6 +1,6 @@
 package dev.satyrn.wolfarmor.common.event;
 
-import dev.satyrn.wolfarmor.api.common.ItemWolfArmor;
+import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.state.IBlockState;

@@ -2,8 +2,8 @@ package dev.satyrn.wolfarmor.common.inventory;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
-import dev.satyrn.wolfarmor.api.IArmoredWolf;
-import dev.satyrn.wolfarmor.api.common.ItemWolfArmor;
+import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
+import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.api.util.Items;
 import net.minecraft.entity.passive.EntityWolf;

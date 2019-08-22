@@ -1,7 +1,7 @@
 package dev.satyrn.wolfarmor.entity.ai;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
-import dev.satyrn.wolfarmor.api.IArmoredWolf;
+import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import dev.satyrn.wolfarmor.common.network.PacketHandler;
 import dev.satyrn.wolfarmor.common.network.packets.WolfEatMessage;
@@ -12,7 +12,6 @@ import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.IInventoryChangedListener;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;

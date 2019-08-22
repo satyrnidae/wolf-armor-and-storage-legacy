@@ -2,7 +2,7 @@ package dev.satyrn.wolfarmor.common;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
-import dev.satyrn.wolfarmor.api.IProxy;
+import dev.satyrn.wolfarmor.api.common.IProxy;
 import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.common.loot.LootHandler;
