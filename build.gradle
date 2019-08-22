@@ -170,9 +170,12 @@ void updateSemVer(String value, modConfig, apiConfig) {
             modConfig.version.patch += 1
             break
         case 'minor':
+            modConfig.version.patch = 0
             modConfig.version.minor += 1
             break
         case 'major':
+            modConfig.version.patch = 0
+            modConfig.version.minor = 0
             modConfig.version.major += 1
             break
     }
