@@ -44,7 +44,6 @@ public class ItemWolfArmor extends Item implements IItemWolfArmor {
             return !itemStack.isEmpty() ? itemStack : super.dispenseStack(source, stack);
         }
     };
-    public static final UUID ARMOR_UUID = UUID.fromString("0DA1275D-85A6-427A-B187-57DF958AC68B");
     private final IWolfArmorMaterial material;
 
     public ItemWolfArmor(IWolfArmorMaterial material) {

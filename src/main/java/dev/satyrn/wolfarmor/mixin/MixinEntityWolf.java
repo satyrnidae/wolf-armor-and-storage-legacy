@@ -3,6 +3,7 @@ package dev.satyrn.wolfarmor.mixin;
 import com.google.common.collect.Multimap;
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
+import dev.satyrn.wolfarmor.api.item.IItemWolfArmor;
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.api.util.DataHelper;
@@ -381,7 +382,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         if(instance == null) {
             return;
         }
-        instance.removeModifier(ItemWolfArmor.ARMOR_UUID);
+        instance.removeModifier(IItemWolfArmor.ARMOR_UUID);
         if (stack.isEmpty() || !(stack.getItem() instanceof ItemWolfArmor)) {
             return;
         }
