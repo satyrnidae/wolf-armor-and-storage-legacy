@@ -13,8 +13,9 @@
     "version": {
         "extension": "SNAPSHOT",
         "major": 3,
+        "api": 4,
         "minecraft": "1.12.2",
-        "minor": 2,
-        "patch": 0
+        "minor": 0,
+        "patch": 10
     }
 }
