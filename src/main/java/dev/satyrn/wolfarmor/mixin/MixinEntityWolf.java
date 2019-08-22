@@ -9,6 +9,7 @@ import dev.satyrn.wolfarmor.api.util.DataHelper;
 import dev.satyrn.wolfarmor.api.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.util.Items;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
+import dev.satyrn.wolfarmor.util.OreDictHelper;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -43,7 +44,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.crypto.Data;
 
 @Mixin(EntityWolf.class)
 public abstract class MixinEntityWolf extends MixinEntityTameable implements IArmoredWolf, IInventoryChangedListener {
@@ -354,9 +354,8 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
             if (!itemInHand.isEmpty()) {
                 boolean isWolfChestEnabled = WolfArmorMod.getConfiguration().getIsWolfChestEnabled();
-                if (isWolfChestEnabled && !this.getHasChest() && Block.getBlockFromItem(itemInHand.getItem()) != Blocks.ENDER_CHEST &&
-                        (Block.getBlockFromItem(itemInHand.getItem()) == Blocks.CHEST ||
-                                OreDictionary.containsMatch(false, OreDictionary.getOres("chestWood"), itemInHand))) {
+                if (isWolfChestEnabled && !this.getHasChest() &&
+                        OreDictHelper.isOre(false, "chestWood", itemInHand)) {
                     if (!this.getEntityWorld().isRemote) {
                         this.playEquipSound(itemInHand);
                         this.setHasChest(true);
@@ -424,8 +423,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
             return;
         }
         SoundEvent sound = null;
-        if (Block.getBlockFromItem(itemStack.getItem()) == Blocks.CHEST ||
-                OreDictionary.containsMatch(false, OreDictionary.getOres("chest"), itemStack)) {
+        if (OreDictHelper.isOre(false, "chestWood", itemStack)) {
             sound = SoundEvents.ENTITY_CHICKEN_EGG;
         }
 
