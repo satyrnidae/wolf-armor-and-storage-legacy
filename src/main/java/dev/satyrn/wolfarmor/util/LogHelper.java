@@ -1,4 +1,4 @@
-package dev.satyrn.wolfarmor;
+package dev.satyrn.wolfarmor.util;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +15,6 @@ public class LogHelper {
     /**
      * Creates a log helper for the specified logger.
      */
-    @SuppressWarnings("WeakerAccess")
     public LogHelper(@Nonnull Logger logger) {
         this.logger = logger;
     }
@@ -26,7 +25,6 @@ public class LogHelper {
      * @param level   The level of the message
      * @param message The message
      */
-    @SuppressWarnings("WeakerAccess")
     public void log(@Nonnull Level level, @Nonnull String message) {
         if (logger == null) {
             throw new LoggingException("Logger has not been initialized");
@@ -41,7 +39,6 @@ public class LogHelper {
      * @param level The level of the exception
      * @param ex    The exception to log
      */
-    @SuppressWarnings("WeakerAccess")
     public void log(@Nonnull Level level, @Nonnull Throwable ex) {
         log(level, ex, level);
     }
@@ -53,7 +50,6 @@ public class LogHelper {
      * @param ex              The exception
      * @param stackTraceLevel The logging level to log the stack trace at
      */
-    @SuppressWarnings("WeakerAccess")
     public void log(@Nonnull Level level, @Nonnull Throwable ex, @Nonnull Level stackTraceLevel) {
         log(level, ex.getMessage());
 
@@ -68,7 +64,6 @@ public class LogHelper {
      * @param level The level of the exception
      * @param obj   The object to log
      */
-    @SuppressWarnings("WeakerAccess")
     public void log(@Nonnull Level level, @Nonnull Object obj) {
         log(level, obj.toString());
     }
@@ -78,7 +73,6 @@ public class LogHelper {
      *
      * @param message The message to log
      */
-    @SuppressWarnings("unused")
     public void info(@Nonnull String message) {
         log(Level.INFO, message);
     }
@@ -88,7 +82,6 @@ public class LogHelper {
      *
      * @param message The message to log
      */
-    @SuppressWarnings("unused")
     public void warning(@Nonnull String message) {
         log(Level.WARN, message);
     }
@@ -98,7 +91,6 @@ public class LogHelper {
      *
      * @param ex The exception to log
      */
-    @SuppressWarnings("unused")
     public void warning(@Nonnull Exception ex) {
         log(Level.WARN, ex, Level.DEBUG);
     }
@@ -108,7 +100,6 @@ public class LogHelper {
      *
      * @param message The message to log
      */
-    @SuppressWarnings("unused")
     public void error(@Nonnull String message) {
         log(Level.ERROR, message);
     }
@@ -119,7 +110,7 @@ public class LogHelper {
      * @param ex The exception to log
      */
     public void error(@Nonnull Exception ex) {
-        log(Level.ERROR, ex);
+        log(Level.ERROR, ex, Level.DEBUG);
     }
 
     /**
@@ -127,7 +118,6 @@ public class LogHelper {
      *
      * @param message The message to log
      */
-    @SuppressWarnings("unused")
     public void fatal(@Nonnull String message) {
         log(Level.FATAL, message);
     }
@@ -137,8 +127,9 @@ public class LogHelper {
      *
      * @param ex The exception to log
      */
+    @SuppressWarnings("unused")
     public void fatal(@Nonnull Throwable ex) {
-        log(Level.FATAL, ex);
+        log(Level.FATAL, ex, Level.DEBUG);
     }
 
     /**
@@ -146,7 +137,6 @@ public class LogHelper {
      *
      * @param message The message to log
      */
-    @SuppressWarnings("WeakerAccess")
     public void debug(@Nonnull String message) {
         log(Level.DEBUG, message);
     }
@@ -156,7 +146,6 @@ public class LogHelper {
      *
      * @param obj The object to log
      */
-    @SuppressWarnings("unused")
     public void debug(@Nonnull Object obj) {
         log(Level.DEBUG, obj);
     }
@@ -166,7 +155,6 @@ public class LogHelper {
      *
      * @param message The message to log
      */
-    @SuppressWarnings("unused")
     public void trace(@Nonnull String message) {
         log(Level.TRACE, message);
     }
@@ -176,7 +164,6 @@ public class LogHelper {
      *
      * @param obj The object to log
      */
-    @SuppressWarnings("unused")
     public void trace(@Nonnull Object obj) {
         log(Level.TRACE, obj);
     }
