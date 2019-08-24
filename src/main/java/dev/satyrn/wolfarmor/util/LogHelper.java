@@ -1,5 +1,6 @@
 package dev.satyrn.wolfarmor.util;
 
+import dev.satyrn.wolfarmor.api.util.ILogHelper;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LoggingException;
@@ -9,13 +10,20 @@ import javax.annotation.Nonnull;
 /**
  * Provides logging utilities
  */
-public class LogHelper {
+public class LogHelper implements ILogHelper {
     private Logger logger;
+
+    public LogHelper() {}
 
     /**
      * Creates a log helper for the specified logger.
      */
-    public LogHelper(@Nonnull Logger logger) {
+    LogHelper(@Nonnull Logger logger) {
+        this.initializeLogger(logger);
+    }
+
+    @Override
+    public void initializeLogger(Logger logger) {
         this.logger = logger;
     }
 
@@ -127,7 +135,6 @@ public class LogHelper {
      *
      * @param ex The exception to log
      */
-    @SuppressWarnings("unused")
     public void fatal(@Nonnull Throwable ex) {
         log(Level.FATAL, ex, Level.DEBUG);
     }

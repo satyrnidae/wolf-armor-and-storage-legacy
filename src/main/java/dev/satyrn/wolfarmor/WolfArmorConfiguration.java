@@ -1,5 +1,6 @@
 package dev.satyrn.wolfarmor;
 
+import dev.satyrn.wolfarmor.api.config.IConfiguration;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -16,7 +17,7 @@ import java.io.File;
 /**
  * Configuration settings for WolfArmor
  */
-public final class WolfArmorConfiguration {
+public final class WolfArmorConfiguration implements IConfiguration {
     //region Fields
 
     private Configuration config;
@@ -70,15 +71,14 @@ public final class WolfArmorConfiguration {
 
     //endregion Fields
 
-    // region Constructors
+    //region Public / Protected Methods
 
     /**
      * Creates and loads wolf armor configuration.
      *
      * @param preInitializationEvent The pre-initialization event.
      */
-    @SuppressWarnings("WeakerAccess")
-    public WolfArmorConfiguration(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
+    public void initializeConfig(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
         config = new Configuration(getConfigurationFile(preInitializationEvent));
 
         WolfArmorMod.getLogger().debug("Loading mod configuration...");
@@ -89,10 +89,6 @@ public final class WolfArmorConfiguration {
 
         MinecraftForge.EVENT_BUS.register(this);
     }
-
-    //endregion Constructors
-
-    //region Public / Protected Methods
 
     /**
      * Handles config changed events
