@@ -1,7 +1,7 @@
 package dev.satyrn.wolfarmor.client.gui.config;
 
-import dev.satyrn.wolfarmor.WolfArmorConfiguration;
 import dev.satyrn.wolfarmor.WolfArmorMod;
+import dev.satyrn.wolfarmor.api.config.IConfiguration;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
@@ -18,6 +18,7 @@ import java.util.List;
 /**
  * Configuration GUI for the Wolf Armor mod.
  */
+@SuppressWarnings("WeakerAccess")
 @SideOnly(Side.CLIENT)
 public class WolfArmorGuiConfig extends GuiConfig {
     //region Constructors
@@ -51,7 +52,7 @@ public class WolfArmorGuiConfig extends GuiConfig {
     private static List<IConfigElement> getConfigurationElements() {
         List<IConfigElement> list = new ArrayList<>();
 
-        WolfArmorConfiguration configuration = WolfArmorMod.getConfiguration();
+        IConfiguration configuration = WolfArmorMod.getConfiguration();
 
         ConfigCategory general = new ConfigCategory(I18n.format("gui.wolfarmor.config.category.general"));
         {

@@ -1,5 +1,7 @@
 package dev.satyrn.wolfarmor;
 
+import dev.satyrn.wolfarmor.api.config.IConfiguration;
+import dev.satyrn.wolfarmor.api.util.ILogHelper;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.api.common.IProxy;
 import dev.satyrn.wolfarmor.util.LogHelper;
@@ -33,34 +35,27 @@ public class WolfArmorMod {
                 serverSide = "dev.satyrn.wolfarmor.common.CommonProxy")
     public static IProxy proxy;
 
+    @SuppressWarnings("unused")
     @Mod.Instance(Resources.MOD_ID)
-    private static WolfArmorMod instance;
+    public static WolfArmorMod instance;
 
-    private static LogHelper logger;
+    static ILogHelper logger;
 
-    private static WolfArmorConfiguration configuration;
+    static IConfiguration configuration;
 
     //endregion Fields
 
+    public WolfArmorMod() {
+        this(new WolfArmorConfiguration(), new LogHelper());
+    }
+
+    @SuppressWarnings("unused")
+    WolfArmorMod(IConfiguration configurationInstance, ILogHelper loggerInstance) {
+        configuration = configurationInstance;
+        logger = loggerInstance;
+    }
+
     //region Public / Protected Methods
-
-    /**
-     * Gets the sided proxy.
-     *
-     * @return The sided proxy.
-     */
-    public static IProxy getProxy() {
-        return proxy;
-    }
-
-    /**
-     * Gets the mod instance.
-     *
-     * @return The mod instance.
-     */
-    public static WolfArmorMod getInstance() {
-        return instance;
-    }
 
     /**
      * Handles pre-initialization tasks
@@ -69,8 +64,8 @@ public class WolfArmorMod {
      */
     @Mod.EventHandler
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
-        logger = new LogHelper(preInitializationEvent.getModLog());
-        configuration = new WolfArmorConfiguration(preInitializationEvent);
+        logger.initializeLogger(preInitializationEvent.getModLog());
+        configuration.initializeConfig(preInitializationEvent);
 
         proxy.preInit(preInitializationEvent);
     }
@@ -110,7 +105,7 @@ public class WolfArmorMod {
      * @return The logger
      */
     @Nonnull
-    public static LogHelper getLogger() {
+    public static ILogHelper getLogger() {
         return logger;
     }
 
@@ -120,8 +115,26 @@ public class WolfArmorMod {
      * @return The configuration settings
      */
     @Nonnull
-    public static WolfArmorConfiguration getConfiguration() {
+    public static IConfiguration getConfiguration() {
         return configuration;
+    }
+
+    /**
+     * Gets the sided proxy.
+     *
+     * @return The sided proxy.
+     */
+    public static IProxy getProxy() {
+        return proxy;
+    }
+
+    /**
+     * Gets the mod instance.
+     *
+     * @return The mod instance.
+     */
+    public static WolfArmorMod getInstance() {
+        return instance;
     }
 
     //endregion Accessors / Mutators
