@@ -2,6 +2,7 @@ package dev.satyrn.wolfarmor;
 
 import dev.satyrn.wolfarmor.api.config.IConfiguration;
 import dev.satyrn.wolfarmor.api.util.Resources;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -229,6 +230,11 @@ public final class WolfArmorConfiguration implements IConfiguration {
     public int getWolfChestSizeHorizontal() { return wolfChestSizeHorizontal; }
 
     public int getWolfChestSizeVertical() { return wolfChestSizeVertical; }
+
+    @Override
+    public void syncSettings(NBTTagCompound settingsData) {
+
+    }
 
     //endregion Generic Accessors
 

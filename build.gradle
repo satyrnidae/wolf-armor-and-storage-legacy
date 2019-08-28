@@ -30,7 +30,7 @@ file "./config.json" withReader {
     modConfig = new JsonSlurper().parseText(it.text)
 }
 
-file "./api/config.json" withReader {
+file "./src/api/config.json" withReader {
     apiConfig = new JsonSlurper().parseText(it.text)
 }
 
@@ -61,7 +61,7 @@ dependencies {
 
 sourceSets.api {
     java {
-        srcDirs 'api/'
+        srcDirs 'src/api/java'
     }
 }
 
