@@ -100,9 +100,7 @@ public class GuiWolfInventory extends GuiContainer {
      */
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String wolfName = this.theWolf.hasCustomName()
-                ? this.theWolf.getCustomNameTag()
-                : I18n.format("entity.Wolf.name");
+        String wolfName = this.theWolf.getName();
 
         this.fontRenderer.drawString(this.wolfInventory.hasCustomName()
                 ? this.wolfInventory.getName()
