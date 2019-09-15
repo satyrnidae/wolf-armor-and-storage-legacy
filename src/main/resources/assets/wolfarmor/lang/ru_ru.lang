@@ -37,7 +37,6 @@ gui.wolfarmor.config.category.client=Настройки только для кл
 gui.wolfarmor.config.category.client.render=Настройки рендеринга
 gui.wolfarmor.config.category.client.gui=Настройки пользовательского интерфейса
 gui.wolfarmor.config.category.behavior=Поведение волка
-# TODO: Add russian translation for "Remove Chest" tooltip
-gui.wolfarmor.inventory.remove_chest=Remove Chest
+gui.wolfarmor.inventory.remove_chest=Снять сундук
 
 entity.wolfarmor.wolf_armored.name=Волк
