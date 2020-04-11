@@ -67,7 +67,7 @@ sourceSets.api {
 
 sourceSets.main {
     java {
-        srcDirs 'src/main/java'
+        srcDirs "$buildDir/sources/main/java"
     }
     artifacts {
         archives shadowJar
@@ -88,7 +88,6 @@ sourceSets.test {
 }
 
 build {
-    dependsOn 'expandSource'
     finalizedBy 'incrementPatchVersion'
 }
 
@@ -116,8 +115,20 @@ javadoc {
 }
 
 compileJava {
-    dependsOn 'expandSource'
     sourceCompatibility = targetCompatibility = "1.8"
+    doFirst {
+        copy {
+            from sourceSets.main.allJava
+            into "$buildDir/generated/main/java"
+            filter { line -> 
+                line.replaceAll('"\\$\\{version\\}"', "\"$shortVersion\"")
+            }
+        }
+        copy {
+            from "$buildDir/generated/main/java"
+            into "$buildDir/sources/main/java"
+        }
+    }
 }
 
 shadowJar {
@@ -233,10 +244,4 @@ task incrementMajor {
         modConfig.version.api = 0
         modConfig.version.major += 1
     }
-}
-
-task expandSource(type:Copy) {
-    from sourceSets.main.allJava
-    into 'build/sources/main/java'
-    expand 'version': shortVersion, 'mcversion': project.minecraft.version
 }
