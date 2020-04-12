@@ -1,3 +1,4 @@
 [submodule "api"]
 	path = src/api
 	url = https://github.com/centurionfox/wolfarmor-api
+	branch = versions/1.12.2
