@@ -35,10 +35,10 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerEntityRenderingHandlers() {
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
-        RenderWolf renderWolf = (RenderWolf) renderManager.entityRenderMap.get(EntityWolf.class);
+        RenderLiving<?> renderWolf = (RenderLiving<?>) renderManager.entityRenderMap.get(EntityWolf.class);
 
-        LayerWolfArmor armor = (LayerWolfArmor) RenderLayerFactory.createArmorLayer(renderWolf);
-        LayerWolfBackpack backpack = (LayerWolfBackpack) RenderLayerFactory.createBackpackLayer(renderWolf);
+        LayerRenderer<?> armor = RenderLayerFactory.createArmorLayer(renderWolf);
+        LayerRenderer<?> backpack = (LayerWolfBackpack) RenderLayerFactory.createBackpackLayer(renderWolf);
         if(armor == null || backpack == null) throw new RuntimeException("Armor layer factory failed initialization!");
 
         renderWolf.addLayer(armor);
