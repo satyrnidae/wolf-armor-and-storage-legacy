@@ -18,11 +18,7 @@ import javax.annotation.Nonnull;
  * WolfArmorMod main class
  */
 @SuppressWarnings("WeakerAccess")
-@Mod(useMetadata = true,
-        modid = Resources.MOD_ID,
-        name = Resources.MOD_NAME,
-        version = WolfArmorMod.MOD_VERSION,
-        guiFactory = "dev.satyrn.wolfarmor.client.gui.config.WolfArmorGuiFactory")
+@Mod(Resources.MOD_ID)
 public class WolfArmorMod {
     //region Fields
 

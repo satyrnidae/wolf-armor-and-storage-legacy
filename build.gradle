@@ -3,13 +3,14 @@ import groovy.json.JsonSlurper
 
 buildscript {
     repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = "http://repo.spongepowered.org/maven" }
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
-        maven { url = "http://repo.spongepowered.org/maven"}
+        mavenCentral()
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
-        classpath "org.spongepowered:mixingradle:0.6+"
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: "3.+", changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: "0.7-SNAPSHOT", changing: true
     }
 }
 
@@ -18,40 +19,41 @@ plugins {
     id 'groovy'
 }
 
-apply plugin: 'maven'
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
 
-def modConfig = null
-def apiConfig = null
+def modconfig = null
+def apiconfig = null
 
 file "./config.json" withReader {
-    modConfig = new JsonSlurper().parseText(it.text)
+    modconfig = new JsonSlurper().parseText(it.text)
 }
 
 file "./src/api/config.json" withReader {
-    apiConfig = new JsonSlurper().parseText(it.text)
+    apiconfig = new JsonSlurper().parseText(it.text)
 }
 
-def apiVersion = "${apiConfig.version.major}.${apiConfig.version.minor}.${apiConfig.version.patch}"
-def shortVersion = "${modConfig.version.major}.${modConfig.version.api}.${modConfig.version.minor}.${modConfig.version.patch}"
+def apiVersion = "${apiconfig.version.major}.${apiconfig.version.minor}.${apiconfig.version.patch}"
+def shortVersion = "${modconfig.version.major}.${modconfig.version.api}.${modconfig.version.minor}.${modconfig.version.patch}"
 
-version = "${modConfig.version.minecraft}-${shortVersion}-${modConfig.version.extension}"
-group= "dev.satyrn.wolfarmor"
-archivesBaseName = "wolfarmor"
+version = "${modconfig.version.minecraft}-${shortVersion}-${modconfig.version.extension}"
+group = modconfig.group
+archivesBaseName = modconfig.modid
 
 println "Current version is ${version}"
 
-sourceCompatibility = targetCompatibility = "1.8"
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
-repositories {
-    maven { url = 'http://repo.spongepowered.org/maven' }
-    maven { url = "https://oss.sonatype.org/content/repositories/snapshots/"}
+minecraft {
+    mappings channel: modconfig.mcp.channel, version: modconfig.mcp.version
 }
 
 dependencies {
-    compile("org.spongepowered:mixin:${modConfig.sponge.version}"){
+    minecraft "net.minecraftforge:forge:${modconfig.version.minecraft}-${modconfig.forge.version}"
+    compile("org.spongepowered:mixin:${modconfig.mixin.version}"){
         exclude module: 'launchwrapper'
         exclude module: 'guava'
         exclude module: 'gson'
@@ -59,15 +61,10 @@ dependencies {
     }
 }
 
-sourceSets.api {
-    java {
-        srcDirs 'src/api/java'
-    }
-}
-
 sourceSets.main {
     java {
-        srcDirs "$buildDir/sources/main/java"
+        srcDirs "src/api/java"
+        srcDirs "src/main/java"
     }
     artifacts {
         archives shadowJar
@@ -87,91 +84,38 @@ sourceSets.test {
     }
 }
 
-build {
-    finalizedBy 'incrementPatchVersion'
-}
-
+// Example for how to get properties into the manifest for reading by the runtime..
 jar {
-    from sourceSets.api.output
-    from sourceSets.main.output
     manifest.attributes(
-            'Built-By': System.properties['user.name'],
-            'Created-By': "${System.properties['java.vm.version']} (${System.properties['java.vm.vendor']})",
-            'Implementation-Title': project.name,
-            'Implementation-Version': version,
-            'Implementation-Vendor': 'https://satyrn.dev',
-            'API-Version': apiVersion,
-            'FMLCorePlugin': "${project.group}.coremod.WolfArmorCore",
-            'ForceLoadAsMod': true,
-            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-            'TweakOrder': 0,
-            'MixinConfigs': 'mixins.wolfarmor.core.json',
-            'FMLAT': 'wolfarmor_at.cfg'
+        'Built-By': System.properties['user.name'],
+        'Created-By': "${System.properties['java.vm.version']} (${System.properties['java.vm.vendor']})",
+        'Specification-Title': modconfig.modid,
+        'Specification-Vendor': modconfig.vendor,
+        'Specification-Version': shortVersion,
+        'Implementation-Title': project.name,
+        'Implementation-Version': version,
+        'Implementation-Vendor': 'https://satyrn.dev',
+        'API-Version': apiVersion,
+        'FMLCorePlugin': "${project.group}.coremod.WolfArmorCore",
+        'ForceLoadAsMod': true,
+        'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+        'TweakOrder': 0,
+        'MixinConfigs': 'mixins.wolfarmor.core.json',
+        'FMLAT': 'wolfarmor_at.cfg'
     )
-}
-
-javadoc {
-    source = sourceSets.api.allJava + sourceSets.main.allJava
-}
-
-compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
-    doFirst {
-        copy {
-            from sourceSets.main.allJava
-            into "$buildDir/generated/main/java"
-            filter { line -> 
-                line.replaceAll('"\\$\\{version\\}"', "\"$shortVersion\"")
-            }
-        }
-        copy {
-            from "$buildDir/generated/main/java"
-            into "$buildDir/sources/main/java"
-        }
-    }
-}
-
-shadowJar {
-    mainSpec.sourcePaths.clear()
-    dependsOn reobfJar
-    dependencies {
-        include dependency('org.spongepowered:mixin')
-    }
-
-    manifest.attributes(
-        'FMLCorePluginContainsFMLMod': true
-    )
-
-    exclude 'dummyThing'
-    exclude 'LICENSES*'
-
-    afterEvaluate {
-        from zipTree(reobfJar.jar)
-    }
-}
-
-minecraft {
-    version = "${modConfig.version.minecraft}-${modConfig.forge.version}"
-    runDir = "run"
-    mappings = modConfig.mcp.version
-
-    replace '@NAME@', modConfig.name
-    replace '@MODID@', modConfig.modid
-    replace '@VERSION@', shortVersion
-    replace '@MCVERSION@', modConfig.version.minecraft
 }
 
 processResources {
     // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+    inputs.property "version", shortVersion
+    inputs.property "mcversion", modconfig.version.minecraft
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
 
         // replace version and mcversion
-        expand 'version':shortVersion, 'mcversion':project.minecraft.version
+        expand 'version':shortVersion, 'mcversion':modconfig.version.minecraft
     }
 
     // copy everything else, thats not the mcmod.info
@@ -186,62 +130,30 @@ processResources {
     }
 }
 
-sourceTestJava {
-
+// Example configuration to allow publishing using the maven-publish task
+// we define a custom artifact that is sourced from the reobfJar output task
+// and then declare that to be published
+// Note you'll need to add a repository here
+def reobfFile = file("$buildDir/reobfJar/output.jar")
+def reobfArtifact = artifacts.add('default', reobfFile) {
+    type 'jar'
+    builtBy 'reobfJar'
 }
 
-mixin {
-    add sourceSets.main, "mixins.wolfarmor.refmap.json"
-}
-
-task saveConfig {
-    doLast {
-        def configFile = new File('./config.json')
-        configFile.delete()
-        configFile.write(new JsonBuilder(modConfig).toPrettyString())
+shadowJar {
+    mainSpec.sourcePaths.clear()
+    dependencies {
+        include dependency('org.spongepowered:mixin')
     }
-}
 
-task reportVersionChange {
-    doLast {
-        println "Semantic version updated to ${modConfig.version.major}.${modConfig.version.api}.${modConfig.version.minor}.${modConfig.version.patch}"
-    }
-}
+    manifest.attributes(
+            'FMLCorePluginContainsFMLMod': true
+    )
 
-task incrementPatchVersion {
-    finalizedBy 'saveConfig'
-    finalizedBy 'reportVersionChange'
-    doLast {
-        modConfig.version.patch += 1
-    }
-}
+    exclude 'dummyThing'
+    exclude 'LICENSES*'
 
-task incrementMinorVersion {
-    finalizedBy 'saveConfig'
-    finalizedBy 'reportVersionChange'
-    doLast {
-        modConfig.version.patch = 0
-        modConfig.version.minor += 1
-    }
-}
-
-task incrementApi {
-    finalizedBy 'saveConfig'
-    finalizedBy 'reportVersionChange'
-    doLast {
-        modConfig.version.patch = 0
-        modConfig.version.minor = 0
-        modConfig.version.api += 1
-    }
-}
-
-task incrementMajor {
-    finalizedBy 'saveConfig'
-    finalizedBy 'reportVersionChange'
-    doLast {
-        modConfig.version.patch = 0
-        modConfig.version.minor = 0
-        modConfig.version.api = 0
-        modConfig.version.major += 1
+    afterEvaluate {
+        from reobfArtifact
     }
 }

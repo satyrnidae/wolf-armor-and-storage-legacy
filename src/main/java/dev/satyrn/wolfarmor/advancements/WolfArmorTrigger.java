@@ -7,10 +7,10 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.advancements.PlayerAdvancements;
-import net.minecraft.advancements.critereon.AbstractCriterionInstance;
-import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.criterion.CriterionInstance;
+import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
@@ -69,7 +69,7 @@ public class WolfArmorTrigger implements ICriterionTrigger<WolfArmorTrigger.Inst
         return new Instance(this.id, EntityPredicate.deserialize(json.get("entity")));
     }
 
-    public void trigger(EntityPlayerMP player, Entity entity) {
+    public void trigger(ServerPlayerEntity player, Entity entity) {
         Listeners listeners = this.listeners.get(player.getAdvancements());
 
         if(listeners != null) {
@@ -77,7 +77,7 @@ public class WolfArmorTrigger implements ICriterionTrigger<WolfArmorTrigger.Inst
         }
     }
 
-    static final class Instance extends AbstractCriterionInstance {
+    static final class Instance extends CriterionInstance {
         private EntityPredicate target;
 
         Instance(ResourceLocation criterion, EntityPredicate target) {
@@ -85,7 +85,7 @@ public class WolfArmorTrigger implements ICriterionTrigger<WolfArmorTrigger.Inst
             this.target = target;
         }
 
-        boolean test(EntityPlayerMP player, Entity entity) {
+        boolean test(ServerPlayerEntity player, Entity entity) {
             return this.target.test(player, entity);
         }
     }
@@ -126,7 +126,7 @@ public class WolfArmorTrigger implements ICriterionTrigger<WolfArmorTrigger.Inst
             listeners.remove(listener);
         }
 
-        public void trigger(EntityPlayerMP player, Entity entity) {
+        public void trigger(ServerPlayerEntity player, Entity entity) {
             List<Listener<Instance>> list = null;
 
             for(Listener<Instance> listener : listeners) {
