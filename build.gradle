@@ -32,7 +32,7 @@ file "./config.json" withReader {
     modconfig = new JsonSlurper().parseText(it.text)
 }
 
-file "./src/api/config.json" withReader {
+file "./wolfarmor-api/config.json" withReader {
     apiconfig = new JsonSlurper().parseText(it.text)
 }
 
@@ -59,11 +59,11 @@ dependencies {
         exclude module: 'gson'
         exclude module: 'commons-io'
     }
+    compile project(":wolfarmor-api")
 }
 
 sourceSets.main {
     java {
-        srcDirs "src/api/java"
         srcDirs "src/main/java"
     }
     artifacts {
@@ -130,6 +130,10 @@ processResources {
     }
 }
 
+build {
+    finalizedBy
+}
+
 // Example configuration to allow publishing using the maven-publish task
 // we define a custom artifact that is sourced from the reobfJar output task
 // and then declare that to be published
@@ -144,6 +148,7 @@ shadowJar {
     mainSpec.sourcePaths.clear()
     dependencies {
         include dependency('org.spongepowered:mixin')
+        include dependency(":wolfarmor-api")
     }
 
     manifest.attributes(
@@ -154,6 +159,39 @@ shadowJar {
     exclude 'LICENSES*'
 
     afterEvaluate {
-        from reobfArtifact
+        from reobfFile
+    }
+}
+
+task reportVersionChange {
+    doLast {
+        println "Semantic version updated to ${modConfig.version.major}.${modConfig.version.api}.${modConfig.version.minor}.${modConfig.version.patch}"
+    }
+}
+
+task incrementPatchVersion {
+    finalizedBy 'saveConfig'
+    finalizedBy 'reportVersionChange'
+    doLast {
+        modConfig.version.patch += 1
+    }
+}
+
+task incrementMinorVersion {
+    finalizedBy 'saveConfig'
+    finalizedBy 'reportVersionChange'
+    doLast {
+        modConfig.version.patch = 0
+        modConfig.version.minor += 1
+    }
+}
+
+task incrementMajor {
+    finalizedBy 'saveConfig'
+    finalizedBy 'reportVersionChange'
+    doLast {
+        modConfig.version.patch = 0
+        modConfig.version.minor = 0
+        modConfig.version.major += 1
     }
 }

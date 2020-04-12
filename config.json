@@ -15,10 +15,9 @@
     },
     "version": {
         "extension": "UNIVERSAL",
-        "major": 3,
-        "api": 4,
+        "major": 4,
         "minecraft": "1.14.4",
-        "minor": 1,
+        "minor": 0,
         "patch": 0
     }
 }

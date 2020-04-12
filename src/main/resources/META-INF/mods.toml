@@ -1,8 +1,0 @@
-modLoader="javafml"
-loaderVersion="[25,)"
-issueTrackerURL="https://github.com/satyrnidae/wolfarmor/issues"
-
-[[mods]]
-modid="wolfarmor"
-version="${file.jarVersion}"
-displayName="Wolf Armor and Storage"
