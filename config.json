@@ -13,11 +13,13 @@
     "mixin": {
         "version": "0.8"
     },
+    "minecraft": {
+        "version": "1.14.4"
+    },
     "version": {
-        "extension": "UNIVERSAL",
+        "extension": "snapshot",
         "major": 4,
-        "minecraft": "1.14.4",
         "minor": 0,
-        "patch": 0
+        "patch": 6
     }
 }

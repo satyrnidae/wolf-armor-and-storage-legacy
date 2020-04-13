@@ -9,8 +9,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: "3.+", changing: true
-        classpath group: 'org.spongepowered', name: 'mixingradle', version: "0.7-SNAPSHOT", changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT', changing: true
     }
 }
 
@@ -28,18 +28,18 @@ apply plugin: 'maven-publish'
 def modconfig = null
 def apiconfig = null
 
-file "./config.json" withReader {
+file './config.json' withReader {
     modconfig = new JsonSlurper().parseText(it.text)
 }
 
-file "./wolfarmor-api/config.json" withReader {
+file './wolfarmor-api/config.json' withReader {
     apiconfig = new JsonSlurper().parseText(it.text)
 }
 
 def apiVersion = "${apiconfig.version.major}.${apiconfig.version.minor}.${apiconfig.version.patch}"
-def shortVersion = "${modconfig.version.major}.${modconfig.version.api}.${modconfig.version.minor}.${modconfig.version.patch}"
+def shortVersion = "${modconfig.version.major}.${modconfig.version.minor}.${modconfig.version.patch}"
 
-version = "${modconfig.version.minecraft}-${shortVersion}-${modconfig.version.extension}"
+version = "${modconfig.minecraft.version}-${shortVersion}-${modconfig.version.extension}"
 group = modconfig.group
 archivesBaseName = modconfig.modid
 
@@ -52,7 +52,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${modconfig.version.minecraft}-${modconfig.forge.version}"
+    minecraft "net.minecraftforge:forge:${modconfig.minecraft.version}-${modconfig.forge.version}"
     compile("org.spongepowered:mixin:${modconfig.mixin.version}"){
         exclude module: 'launchwrapper'
         exclude module: 'guava'
@@ -64,7 +64,7 @@ dependencies {
 
 sourceSets.main {
     java {
-        srcDirs "src/main/java"
+        srcDirs 'src/main/java'
     }
     artifacts {
         archives shadowJar
@@ -73,11 +73,11 @@ sourceSets.main {
 
 sourceSets.test {
     dependencies {
-        testCompile "org.codehaus.groovy:groovy-all:2.5.7"
-        testCompile "org.spockframework:spock-core:1.3-groovy-2.5"
-        testCompile "junit:junit:4.12"
-        testRuntime "org.objenesis:objenesis:2.6"
-        testRuntime "net.bytebuddy:byte-buddy:1.9.3"
+        testCompile 'org.codehaus.groovy:groovy-all:2.5.7'
+        testCompile 'org.spockframework:spock-core:1.3-groovy-2.5'
+        testCompile 'junit:junit:4.12'
+        testRuntime 'org.objenesis:objenesis:2.6'
+        testRuntime 'net.bytebuddy:byte-buddy:1.9.3'
     }
     java {
         srcDirs 'src/test/groovy'
@@ -89,12 +89,9 @@ jar {
     manifest.attributes(
         'Built-By': System.properties['user.name'],
         'Created-By': "${System.properties['java.vm.version']} (${System.properties['java.vm.vendor']})",
-        'Specification-Title': modconfig.modid,
+        'Specification-Title': project.name,
         'Specification-Vendor': modconfig.vendor,
-        'Specification-Version': shortVersion,
-        'Implementation-Title': project.name,
-        'Implementation-Version': version,
-        'Implementation-Vendor': 'https://satyrn.dev',
+        'Specification-Version': version,
         'API-Version': apiVersion,
         'FMLCorePlugin': "${project.group}.coremod.WolfArmorCore",
         'ForceLoadAsMod': true,
@@ -103,6 +100,31 @@ jar {
         'MixinConfigs': 'mixins.wolfarmor.core.json',
         'FMLAT': 'wolfarmor_at.cfg'
     )
+}
+
+build {
+    finalizedBy 'incrementPatchVersion'
+}
+
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.8"
+    doFirst {
+        // Replace tokens in files, output to generated source
+        copy {
+            from sourceSets.main.allJava
+            into "$buildDir/generated/main/java"
+            expand  modid: modconfig.modid,
+                    modname: modconfig.name,
+                    version: shortVersion,
+                    mcversion: modconfig.minecraft.version
+        }
+        // Copy generated source to build source
+        copy {
+            from "$buildDir/generated/main/java"
+            into "$buildDir/sources/main/java"
+        }
+        delete "$buildDir/generated"
+    }
 }
 
 processResources {
@@ -130,25 +152,13 @@ processResources {
     }
 }
 
-build {
-    finalizedBy
-}
-
-// Example configuration to allow publishing using the maven-publish task
-// we define a custom artifact that is sourced from the reobfJar output task
-// and then declare that to be published
-// Note you'll need to add a repository here
 def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
-}
 
 shadowJar {
     mainSpec.sourcePaths.clear()
     dependencies {
         include dependency('org.spongepowered:mixin')
-        include dependency(":wolfarmor-api")
+        include dependency(':wolfarmor-api')
     }
 
     manifest.attributes(
@@ -163,9 +173,17 @@ shadowJar {
     }
 }
 
+task saveConfig {
+    doLast {
+        def configFile = new File('./config.json')
+        configFile.delete()
+        configFile.write(new JsonBuilder(modconfig).toPrettyString())
+    }
+}
+
 task reportVersionChange {
     doLast {
-        println "Semantic version updated to ${modConfig.version.major}.${modConfig.version.api}.${modConfig.version.minor}.${modConfig.version.patch}"
+        println "Semantic version updated to ${modconfig.version.major}.${modconfig.version.minor}.${modconfig.version.patch}"
     }
 }
 
@@ -173,7 +191,7 @@ task incrementPatchVersion {
     finalizedBy 'saveConfig'
     finalizedBy 'reportVersionChange'
     doLast {
-        modConfig.version.patch += 1
+        modconfig.version.patch += 1
     }
 }
 
@@ -181,8 +199,8 @@ task incrementMinorVersion {
     finalizedBy 'saveConfig'
     finalizedBy 'reportVersionChange'
     doLast {
-        modConfig.version.patch = 0
-        modConfig.version.minor += 1
+        modconfig.version.patch = 0
+        modconfig.version.minor += 1
     }
 }
 
@@ -190,8 +208,8 @@ task incrementMajor {
     finalizedBy 'saveConfig'
     finalizedBy 'reportVersionChange'
     doLast {
-        modConfig.version.patch = 0
-        modConfig.version.minor = 0
-        modConfig.version.major += 1
+        modconfig.version.patch = 0
+        modconfig.version.minor = 0
+        modconfig.version.major += 1
     }
 }

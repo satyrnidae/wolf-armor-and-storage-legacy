@@ -2,6 +2,6 @@ package dev.satyrn.wolfarmor;
 
 import net.minecraftforge.fml.common.Mod;
 
-@Mod("wolfarmor")
+@Mod("${modid}")
 public class WolfArmorAndStorage {
 }
