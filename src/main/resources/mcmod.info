@@ -1,7 +1,7 @@
 [
   {
-    "modid": "wolfarmor",
-    "name": "Wolf Armor and Storage",
+    "modid": "${modid}",
+    "name": "${modname}",
     "description": "Adds armors and storage for wolves!",
     "version": "${version}",
     "mcversion": "${mcversion}",
@@ -11,11 +11,11 @@
       "satyrnidae"
     ],
     "credits": "Copyright (C) 2014-2020 Isabel Maskrey. Licensed under MIT.",
-    "logoFile": "assets/wolfarmor/logo.png",
+    "logoFile": "assets/${modid}/logo.png",
     "screenshots": [
-        "assets/wolfarmor/screenshots/dispenser.png",
-        "assets/wolfarmor/screenshots/inventory.png",
-        "assets/wolfarmor/screenshots/wolves.png"
+        "assets/${modid}/screenshots/dispenser.png",
+        "assets/${modid}/screenshots/inventory.png",
+        "assets/${modid}/screenshots/wolves.png"
     ],
     "useDependencyInformation": true,
     "dependencies": [

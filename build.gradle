@@ -156,9 +156,8 @@ processResources {
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-
         // replace version and mcversion
-        expand 'version':shortVersion, 'mcversion':project.minecraft.version
+        expand version: shortVersion, mcversion: config.minecraft.version, modname: config.name, modid: config.modid
     }
 
     // copy everything else, thats not the mcmod.info
