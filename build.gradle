@@ -17,7 +17,6 @@ buildscript {
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.4'
     id 'groovy'
-    id 'signing'
 }
 
 apply plugin: 'java'
@@ -107,7 +106,7 @@ sourceSets.test {
 }
 
 build {
-    dependsOn ':wolfarmor-api:build'
+    dependsOn 'signJar'
     finalizedBy 'incrementPatchVersion'
 }
 
@@ -180,6 +179,19 @@ javadoc { }
 
 mixin {
     add sourceSets.main, "mixins.wolfarmor.refmap.json"
+}
+
+task signJar(type: SignJar, dependsOn: shadowJar) {
+    onlyIf {
+        project.hasProperty('keyStore');
+    }
+
+    keyStore = project.keyStore
+    alias = project.keyStoreAlias
+    storePass = project.keyStorePass
+    keyPass = project.keyStoreKeyPass
+    inputFile = shadowJar.archivePath
+    outputFile = "$buildDir/libs/$archivesBaseName-$version-signed.jar"
 }
 
 task saveConfig {
