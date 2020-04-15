@@ -4,7 +4,6 @@ import dev.satyrn.wolfarmor.tests.AllTestsUtil
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraftforge.oredict.OreDictionary
-import org.testng.IExpectedExceptionsHolder
 import spock.lang.Specification
 import spock.lang.Unroll
 
