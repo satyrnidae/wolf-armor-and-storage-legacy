@@ -1,21 +1,22 @@
 {
+    "modid": "wolfarmor",
+    "name": "Wolf Armor and Storage",
+    "version": {
+        "extension": "UNIVERSAL",
+        "major": 3,
+        "minor": 5,
+        "patch": 2
+    },
     "forge": {
         "version": "14.23.5.2838"
     },
     "mcp": {
         "version": "stable_39"
     },
-    "modid": "wolfarmor",
-    "name": "Wolf Armor and Storage",
-    "sponge": {
-        "version": "0.7.10-SNAPSHOT"
+    "minecraft": {
+        "version": "1.12.2"
     },
-    "version": {
-        "extension": "UNIVERSAL",
-        "major": 3,
-        "api": 4,
-        "minecraft": "1.12.2",
-        "minor": 1,
-        "patch": 2
+    "mixin": {
+        "version": "0.7.10-SNAPSHOT"
     }
 }
