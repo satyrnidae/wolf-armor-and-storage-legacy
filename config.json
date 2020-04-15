@@ -2,7 +2,7 @@
     "modid": "wolfarmor",
     "name": "Wolf Armor and Storage",
     "version": {
-        "extension": "UNIVERSAL",
+        "extension": "universal",
         "major": 3,
         "minor": 5,
         "patch": 2
