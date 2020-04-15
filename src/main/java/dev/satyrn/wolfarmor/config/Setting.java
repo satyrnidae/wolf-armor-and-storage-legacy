@@ -101,6 +101,15 @@ public abstract class Setting<T> {
     }
 
     /**
+     * Gets the default value of the setting, regardless of synchronization or current value.
+     * @return The default value of the setting.
+     */
+    @Nullable
+    public T getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    /**
      * Loads the setting from the configuration file
      */
     public abstract void loadConfiguration();
