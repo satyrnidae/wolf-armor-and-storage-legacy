@@ -35,6 +35,12 @@ public abstract class Setting<T> {
     }
 
     /**
+     * Gets the setting's name
+     * @return The setting's name
+     */
+    public String getName() { return this.name; }
+
+    /**
      * Sets the configuration category name.  This determines in which group the config will be classified.
      * @param value The new value for the configuration category
      * @return self
@@ -44,34 +50,6 @@ public abstract class Setting<T> {
         this.category = value;
         return this;
     }
-
-    /**
-     * Sets the value of the configuration setting.
-     * @param value The new value for the configuration setting
-     * @return self
-     */
-    @Nonnull
-    public Setting<T> setValue(T value) {
-        this.value = value;
-        return this;
-    }
-
-    /**
-     * Flags this setting as either synchronized between server and client, or unsynchronized.
-     * @param value <c>true</c> to mark synchronized, <c>false</c> for unsynchronized values.
-     * @return self
-     */
-    @Nonnull
-    public Setting<T> setIsSynchronizedSetting(boolean value) {
-        this.isSynchronizedSetting = value;
-        return this;
-    }
-
-    /**
-     * Gets the setting's name
-     * @return The setting's name
-     */
-    public String getName() { return this.name; }
 
     /**
      * Gets the setting's category
@@ -84,6 +62,17 @@ public abstract class Setting<T> {
      * @return The full name of the setting, consisting of its category and name concatenated with a period.
      */
     public String getFullSettingName() { return String.format("%s.%s", this.category, this.name); }
+
+    /**
+     * Sets the value of the configuration setting.
+     * @param value The new value for the configuration setting
+     * @return self
+     */
+    @Nonnull
+    public Setting<T> setValue(T value) {
+        this.value = value;
+        return this;
+    }
 
     /**
      * Gets the calculated value of the setting.
@@ -101,6 +90,23 @@ public abstract class Setting<T> {
     }
 
     /**
+     * Flags this setting as either synchronized between server and client, or unsynchronized.
+     * @param value <c>true</c> to mark synchronized, <c>false</c> for unsynchronized values.
+     * @return self
+     */
+    @Nonnull
+    public Setting<T> setIsSynchronizedSetting(boolean value) {
+        this.isSynchronizedSetting = value;
+        return this;
+    }
+
+    /**
+     * Gets a flag indicating whether or not this setting's value is synchronized from the host to the client instance
+     * @return <c>true</c> if synchronization is enabled, otherwise <c>false</c>.
+     */
+    public boolean getIsSynchronizedSetting() { return this.isSynchronizedSetting; }
+
+    /**
      * Gets the default value of the setting, regardless of synchronization or current value.
      * @return The default value of the setting.
      */
@@ -108,6 +114,19 @@ public abstract class Setting<T> {
     public T getDefaultValue() {
         return this.defaultValue;
     }
+
+    /**
+     * The synchronized value for the
+     * @return
+     */
+    public T getSynchronizedValue() { return this.isSynchronizedSetting ? this.synchronizedValue : null;}
+
+    /**
+     * Flag indicating whether or not the setting is currently synchronized to a server's setting value
+     * @return If the setting is not a synchronized setting, this getter always returns <c>false</c>. However, for
+     * synchronized settings, it will return <c>true</c> if the setting is in a synchronized state.
+     */
+    public boolean getIsCurrentlySynchronized() { return this.isSynchronizedSetting && this.isCurrentlySynchronized; }
 
     /**
      * Loads the setting from the configuration file
@@ -118,6 +137,21 @@ public abstract class Setting<T> {
      * Saves the value for the setting to the configuration file
      */
     public abstract void saveConfiguration();
+
+    /**
+     * Reads the synchronized setting value from an NBT object
+     * @param tag The tag
+     */
+    public void readSynchronized(NBTBase tag) {
+        this.isCurrentlySynchronized = true;
+        this.synchronizedValue = this.readTag(tag);
+    }
+
+    /**
+     * Writes the value to an NBTBase tag
+     * @return The tag
+     */
+    public NBTBase writeSynchronized() { return this.writeTag(this.value); }
 
     /**
      * Loads the setting value from an NBT object.
