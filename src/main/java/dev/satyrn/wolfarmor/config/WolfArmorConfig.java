@@ -11,5 +11,3 @@ public class WolfArmorConfig {
 
     //public Setting<T> getSetting<T>(String name)
 }
-
-
