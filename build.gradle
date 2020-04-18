@@ -167,6 +167,7 @@ processResources {
     from('/') {
         include 'LICENSE'
         include 'CREDITS'
+        include 'THIRDPARTY'
     }
 }
 
