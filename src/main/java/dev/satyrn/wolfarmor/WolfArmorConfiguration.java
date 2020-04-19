@@ -18,6 +18,7 @@ import java.io.File;
 /**
  * Configuration settings for WolfArmor
  */
+@Deprecated
 public final class WolfArmorConfiguration implements IConfiguration {
     //region Fields
 
