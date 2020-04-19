@@ -250,7 +250,7 @@ public class EntityWolfArmored extends EntityWolf implements IInventoryChangedLi
      */
     @Override
     public boolean getHasChest() {
-        return WolfArmorMod.getConfiguration().getIsWolfChestEnabled() && this.dataManager.get(HAS_CHEST);
+        return WolfArmorMod.getConfig().getChestEnabled() && this.dataManager.get(HAS_CHEST);
     }
 
     /**

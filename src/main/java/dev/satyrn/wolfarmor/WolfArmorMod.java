@@ -43,20 +43,16 @@ public class WolfArmorMod {
 
     static ILogHelper logger;
 
-    @Deprecated
-    static IConfiguration configuration;
-
     static IWolfArmorConfig wolfArmorConfig;
 
     //endregion Fields
 
     public WolfArmorMod() {
-        this(new WolfArmorConfiguration(), new WolfArmorConfig(), new LogHelper());
+        this(new WolfArmorConfig(), new LogHelper());
     }
 
     @SuppressWarnings("unused")
-    WolfArmorMod(IConfiguration configurationInstance, IWolfArmorConfig wolfArmorConfigInstance, ILogHelper loggerInstance) {
-        configuration = configurationInstance;
+    WolfArmorMod(IWolfArmorConfig wolfArmorConfigInstance, ILogHelper loggerInstance) {
         wolfArmorConfig = wolfArmorConfigInstance;
         logger = loggerInstance;
     }
@@ -71,7 +67,6 @@ public class WolfArmorMod {
     @Mod.EventHandler
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
         logger.initializeLogger(preInitializationEvent.getModLog());
-        configuration.initializeConfig(preInitializationEvent);
         wolfArmorConfig.initialize(preInitializationEvent.getModConfigurationDirectory() + "/satyrn");
         proxy.preInit(preInitializationEvent);
     }
@@ -121,8 +116,8 @@ public class WolfArmorMod {
      * @return The configuration settings
      */
     @Nonnull
-    public static IConfiguration getConfiguration() {
-        return configuration;
+    public static IWolfArmorConfig getConfig() {
+        return wolfArmorConfig;
     }
 
     /**

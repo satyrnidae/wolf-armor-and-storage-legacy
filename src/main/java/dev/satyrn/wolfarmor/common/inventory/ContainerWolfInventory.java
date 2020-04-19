@@ -27,8 +27,8 @@ public class ContainerWolfInventory extends Container {
     public static final int INVENTORY_SLOT_ARMOR = 0;
     public static final int INVENTORY_SLOT_CHEST_START = 1;
 
-    private IInventory wolfInventory;
-    private EntityWolf theWolf;
+    private final IInventory wolfInventory;
+    private final EntityWolf theWolf;
 
     //endregion Fields
 
@@ -91,17 +91,17 @@ public class ContainerWolfInventory extends Container {
 
         IArmoredWolf wolfArmor = (IArmoredWolf)theWolf;
 
-        int wolfInventorySizeX = WolfArmorMod.getConfiguration().getWolfChestSizeHorizontal();
-        int wolfInventorySizeY = WolfArmorMod.getConfiguration().getWolfChestSizeVertical();
-        int xItemOffset = (5 - wolfInventorySizeX) * 9;
-        int yItemOffset = (3 - wolfInventorySizeY) * 9;
+        int columns = WolfArmorMod.getConfig().getChestSize().getColumns();
+        int rows = WolfArmorMod.getConfig().getChestSize().getRows();
+        int xItemOffset = (5 - columns) * 9;
+        int yItemOffset = (3 - rows) * 9;
 
         int x;
         int y;
         if (wolfArmor.getHasChest()) {
-            for (y = 0; y < wolfInventorySizeY; y++) {
-                for (x = 0; x < wolfInventorySizeX; x++) {
-                    this.addSlotToContainer(new Slot(wolfInventory, 1 + x + y * wolfInventorySizeX, 80 + xItemOffset + x * 18, 18 + yItemOffset + y * 18));
+            for (y = 0; y < rows; y++) {
+                for (x = 0; x < columns; x++) {
+                    this.addSlotToContainer(new Slot(wolfInventory, 1 + x + y * columns, 80 + xItemOffset + x * 18, 18 + yItemOffset + y * 18));
                 }
             }
         }

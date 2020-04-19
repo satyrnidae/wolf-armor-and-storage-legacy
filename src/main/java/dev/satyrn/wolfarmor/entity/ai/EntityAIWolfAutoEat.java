@@ -25,7 +25,7 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
     private final EntityWolf entity;
     private final IArmoredWolf armoredWolf;
 
-    private NonNullList<ItemStack> inventoryContents = NonNullList.create();
+    private final NonNullList<ItemStack> inventoryContents = NonNullList.create();
     private ItemStack eatingFood = ItemStack.EMPTY;
 
     private int eatCooldown;
@@ -47,8 +47,7 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
 
     @Override
     public boolean shouldExecute() {
-        if (!WolfArmorMod.getConfiguration().getIsWolfChestEnabled() ||
-                !WolfArmorMod.getConfiguration().getShouldWolvesEatWhenDamaged()) {
+        if (!(WolfArmorMod.getConfig().getChestEnabled() && WolfArmorMod.getConfig().getAutoHealEnabled())) {
             return false;
         }
 

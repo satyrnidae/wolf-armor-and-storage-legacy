@@ -28,8 +28,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
     //region Fields
 
     private ModelWolfArmor[] modelWolfArmors;
-    @SuppressWarnings("rawtypes")
-    private final RenderLiving renderer;
+    private final RenderLiving<?> renderer;
 
     private static final Map<String, ResourceLocation> WOLF_ARMOR_TEXTURE_MAP = Maps.newHashMap();
 
@@ -79,7 +78,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
                               float netHeadYaw,
                               float headPitch,
                               float scale) {
-        if (!WolfArmorMod.getConfiguration().getIsWolfArmorRenderEnabled()) {
+        if (!WolfArmorMod.getConfig().getArmorRendered()) {
             return;
         }
 
@@ -92,12 +91,12 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
 
             for (int layer = 0; layer < modelWolfArmors.length; layer++) {
                 ModelWolfArmor model = modelWolfArmors[layer];
-                model = getArmorModelForLayer(entityWolf, itemStack, layer, model);
+                //TODO: API call to get model
 
                 model.setModelAttributes(this.renderer.getMainModel());
                 model.setLivingAnimations(entityWolf, limbSwing, limbSwingAmount, partialTicks);
 
-                this.renderer.bindTexture(this.getArmorResource(entityWolf, itemStack, layer, null));
+                this.renderer.bindTexture(this.getArmorResource(itemStack, layer, null));
 
                 int color = armorItem.getColor(itemStack);
 
@@ -115,7 +114,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
                 GlStateManager.color(getColorRed(), getColorGreen(), getColorBlue(), getAlpha());
 
                 if (armorItem.getHasOverlay(itemStack)) {
-                    this.renderer.bindTexture(this.getArmorResource(entityWolf, itemStack, layer, "overlay"));
+                    this.renderer.bindTexture(this.getArmorResource(itemStack, layer, "overlay"));
                     model.render(entityWolf, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
                 }
 
@@ -146,37 +145,17 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
     //region Accessors / Mutators
 
     /**
-     * Gets the armor model for the current layer.
-     *
-     * @param entityWolfArmored The armored wolf entity.
-     * @param itemStack         The item stack in the armor slot.
-     * @param layer             The current layer.
-     * @param model             The default model.
-     * @return The default model.
-     */
-    @Nonnull
-    private ModelWolfArmor getArmorModelForLayer(@Nonnull EntityWolf entityWolfArmored,
-                                                   @Nonnull ItemStack itemStack,
-                                                   int layer,
-                                                   @Nonnull ModelWolfArmor model) {
-        //TODO: API call to get model
-        return model;
-    }
-
-    /**
      * Gets the resource location for the armor item.
      *
-     * @param entityWolf The armored wolf entity.
      * @param itemStack  The item stack in the armor slot.
      * @param layer      The current layer.
      * @param type       The texture variant. May be null or overlay.
      * @return A new or cached resource location corresponding to the generated / api path.
      */
     @Nonnull
-    private ResourceLocation getArmorResource(@Nonnull EntityWolf entityWolf,
-                                                @Nonnull ItemStack itemStack,
-                                                int layer,
-                                                @Nullable String type) {
+    private ResourceLocation getArmorResource(@Nonnull ItemStack itemStack,
+                                              int layer,
+                                              @Nullable String type) {
         ItemWolfArmor armor = (ItemWolfArmor) itemStack.getItem();
         String texture = armor.getMaterial().getName();
         String domain = Resources.MOD_ID;
@@ -251,7 +230,6 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      *
      * @return false
      */
-    @SuppressWarnings("WeakerAccess")
     protected boolean getShouldSkipArmorGlint() {
         return shouldSkipArmorGlint;
     }

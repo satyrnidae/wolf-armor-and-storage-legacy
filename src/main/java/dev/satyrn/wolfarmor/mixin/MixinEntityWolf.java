@@ -57,7 +57,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
     @Override
     public int getMaxSizeInventory() {
-        return 1 + (WolfArmorMod.getConfiguration().getWolfChestSizeHorizontal() * WolfArmorMod.getConfiguration().getWolfChestSizeVertical());
+        return 1 + (WolfArmorMod.getConfig().getChestSize().getColumns() * WolfArmorMod.getConfig().getChestSize().getRows());
     }
 
     @Override
@@ -352,7 +352,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
             @Nonnull ItemStack itemInHand = player.getHeldItem(hand);
 
             if (!itemInHand.isEmpty()) {
-                boolean isWolfChestEnabled = WolfArmorMod.getConfiguration().getIsWolfChestEnabled();
+                boolean isWolfChestEnabled = WolfArmorMod.getConfig().getChestEnabled();
                 if (isWolfChestEnabled && !this.getHasChest() &&
                         OreDictHelper.isOre(false, "chestWood", itemInHand)) {
                     if (!this.getEntityWorld().isRemote) {
