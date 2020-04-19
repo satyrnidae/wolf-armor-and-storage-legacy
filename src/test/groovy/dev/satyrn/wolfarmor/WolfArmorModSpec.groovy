@@ -1,7 +1,6 @@
 package dev.satyrn.wolfarmor
 
 import dev.satyrn.wolfarmor.api.common.IProxy
-import dev.satyrn.wolfarmor.api.config.IConfiguration
 import dev.satyrn.wolfarmor.api.config.IWolfArmorConfig
 import dev.satyrn.wolfarmor.api.util.ILogHelper
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -26,7 +25,7 @@ class WolfArmorModSpec extends Specification {
 
     def 'GetInstance should return instance'() {
         setup:
-        def instance = new WolfArmorMod(Mock(IConfiguration), Mock(IWolfArmorConfig), Mock(ILogHelper))
+        def instance = new WolfArmorMod(Mock(IWolfArmorConfig), Mock(ILogHelper))
         WolfArmorMod.instance = instance
 
         expect:
@@ -44,11 +43,11 @@ class WolfArmorModSpec extends Specification {
 
     def 'GetConfiguration should return configuration'() {
         setup:
-        def configuration = Mock(IConfiguration)
-        WolfArmorMod.configuration = configuration
+        def configuration = Mock(IWolfArmorConfig)
+        WolfArmorMod.wolfArmorConfig = configuration
 
         expect:
-        WolfArmorMod.getConfiguration() == configuration
+        WolfArmorMod.getConfig() == configuration
     }
 
     def 'PreInit should call proxy pre-init'() {
@@ -57,9 +56,8 @@ class WolfArmorModSpec extends Specification {
         def mockEvent = Mock(FMLPreInitializationEvent)
         def mockLogger = Mock(Logger)
         def mockLogHelper = Mock(ILogHelper)
-        def mockConfiguration = Mock(IConfiguration)
         def mockNewConfiguration = Mock(IWolfArmorConfig)
-        def it = new WolfArmorMod(mockConfiguration, mockNewConfiguration, mockLogHelper)
+        def it = new WolfArmorMod(mockNewConfiguration, mockLogHelper)
         mockEvent.getModLog() >> mockLogger
 
         WolfArmorMod.instance = it
@@ -70,17 +68,16 @@ class WolfArmorModSpec extends Specification {
 
         then:
         1 * mockLogHelper.initializeLogger(mockLogger)
-        1 * mockNewConfiguration.initialize(_);
-        1 * mockConfiguration.initializeConfig(mockEvent)
+        1 * mockNewConfiguration.initialize(_)
         1 * mockProxy.preInit(mockEvent)
     }
 
     def 'Default constructor should set config and logger'() {
         when:
-        new WolfArmorMod();
+        new WolfArmorMod()
 
         then:
-        WolfArmorMod.configuration != null
+        WolfArmorMod.config != null
         WolfArmorMod.logger != null
     }
 
@@ -88,7 +85,7 @@ class WolfArmorModSpec extends Specification {
         setup:
         def mockEvent = Mock(FMLInitializationEvent)
         def mockProxy = Mock(IProxy)
-        def it = new WolfArmorMod(Mock(IConfiguration), Mock(IWolfArmorConfig), Mock(ILogHelper))
+        def it = new WolfArmorMod(Mock(IWolfArmorConfig), Mock(ILogHelper))
         WolfArmorMod.proxy = mockProxy
 
         when:
@@ -102,7 +99,7 @@ class WolfArmorModSpec extends Specification {
         setup:
         def mockEvent = Mock(FMLPostInitializationEvent)
         def mockProxy = Mock(IProxy)
-        def it = new WolfArmorMod(Mock(IConfiguration), Mock(IWolfArmorConfig), Mock(ILogHelper))
+        def it = new WolfArmorMod(Mock(IWolfArmorConfig), Mock(ILogHelper))
         WolfArmorMod.proxy = mockProxy
 
         when:
@@ -116,7 +113,7 @@ class WolfArmorModSpec extends Specification {
         setup:
         def mockEvent = Mock(FMLLoadCompleteEvent)
         def mockProxy = Mock(IProxy)
-        def it = new WolfArmorMod(Mock(IConfiguration), Mock(IWolfArmorConfig), Mock(ILogHelper))
+        def it = new WolfArmorMod(Mock(IWolfArmorConfig), Mock(ILogHelper))
         WolfArmorMod.proxy = mockProxy
 
         when:
