@@ -1,9 +1,11 @@
 package dev.satyrn.wolfarmor;
 
 import dev.satyrn.wolfarmor.api.config.IConfiguration;
+import dev.satyrn.wolfarmor.api.config.IWolfArmorConfig;
 import dev.satyrn.wolfarmor.api.util.ILogHelper;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.api.common.IProxy;
+import dev.satyrn.wolfarmor.config.WolfArmorConfig;
 import dev.satyrn.wolfarmor.util.LogHelper;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -41,17 +43,21 @@ public class WolfArmorMod {
 
     static ILogHelper logger;
 
+    @Deprecated
     static IConfiguration configuration;
+
+    static IWolfArmorConfig wolfArmorConfig;
 
     //endregion Fields
 
     public WolfArmorMod() {
-        this(new WolfArmorConfiguration(), new LogHelper());
+        this(new WolfArmorConfiguration(), new WolfArmorConfig(), new LogHelper());
     }
 
     @SuppressWarnings("unused")
-    WolfArmorMod(IConfiguration configurationInstance, ILogHelper loggerInstance) {
+    WolfArmorMod(IConfiguration configurationInstance, IWolfArmorConfig wolfArmorConfigInstance, ILogHelper loggerInstance) {
         configuration = configurationInstance;
+        wolfArmorConfig = wolfArmorConfigInstance;
         logger = loggerInstance;
     }
 
@@ -66,7 +72,7 @@ public class WolfArmorMod {
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
         logger.initializeLogger(preInitializationEvent.getModLog());
         configuration.initializeConfig(preInitializationEvent);
-
+        wolfArmorConfig.initialize(preInitializationEvent.getModConfigurationDirectory() + "/satyrn");
         proxy.preInit(preInitializationEvent);
     }
 

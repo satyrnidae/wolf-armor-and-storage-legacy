@@ -2,6 +2,7 @@ package dev.satyrn.wolfarmor
 
 import dev.satyrn.wolfarmor.api.common.IProxy
 import dev.satyrn.wolfarmor.api.config.IConfiguration
+import dev.satyrn.wolfarmor.api.config.IWolfArmorConfig
 import dev.satyrn.wolfarmor.api.util.ILogHelper
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent
@@ -25,7 +26,7 @@ class WolfArmorModSpec extends Specification {
 
     def 'GetInstance should return instance'() {
         setup:
-        def instance = new WolfArmorMod(Mock(IConfiguration), Mock(ILogHelper))
+        def instance = new WolfArmorMod(Mock(IConfiguration), Mock(IWolfArmorConfig), Mock(ILogHelper))
         WolfArmorMod.instance = instance
 
         expect:
@@ -57,7 +58,8 @@ class WolfArmorModSpec extends Specification {
         def mockLogger = Mock(Logger)
         def mockLogHelper = Mock(ILogHelper)
         def mockConfiguration = Mock(IConfiguration)
-        def it = new WolfArmorMod(mockConfiguration, mockLogHelper)
+        def mockNewConfiguration = Mock(IWolfArmorConfig)
+        def it = new WolfArmorMod(mockConfiguration, mockNewConfiguration, mockLogHelper)
         mockEvent.getModLog() >> mockLogger
 
         WolfArmorMod.instance = it
@@ -68,6 +70,7 @@ class WolfArmorModSpec extends Specification {
 
         then:
         1 * mockLogHelper.initializeLogger(mockLogger)
+        1 * mockNewConfiguration.initialize(_);
         1 * mockConfiguration.initializeConfig(mockEvent)
         1 * mockProxy.preInit(mockEvent)
     }
@@ -85,7 +88,7 @@ class WolfArmorModSpec extends Specification {
         setup:
         def mockEvent = Mock(FMLInitializationEvent)
         def mockProxy = Mock(IProxy)
-        def it = new WolfArmorMod(Mock(IConfiguration), Mock(ILogHelper))
+        def it = new WolfArmorMod(Mock(IConfiguration), Mock(IWolfArmorConfig), Mock(ILogHelper))
         WolfArmorMod.proxy = mockProxy
 
         when:
@@ -99,7 +102,7 @@ class WolfArmorModSpec extends Specification {
         setup:
         def mockEvent = Mock(FMLPostInitializationEvent)
         def mockProxy = Mock(IProxy)
-        def it = new WolfArmorMod(Mock(IConfiguration), Mock(ILogHelper))
+        def it = new WolfArmorMod(Mock(IConfiguration), Mock(IWolfArmorConfig), Mock(ILogHelper))
         WolfArmorMod.proxy = mockProxy
 
         when:
@@ -113,7 +116,7 @@ class WolfArmorModSpec extends Specification {
         setup:
         def mockEvent = Mock(FMLLoadCompleteEvent)
         def mockProxy = Mock(IProxy)
-        def it = new WolfArmorMod(Mock(IConfiguration), Mock(ILogHelper))
+        def it = new WolfArmorMod(Mock(IConfiguration), Mock(IWolfArmorConfig), Mock(ILogHelper))
         WolfArmorMod.proxy = mockProxy
 
         when:
