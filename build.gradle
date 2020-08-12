@@ -105,7 +105,6 @@ sourceSets.test {
 
 build {
     dependsOn 'signJar'
-    finalizedBy 'incrementPatchVersion'
 }
 
 jar {
