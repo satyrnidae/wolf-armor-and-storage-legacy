@@ -1,6 +1,6 @@
-# Wolf Armor and Storage [![Curseforge](http://cf.way2muchnoise.eu/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage?gameCategorySlug=mc-mods&projectID=253689) [![Versions](http://cf.way2muchnoise.eu/versions/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage/files)
+# Wolf Armor and Storage ![Java CI with Gradle](https://github.com/satyrnidae/wolfarmor/workflows/Java%20CI%20with%20Gradle/badge.svg) [![Curseforge](http://cf.way2muchnoise.eu/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage?gameCategorySlug=mc-mods&projectID=253689) [![Versions](http://cf.way2muchnoise.eu/versions/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage/files)
 
-**_Note: the most recent supported version of this mod is <span style='color: red'>3.4.1.1-universal</span>, and this description is up-to-date with that version as of 2020-04-11._**
+**_Note: the most recent supported version of this mod is <span style='color: red'>3.5.4-universal</span>, and this description is up-to-date with that version as of 2020-04-11._**
 
 **_Note 2: Since it gets asked a lot, yes, you may include this mod in your modpack._**
 
