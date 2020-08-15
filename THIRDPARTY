@@ -1,5 +1,10 @@
-# Wearable Backpacks
-Copyright (c) 2014-2019 copygirl
+This mod implements code derived from copycore, by copygirl. The license is included below.
+
+# BEGIN COPYCORE
+
+The MIT License (MIT)
+
+Copyright (c) 2014 copygirl
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +24,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-# Sponge Mixin
+# END COPYCORE
+
+This mod also repackages and redistributes the Sponge Mixin framework, by the SpongePowered contributors.  The license
+is included in its entirety below.
+
+# BEGIN MIXIN
+
 The MIT License (MIT)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -39,3 +50,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+# END MIXIN
