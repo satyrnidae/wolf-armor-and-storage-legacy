@@ -42,81 +42,91 @@ public class WolfArmorConfig {
 
     private final Setting<Boolean> chestEnabled = new BooleanSetting(true)
             .setCategory(Configuration.CATEGORY_GENERAL)
-            .setName("chest.enabled")
-            .setComment("Enables or disables wolf chests")
+            .setName("backpack")
+            .setComment("Enables or disables wolf backpacks.")
             .setRequiresWorldReload()
             .setSynchronizes(true);
 
     private final Setting<WolfInventorySize> chestSize =
             new WolfInventorySizeSetting(new WolfInventorySize((byte)3, (byte)2))
                     .setCategory(Configuration.CATEGORY_GENERAL)
-                    .setName("chest.size")
-                    .setComment("Sets the horizontal and vertical size of the wolf chest")
+                    .setName("backpack_size")
+                    .setComment("Sets the horizontal and vertical size of wolves' backpacks.")
                     .setSynchronizes(true)
                     .setRequiresWorldReload()
                     .setConfigWidgetClassName("dev.satyrn.wolfarmor.client.gui.config.WolfInventorySizeWidget");
 
     public BehaviorCategory behavior;
+
+    /**
+     * TODO: Document the purpose of this class
+     * @author Isabel Maskrey (satyrnidae)
+     * @since 3.6.0
+     */
     public static final class BehaviorCategory {
         private static final String CATEGORY = "behavior";
 
         final Setting<Boolean> howlAtMoonEnabled = new BooleanSetting(false)
                 .setCategory(CATEGORY)
-                .setName("howl_at_moon.enabled")
+                .setName("howl_at_moon")
                 .setComment("Enables or disables untamed wolves howling at the moon")
                 .setSynchronizes(true);
 
         final Setting<Boolean> autoHealEnabled = new BooleanSetting(true)
                 .setCategory(CATEGORY)
-                .setName("auto_heal.enabled")
-                .setComment("Enables or disables wolves automatically eating food when their health is low")
+                .setName("auto_eat")
+                .setComment("Enables or disables wolves automatically eating food when their health is low.")
                 .setSynchronizes(true);
 
         final Setting<WolfFoodStatsLevel> useFoodStats = new WolfFoodStatsSetting()
                 .setCategory(CATEGORY)
-                .setName("food.saturation_healing")
-                .setComment("Sets whether or not to enable hunger for wolves. Valid values are disabled, heal, and full. \"Heal\" will override the default " +
-                        "heal functionality and heal wolves w/ saturation.  \"Full\" will cause unfed wolves to lose health until the untamed wolf health "
-                        + "level is reached, or if starvation is enabled, until it dies.")
+                .setName("hunger")
+                .setComment("Sets whether or not to enable hunger for wolves. Valid values are disabled, heal, and "
+                        + "full. \"Heal\" will override the default heal functionality and heal wolves w/ saturation. "
+                        + "\"Full\" will cause unfed wolves to lose health until 4 hearts are left, or, if "
+                        + "starvation is enabled, until it dies.")
                 .setRequiresWorldReload()
                 .setSynchronizes(true);
 
         final Setting<Boolean> wolvesCanStarve = new BooleanSetting(false)
                 .setCategory(CATEGORY)
-                .setName("food.enable_starvation")
-                .setComment("Sets whether or not wolves can starve. Don't use this on a server unless you're endlessly filling up your wolves' inventories.")
+                .setName("starvation")
+                .setComment("Sets whether or not wolves can starve to death if hunger is set to \"full\".")
                 .setRequiresWorldReload()
                 .setSynchronizes(true);
     }
 
     public ClientCategory client;
+
+    /**
+     * TODO: Document the purpose of this class
+     * @author Isabel Maskrey (satyrnidae)
+     * @since 3.6.0
+     */
     public static final class ClientCategory {
         private static final String CATEGORY = Configuration.CATEGORY_CLIENT;
 
         final Setting<Boolean> armorRendered = new BooleanSetting(true)
                 .setCategory(CATEGORY)
-                .setName("render.armor_model")
-                .setComment("Enables or disables wolf armor layer rendering. Disable if you have an unsupported model mod");
+                .setName("armor_model")
+                .setComment("Enables or disables wolf armor model rendering. Disable this if you have an unsupported "
+                        + " custom model mod, or if rendering the armor causes other issues.");
 
         final Setting<Boolean> chestRendered = new BooleanSetting(true)
                 .setCategory(CATEGORY)
-                .setName("render.chest_model")
-                .setComment("Enables or disables wolf chest layer rendering. Disable if you have an unsupported model mod");
+                .setName("backpack_model")
+                .setComment("Enables or disables wolf backpack model rendering. Disable if you have an unsupported "
+                        + "custom model mod, or if rendering the backpack causes other issues.");
 
-        final Setting<Boolean> healthInGui = new BooleanSetting(true)
+        final Setting<Boolean> statsInGui = new BooleanSetting(true)
                 .setCategory(CATEGORY)
-                .setName("inventory.display_health")
-                .setComment("Enables or disables displaying the wolf health amount in the inventory");
-
-        final Setting<Boolean> armorInGui = new BooleanSetting(true)
-                .setCategory(CATEGORY)
-                .setName("inventory.display_armor")
-                .setComment("Enables or disables displaying the wolf armor amount in the inventory");
+                .setName("stats_in_gui")
+                .setComment("Enables or disables displaying the wolf health, armor, and food stats in the inventory");
 
         final Setting<Boolean> wolfStatsRendered = new BooleanSetting(false)
                 .setCategory(CATEGORY)
-                .setName("render.stats")
-                .setComment("Enables or disables health, armor, and food stat rendering when looking at one of your tamed wolves.");
+                .setName("stats_in_nameplate")
+                .setComment("Enables or disables displaying health, armor, and food stats above tamed wolves' heads.");
     }
 
     private Configuration configuration;
@@ -125,6 +135,11 @@ public class WolfArmorConfig {
     @SideOnly(Side.CLIENT)
     private boolean connected;
 
+    /**
+     * TODO: Document this method
+     * @param object
+     * @since 3.6.0
+     */
     private void addSettingsFromClass(Object object) {
         for (Field field : object.getClass().getDeclaredFields()) {
             if (!Setting.class.isAssignableFrom(field.getType())) { continue; }
@@ -139,9 +154,26 @@ public class WolfArmorConfig {
             this.settings.put(setting.getFullName(), setting);
         }
     }
+
+    /**
+     * TODO: Document this method
+     * @return
+     * @since 3.6.0
+     */
     public Collection<Setting<?>> getSettings() { return this.settings.values(); }
+
+    /**
+     * TODO: Document this method
+     * @param fullName
+     * @return
+     * @since 3.6.0
+     */
     public Setting<?> getSetting(String fullName) { return this.settings.get(fullName); }
 
+    /**
+     * TODO: Document this method
+     * @since 3.5.13
+     */
     public void load() {
         if (this.settings.size() == 0) return;
         this.configuration.load();
@@ -149,11 +181,20 @@ public class WolfArmorConfig {
         this.getSettings().forEach(setting -> setting.loadFromConfiguration(this.configuration));
     }
 
+    /**
+     * TODO: Document this method
+     * @since 3.5.13
+     */
     public void save() {
         this.getSettings().forEach(setting -> setting.saveToConfiguration(this.configuration));
         this.configuration.save();
     }
 
+    /**
+     * TODO: Document this method
+     * @param data
+     * @since 3.5.13
+     */
     @SideOnly(Side.CLIENT)
     public void sync(@Nonnull NBTTagCompound data) {
         if (this.connected) {
@@ -167,11 +208,21 @@ public class WolfArmorConfig {
         }
     }
 
+    /**
+     * TODO: Document this method
+     * @param event
+     * @since 3.6.0
+     */
     @SubscribeEvent
     public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.connected = true;
     }
 
+    /**
+     * TODO: Document this method
+     * @param event
+     * @since 3.6.0
+     */
     @SubscribeEvent
     public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         if (!this.connected) return;
@@ -215,36 +266,43 @@ public class WolfArmorConfig {
     public boolean getChestRendered() { return this.client.chestRendered.getCurrentValue(); }
 
     /**
-     * Checks if the wolf's health should be displayed in the GUI
-     *
-     * @return <c>true</c> if the health should be displayed; otherwise, <c>false</c>
-     */
-    public boolean getHealthInGui() { return this.client.healthInGui.getCurrentValue(); }
-
-    /**
-     * Checks if the wolf's equipped armor level should be displayed in the GUI
-     *
-     * @return <c>true</c> if the armor should be displayed; otherwise, <c>false</c>
-     */
-    public boolean getArmorInGui() { return this.client.armorInGui.getCurrentValue(); }
-
-    /**
      * Gets the current configured wolf chest size
      *
      * @return The current configured wolf chest size
      */
     public WolfInventorySize getChestSize() { return this.chestSize.getCurrentValue(); }
 
+    /**
+     * TODO: Document this method
+     * @return
+     * @since 3.6.0
+     */
     public WolfFoodStatsLevel getFoodStatsLevel() { return this.behavior.useFoodStats.getCurrentValue(); }
 
+    /**
+     * TODO: Document this method
+     * @return
+     * @since 3.6.0
+     */
     public boolean getCanStarve() { return this.behavior.wolvesCanStarve.getCurrentValue(); }
 
+    /**
+     * TODO: Document this method
+     * @return
+     * @since 3.6.0
+     */
     public boolean getStatsRendered() { return this.client.wolfStatsRendered.getCurrentValue(); }
 
     /**
-     * Initializes the config file and directory
-     *
+     * TODO: Document this method
+     * @return 3.6.0
+     */
+    public boolean getStatsInGui() { return this.client.statsInGui.getCurrentValue(); }
+
+    /**
+     * Initializes the configuration file
      * @param configDirectory The path to the directory where the config file is stored
+     * @since 3.5.13
      */
     public void initialize(String configDirectory) {
         File directory = new File(configDirectory);
@@ -278,6 +336,12 @@ public class WolfArmorConfig {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+    /**
+     * TODO: Document this method
+     * @param player
+     * @return
+     * @since 3.6.0
+     */
     @SubscribeEvent
     public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent event) {
         if (!event.getModID().equals(Resources.MOD_ID)) return;
@@ -290,6 +354,12 @@ public class WolfArmorConfig {
         }
     }
 
+    /**
+     * TODO: Document this method
+     * @param player
+     * @return
+     * @since 3.6.0
+     */
     private static boolean isNotServerOwner(EntityPlayer player) {
         return player.getName().equalsIgnoreCase(FMLCommonHandler.instance().getMinecraftServerInstance().getServerOwner());
     }
