@@ -1,5 +1,6 @@
 package dev.satyrn.wolfarmor.client;
 
+import dev.satyrn.wolfarmor.client.event.RenderEventHandler;
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import dev.satyrn.wolfarmor.api.client.RenderLayerFactory;
 import dev.satyrn.wolfarmor.api.util.Items;
@@ -17,6 +18,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
@@ -29,6 +32,7 @@ import javax.annotation.Nullable;
  * Loads client-specific mod data
  */
 @SideOnly(Side.CLIENT)
+@Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
     //region Public / Protected Methods
 
@@ -83,11 +87,23 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
+    /**
+     * Gets a thread listener from a packet's context
+     * @param context The message context
+     * @return The thread on either the client or server sides, dependant on the context's side
+     * @since 2.1.0
+     */
     @Override
     public IThreadListener getThreadFromContext(MessageContext context) {
         return context.side.isClient() ? Minecraft.getMinecraft() : super.getThreadFromContext(context);
     }
 
+    /**
+     * Gets a player entity from a packet's context
+     * @param context The message context
+     * @return The player on either the client or server sides, dependant on the context's side
+     * @since 2.1.0
+     */
     @Override
     public EntityPlayer getPlayerFromContext(MessageContext context) {
         return context.side.isClient()? Minecraft.getMinecraft().player : super.getPlayerFromContext(context);
@@ -96,6 +112,12 @@ public class ClientProxy extends CommonProxy {
     @Override
     public Side getCurrentSide() {
         return Side.CLIENT;
+    }
+
+    @Override
+    public void registerEventListeners() {
+        super.registerEventListeners();
+        MinecraftForge.EVENT_BUS.register(new RenderEventHandler());
     }
 
     //endregion Public / Protected Methods

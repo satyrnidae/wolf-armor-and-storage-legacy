@@ -7,13 +7,15 @@
   "minVersion": "0.7.5",
   "mixins": [
     "MixinEntity",
-    "MixinEntityLivingBase",
-    "MixinEntityLiving",
-    "MixinEntityCreature",
     "MixinEntityAgeable",
+    "MixinEntityAISit",
     "MixinEntityAnimal",
+    "MixinEntityCreature",
+    "MixinEntityLiving",
+    "MixinEntityLivingBase",
     "MixinEntityTameable",
-    "MixinEntityWolf"
+    "MixinEntityWolf",
+    "MixinPotion"
   ],
   "injectors": {
     "defaultRequire": 1

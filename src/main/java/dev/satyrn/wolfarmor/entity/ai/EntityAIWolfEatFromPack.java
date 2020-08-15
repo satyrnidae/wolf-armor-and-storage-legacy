@@ -2,8 +2,10 @@ package dev.satyrn.wolfarmor.entity.ai;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
+import dev.satyrn.wolfarmor.api.util.CreatureFoodStats;
+import dev.satyrn.wolfarmor.config.WolfArmorConfig;
+import dev.satyrn.wolfarmor.util.WolfFoodStatsLevel;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
-import dev.satyrn.wolfarmor.common.network.PacketHandler;
 import dev.satyrn.wolfarmor.common.network.packets.WolfEatMessage;
 import dev.satyrn.wolfarmor.common.network.packets.WolfHealMessage;
 
@@ -16,25 +18,33 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Comparator;
 
-public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChangedListener {
+/**
+ * @author Isabel Maskrey (satyrnidae)
+ */
+public class EntityAIWolfEatFromPack extends EntityAIBase implements IInventoryChangedListener {
     private final EntityWolf entity;
     private final IArmoredWolf armoredWolf;
 
     private final NonNullList<ItemStack> inventoryContents = NonNullList.create();
+    private final WolfArmorConfig config;
+    private final SimpleNetworkWrapper connection;
     private ItemStack eatingFood = ItemStack.EMPTY;
 
     private int eatCooldown;
     private int foodEatTime;
     private boolean hasHealedSinceLastReset;
 
-    public EntityAIWolfAutoEat(@Nonnull EntityWolf entity) {
+    public EntityAIWolfEatFromPack(@Nonnull EntityWolf entity) {
         this.entity = entity;
         this.armoredWolf = (IArmoredWolf)entity;
+        this.config = WolfArmorMod.getConfig();
+        this.connection = WolfArmorMod.getNetworkChannel();
         this.inventoryInit();
     }
 
@@ -47,28 +57,33 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
 
     @Override
     public boolean shouldExecute() {
-        if (!(WolfArmorMod.getConfig().getChestEnabled() && WolfArmorMod.getConfig().getAutoHealEnabled())) {
-            return false;
-        }
-
-        return armoredWolf.getHasChest() &&
-                !entity.getIsInvulnerable() &&
-                entity.hurtTime == 0 &&
-                (entity.getMaxHealth() - entity.getHealth()) >= 1.0F;
+        return !this.entity.getIsInvulnerable()
+                && this.entity.hurtTime == 0
+                && this.config.getChestEnabled()
+                && this.config.getAutoHealEnabled()
+                && this.armoredWolf.getHasChest();
     }
 
     @Override
     public void startExecuting() {
         if(eatCooldown <= 0) {
             @Nonnull ItemStack mostEfficientFood = getMostEfficientFood();
-            @Nullable ItemFood itemFood;
-            if (mostEfficientFood.isEmpty() || !(mostEfficientFood.getItem() instanceof ItemFood)) {
-                return;
+            if (!mostEfficientFood.isEmpty() && mostEfficientFood.getItem() instanceof ItemFood) {
+                @Nullable ItemFood foodItem = (ItemFood)mostEfficientFood.getItem();
+
+                float damageAmount = (this.entity.getMaxHealth() - this.entity.getHealth());
+                float healedAmount = foodItem.getHealAmount(mostEfficientFood);
+                CreatureFoodStats foodStats = this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED ? this.armoredWolf.getFoodStats() : null;
+
+                boolean isHurtOrHungry = damageAmount >= 1.0F || (foodStats != null && foodStats.needFood());
+                boolean wasteNotWantNot = healedAmount <= damageAmount || (foodStats != null && healedAmount <= (20 - foodStats.getFoodLevel()));
+
+                if (isHurtOrHungry && wasteNotWantNot) {
+                    this.eatingFood = mostEfficientFood;
+                    foodEatTime = foodItem.itemUseDuration;
+                    eatCooldown = foodEatTime + entity.getRNG().nextInt(foodEatTime);
+                }
             }
-            itemFood = (ItemFood) mostEfficientFood.getItem();
-            this.eatingFood = mostEfficientFood;
-            foodEatTime = itemFood.itemUseDuration;
-            eatCooldown = itemFood.itemUseDuration + entity.getRNG().nextInt(itemFood.itemUseDuration);
         }
     }
 
@@ -83,23 +98,30 @@ public class EntityAIWolfAutoEat extends EntityAIBase implements IInventoryChang
         if(!eatingFood.isEmpty() && eatingFood.getItem() instanceof ItemFood) {
             if (foodEatTime > 0) {
                 if (--foodEatTime % 4 == 0) {
-                    PacketHandler.getChannel().sendToAllAround(
-                        new WolfEatMessage(entity.getEntityId(), eatingFood),
-                        new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 60));
-                    this.entity.playSound(SoundEvents.ENTITY_GENERIC_EAT,
-                            0.5F,
-                            (this.entity.getRNG().nextFloat() - this.entity.getRNG().nextFloat()) * 0.2F + 1);
+                    TargetPoint targetPoint = new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 80);
+                    this.connection.sendToAllAround(new WolfEatMessage(entity.getEntityId(), eatingFood), targetPoint);
+                    this.entity.playSound(SoundEvents.ENTITY_GENERIC_EAT, 0.5F, (this.entity.getRNG().nextFloat() - this.entity.getRNG().nextFloat()) * 0.2F + 1);
                 }
             } else if (!hasHealedSinceLastReset) {
-                hasHealedSinceLastReset = true;
-                PacketHandler.getChannel().sendToAllAround(
-                    new WolfHealMessage(entity.getEntityId()),
-                    new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 60));
-                this.entity.heal((float) ((ItemFood) eatingFood.getItem()).getHealAmount(eatingFood));
-                this.eatingFood.shrink(1);
+                CreatureFoodStats foodStats = this.armoredWolf.getFoodStats();
+                boolean creatureFoodStatsEnabled = this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED;
+                if (foodStats != null || !creatureFoodStatsEnabled) {
+                    hasHealedSinceLastReset = true;
+                    TargetPoint targetPoint = new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 80);
+                    this.connection.sendToAllAround(new WolfHealMessage(entity.getEntityId()), targetPoint);
+
+                    if (creatureFoodStatsEnabled) {
+                        foodStats.addStats((ItemFood)this.eatingFood.getItem(), this.eatingFood);
+                    } else {
+                        this.entity.heal((float) ((ItemFood) eatingFood.getItem()).getHealAmount(eatingFood));
+                    }
+                    this.eatingFood.shrink(1);
+                }
             }
         }
     }
+
+
 
     @Override
     public void resetTask() {

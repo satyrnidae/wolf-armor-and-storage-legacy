@@ -5,7 +5,6 @@ import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.item.IWolfArmorMaterial;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
-import dev.satyrn.wolfarmor.common.network.PacketHandler;
 import dev.satyrn.wolfarmor.common.network.packets.WolfDropChestMessage;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -87,7 +86,7 @@ public class GuiWolfInventory extends GuiContainer {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if (isChestButtonHovered(mouseX, mouseY)) {
-            PacketHandler.getChannel().sendToServer(new WolfDropChestMessage(theWolf.getEntityId()));
+            WolfArmorMod.getNetworkChannel().sendToServer(new WolfDropChestMessage(theWolf.getEntityId()));
             this.mc.player.closeScreen();
         }
     }
