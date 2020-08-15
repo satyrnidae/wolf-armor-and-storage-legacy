@@ -1,11 +1,8 @@
 package dev.satyrn.wolfarmor.client.gui.config;
 
-import dev.satyrn.wolfarmor.WolfArmorMod;
-import dev.satyrn.wolfarmor.api.config.IConfiguration;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.common.config.*;
 import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.client.config.IConfigElement;
 import net.minecraftforge.fml.relauncher.Side;
