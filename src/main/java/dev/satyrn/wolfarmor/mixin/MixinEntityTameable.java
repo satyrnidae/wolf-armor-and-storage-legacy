@@ -10,6 +10,10 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(EntityTameable.class)
 public abstract class MixinEntityTameable extends MixinEntityAnimal {
 
+    @Shadow public abstract boolean isSitting();
+
+    @Shadow public abstract void setSitting(boolean sitting);
+
     @Shadow public void onDeath(DamageSource p_onDeath_1_) {}
 
     @Shadow public abstract boolean isOwner(EntityLivingBase p_isOwner_1_);
