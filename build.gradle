@@ -112,11 +112,11 @@ build {
 runClient {
     jvmArgs "-Dfml.coreMods.load=dev.satyrn.wolfarmor.core.WolfArmorCore"
     jvmArgs "-Dmixin.debug=true"
-    if (username) {
-        args '--username', username
+    if (project.hasProperty('username')) {
+        args '--username', project.getProperties()['username']
     }
     if (password) {
-        args '--password', password
+        args '--password', project.getProperties()['password']
     }
 }
 
@@ -196,10 +196,10 @@ task signJar(type: SignJar, dependsOn: shadowJar) {
         project.hasProperty('keyStore');
     }
 
-    keyStore = project.keyStore
-    alias = project.keyStoreAlias
-    storePass = project.keyStorePass
-    keyPass = project.keyStoreKeyPass
+    keyStore = project.getProperties()['keyStore'];
+    alias = project.getProperties()['keyStoreAlias'];
+    storePass = project.getProperties()['keyStorePass'];
+    keyPass = project.getProperties()['keyStoreKeyPass'];
     inputFile = shadowJar.archivePath
     outputFile = "$buildDir/libs/$archivesBaseName-$version-signed.jar"
 }
