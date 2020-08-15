@@ -21,10 +21,10 @@ import static java.lang.Math.PI;
 public class ModelWolfBackpack extends ModelBase {
     //region Fields
 
-    private ModelRenderer backpackRightTop;
-    private ModelRenderer backpackRightBottom;
-    private ModelRenderer backpackLeftTop;
-    private ModelRenderer backpackLeftBottom;
+    private final ModelRenderer backpackRightTop;
+    private final ModelRenderer backpackRightBottom;
+    private final ModelRenderer backpackLeftTop;
+    private final ModelRenderer backpackLeftBottom;
 
     private final static float INITIAL_Z_ROTATION = 0.139626F;
 
@@ -43,12 +43,12 @@ public class ModelWolfBackpack extends ModelBase {
         this.backpackRightTop.addBox(3, -2, 0, 2, 2, 5, scale);
         this.backpackRightTop.setRotationPoint(0, 14, 2);
 
-        this.backpackRightBottom = new ModelRenderer(this, 0, 14);
+        this.backpackRightBottom = new ModelRenderer(this, 0, 7);
         this.backpackRightBottom.setTextureSize(16, 32);
         this.backpackRightBottom.addBox(3, 0, 0, 3, 4, 5, scale);
         this.backpackRightBottom.setRotationPoint(0, 14, 2);
 
-        this.backpackLeftTop = new ModelRenderer(this, 0, 7);
+        this.backpackLeftTop = new ModelRenderer(this, 0, 16);
         this.backpackLeftTop.setTextureSize(16, 32);
         this.backpackLeftTop.addBox(-5, -2, 0, 2, 2, 5, scale);
         this.backpackLeftTop.setRotationPoint(0, 14, 2);
