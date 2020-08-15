@@ -298,33 +298,45 @@ task gitCheckWorkingTree(type:Exec) {
     }
 }
 
-task gitAddConfig(type:Exec) {
+task gitAddConfig() {
     group SCM_GROUP
     shouldRunAfter saveConfig
-    workingDir projectDir.getAbsolutePath()
-    ignoreExitValue true
-    executable 'git'
-    args 'add', 'config.json'
+    doLast {
+        exec {
+            workingDir projectDir.getAbsolutePath()
+            ignoreExitValue true
+            executable 'git'
+            args 'add', 'config.json'
+        }
+    }
 }
 
-task gitTagVersion(type:Exec) {
+task gitTagVersion() {
     group SCM_GROUP
     shouldRunAfter gitAddConfig
-    workingDir projectDir.getAbsolutePath()
-    def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
-    ignoreExitValue true
-    executable 'git'
-    args 'tag', '-a', "${newVersionNum}", '-m', "\"${newVersionNum}\""
+    doLast {
+        exec {
+            workingDir projectDir.getAbsolutePath()
+            def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
+            ignoreExitValue true
+            executable 'git'
+            args 'tag', '-a', "${newVersionNum}", '-m', "\"${newVersionNum}\""
+        }
+    }
 }
 
-task gitCommit(type:Exec) {
+task gitCommit() {
     group SCM_GROUP
     shouldRunAfter gitTagVersion
-    workingDir projectDir.getAbsolutePath()
-    def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
-    ignoreExitValue true
-    executable 'git'
-    args 'commit', '-m', "\"🏷 ${newVersionNum}\""
+    doLast {
+        exec {
+            workingDir projectDir.getAbsolutePath()
+            def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
+            ignoreExitValue true
+            executable 'git'
+            args 'commit', '-m', "\"🏷 ${newVersionNum}\""
+        }
+    }
 }
 
 task reportVersionChange {
