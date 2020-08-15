@@ -5,9 +5,9 @@ import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
 import dev.satyrn.wolfarmor.api.common.IProxy;
 import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.api.util.Resources;
+import dev.satyrn.wolfarmor.common.event.PotionEventHandler;
 import dev.satyrn.wolfarmor.common.loot.LootHandler;
 import dev.satyrn.wolfarmor.common.network.WolfArmorGuiHandler;
-import dev.satyrn.wolfarmor.common.network.PacketHandler;
 import dev.satyrn.wolfarmor.compatibility.CompatibilityHelper;
 import dev.satyrn.wolfarmor.common.event.EntityEventHandler;
 import dev.satyrn.wolfarmor.common.event.PlayerEventHandler;
@@ -58,10 +58,6 @@ public class CommonProxy implements IProxy {
         CriteriaTriggers.register(Criteria.EQUIP_WOLF_ARMOR);
         CriteriaTriggers.register(Criteria.EQUIP_WOLF_CHEST);
     }
-    @Override
-    public void registerPackets() {
-        PacketHandler.initialize();
-    }
 
     @Override
     public void registerLootTables() {
@@ -73,12 +69,12 @@ public class CommonProxy implements IProxy {
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         MinecraftForge.EVENT_BUS.register(new PlayerEventHandler());
         MinecraftForge.EVENT_BUS.register(new RegistrationEventHandler());
+        MinecraftForge.EVENT_BUS.register(new PotionEventHandler());
     }
 
     @Override
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
         this.registerGuiHandlers();
-        this.registerPackets();
         this.registerLootTables();
         this.registerEntityRenderingHandlers();
         CompatibilityHelper.postInit();
@@ -94,11 +90,23 @@ public class CommonProxy implements IProxy {
         NetworkRegistry.INSTANCE.registerGuiHandler(WolfArmorMod.getInstance(), new WolfArmorGuiHandler());
     }
 
+    /**
+     * Gets the sided thread from the message context
+     * @param context The message context
+     * @return The server instance
+     * @since 2.1.0
+     */
 	@Override
 	public IThreadListener getThreadFromContext(MessageContext context) {
 		return context.getServerHandler().player.getServer();
     }
-    
+
+    /**
+     * Gets the sided player instance from the message context
+     * @param context The message context
+     * @return The server player instance
+     * @since 2.1.0
+     */
     @Override
     public EntityPlayer getPlayerFromContext(MessageContext context) {
         return context.getServerHandler().player;

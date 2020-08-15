@@ -1,9 +1,10 @@
 package dev.satyrn.wolfarmor;
 
-import dev.satyrn.wolfarmor.api.config.IConfiguration;
 import dev.satyrn.wolfarmor.api.util.ILogHelper;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.api.common.IProxy;
+import dev.satyrn.wolfarmor.common.network.WolfArmorChannel;
+import dev.satyrn.wolfarmor.config.WolfArmorConfig;
 import dev.satyrn.wolfarmor.util.LogHelper;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -35,24 +36,22 @@ public class WolfArmorMod {
                 serverSide = "dev.satyrn.wolfarmor.common.CommonProxy")
     public static IProxy proxy;
 
-    @SuppressWarnings("unused")
     @Mod.Instance(Resources.MOD_ID)
     public static WolfArmorMod instance;
 
-    static ILogHelper logger;
-
-    static IConfiguration configuration;
+    private final ILogHelper logger;
+    private final WolfArmorConfig config;
+    private WolfArmorChannel channel;
 
     //endregion Fields
 
-    public WolfArmorMod() {
-        this(new WolfArmorConfiguration(), new LogHelper());
+    public WolfArmorMod() { this(new WolfArmorConfig(), new LogHelper());
     }
 
     @SuppressWarnings("unused")
-    WolfArmorMod(IConfiguration configurationInstance, ILogHelper loggerInstance) {
-        configuration = configurationInstance;
+    WolfArmorMod(WolfArmorConfig configInstance, ILogHelper loggerInstance) {
         logger = loggerInstance;
+        config = configInstance;
     }
 
     //region Public / Protected Methods
@@ -65,8 +64,9 @@ public class WolfArmorMod {
     @Mod.EventHandler
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
         logger.initializeLogger(preInitializationEvent.getModLog());
-        configuration.initializeConfig(preInitializationEvent);
+        channel = new WolfArmorChannel();
 
+        config.initialize(preInitializationEvent.getModConfigurationDirectory() + "/satyrn");
         proxy.preInit(preInitializationEvent);
     }
 
@@ -106,7 +106,7 @@ public class WolfArmorMod {
      */
     @Nonnull
     public static ILogHelper getLogger() {
-        return logger;
+        return getInstance().logger;
     }
 
     /**
@@ -115,9 +115,11 @@ public class WolfArmorMod {
      * @return The configuration settings
      */
     @Nonnull
-    public static IConfiguration getConfiguration() {
-        return configuration;
+    public static WolfArmorConfig getConfig() {
+        return getInstance().config;
     }
+
+    public static WolfArmorChannel getNetworkChannel() { return getInstance().channel; }
 
     /**
      * Gets the sided proxy.

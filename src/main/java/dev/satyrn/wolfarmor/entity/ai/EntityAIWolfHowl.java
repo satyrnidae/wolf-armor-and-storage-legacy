@@ -35,7 +35,7 @@ public class EntityAIWolfHowl extends EntityAIBase {
      */
     @Override
     public boolean shouldExecute() {
-        if (!WolfArmorMod.getConfiguration().getAreHowlingUntamedWolvesEnabled()) {
+        if (!WolfArmorMod.getConfig().getHowlAtMoonEnabled()) {
             return false;
         }
 
