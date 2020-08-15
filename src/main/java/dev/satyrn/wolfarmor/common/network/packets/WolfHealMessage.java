@@ -12,27 +12,56 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 
+/**
+ * Handles auto-eating wolf heal events
+ * @author Isabel Maskrey (satyrnidae)
+ * @since 2.1.0
+ */
 public class WolfHealMessage extends ClientMessageBase<WolfHealMessage> {
-
     private int entityId;
 
-    @SuppressWarnings("unused")
+    /**
+     * Initializes an empty WolfHealMessage
+     * @since 2.1.0
+     */
     public WolfHealMessage() {}
 
+    /**
+     * Initializes a new WolfHealMessage with the given entityId
+     * @param entityId The ID of the entity around which to spawn the heal particles
+     * @since 2.1.0
+     */
     public WolfHealMessage(int entityId) {
         this.entityId = entityId;
     }
 
+    /**
+     * Reads the entity ID from the buffer
+     * @param buffer The packet data buffer
+     * @since 2.1.0
+     */
 	@Override
-	protected void read(PacketBuffer buffer) throws IOException { 
-        this.entityId = buffer.readInt();
+	protected void read(PacketBuffer buffer) {
+        this.entityId = buffer.readVarInt();
     }
 
+    /**
+     * Writes the entity ID to the buffer
+     * @param buffer The packet data buffer
+     * @since 2.1.0
+     */
 	@Override
-	protected void write(PacketBuffer buffer) throws IOException {
-        buffer.writeInt(this.entityId);
+	protected void write(PacketBuffer buffer) {
+        buffer.writeVarInt(this.entityId);
     }
 
+    /**
+     * Spawns happy particles around the wolf
+     * @param player The sided player instance
+     * @param side The side on which the message is being processed
+     * @return Nothing, as this message is processed on the world thread and no reply can be sent
+     * @since 2.1.0
+     */
 	@Override
 	protected IMessage process(EntityPlayer player, Side side) {
         World world = player.getEntityWorld();
