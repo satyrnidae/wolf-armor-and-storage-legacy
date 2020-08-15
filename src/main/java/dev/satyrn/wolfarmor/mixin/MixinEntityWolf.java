@@ -4,19 +4,29 @@ import com.google.common.collect.Multimap;
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
 import dev.satyrn.wolfarmor.api.item.IItemWolfArmor;
+import dev.satyrn.wolfarmor.common.network.MessageBase;
+import dev.satyrn.wolfarmor.common.network.packets.RemovePotionEffectMessage;
+import dev.satyrn.wolfarmor.common.network.packets.UpdatePotionEffectMessage;
+import dev.satyrn.wolfarmor.config.WolfArmorConfig;
+import dev.satyrn.wolfarmor.util.WolfFoodStatsLevel;
+import dev.satyrn.wolfarmor.common.network.packets.UpdateFoodStatsMessage;
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.api.util.DataHelper;
 import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.util.Items;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
+import dev.satyrn.wolfarmor.api.util.CreatureFoodStats;
 import dev.satyrn.wolfarmor.util.OreDictHelper;
+import net.minecraft.block.material.Material;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -25,17 +35,23 @@ import net.minecraft.init.Enchantments;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.*;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.apache.logging.log4j.Level;
+import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -43,73 +59,104 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
 
+/**
+ * Mixes-in armored wolf functionality to the base wolf entity
+ * @author Isabel Maskrey (satyrnidae)
+ * @since 3.0.20
+ */
 @Mixin(EntityWolf.class)
-public abstract class MixinEntityWolf extends MixinEntityTameable implements IArmoredWolf, IInventoryChangedListener {
+public abstract class MixinEntityWolf extends MixinEntityTameable implements IArmoredWolf {
+    private int entityXpCooldown;
+    private ContainerHorseChest inventory;
+    private CreatureFoodStats foodStats;
+    private WolfArmorConfig config;
+    private SimpleNetworkWrapper connection;
 
+    // Static ctor injection to add new data manager keys before any sub-classes can add their own.  Prevents nasty ID conflicts,
+    // and lessens the number of packets we need to write or send.
     static {
         DataHelper.HAS_CHEST = EntityDataManager.createKey(EntityWolf.class, DataSerializers.BOOLEAN);
         DataHelper.ARMOR_ITEM = EntityDataManager.createKey(EntityWolf.class, DataSerializers.ITEM_STACK);
         DataHelper.CHEST_TYPE = EntityDataManager.createKey(EntityWolf.class, DataSerializers.ITEM_STACK);
     }
 
-    private ContainerHorseChest inventory;
+    /**
+     * Injects into the constructor to set the config instance, the food stats, and initilialize the inventory
+     * @param ci The callback info
+     * @since 3.0.20
+     */
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void onConstructed(CallbackInfo ci) {
+        this.config = WolfArmorMod.getConfig();
+        this.connection = WolfArmorMod.getNetworkChannel();
 
-    @Override
-    public int getMaxSizeInventory() {
-        return 1 + (WolfArmorMod.getConfiguration().getWolfChestSizeHorizontal() * WolfArmorMod.getConfiguration().getWolfChestSizeVertical());
+        float minimumHealth = this.config.getCanStarve() ? 0F : 8F;
+        boolean damageEntity = this.config.getFoodStatsLevel() == WolfFoodStatsLevel.FULL;
+
+        this.foodStats = new CreatureFoodStats(minimumHealth, damageEntity);
+        this.inventoryInit();
     }
 
+    /**
+     * Gets the food stats instance for this creature
+     * @return The creature's food stats instance
+     * @since 3.6.0
+     */
+    @Override
+    @Nonnull public CreatureFoodStats getFoodStats() { return this.foodStats; }
+
+    /**
+     * Adds levels of exhaustion to the creature's food stats instance
+     * @param exhaustion The levels of exhaustion to add
+     * @since 3.6.0
+     */
+    @Override
+    public void addExhaustion(float exhaustion) {
+        if (this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED
+                && this.foodStats != null
+                && !this.getEntityWorld().isRemote) {
+            this.foodStats.addExhaustion(exhaustion);
+        }
+    }
+
+    /**
+     * Callback to update the server-side wolf entity when the contianer is modified client-side
+     * @param invBasic The inventory instance
+     * @since 3.0.20
+     */
     @Override
     public void onInventoryChanged(@Nonnull IInventory invBasic) {
-        if(!this.getEntityWorld().isRemote) {
-            @Nonnull ItemStack armorItemStack = inventory.getStackInSlot(ContainerWolfInventory.INVENTORY_SLOT_ARMOR);
-            this.setArmorItemStack(armorItemStack);
-
-            applyArmorModifiers(this.getEntityAttribute(SharedMonsterAttributes.ARMOR), armorItemStack);
-            applyArmorModifiers(this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS), armorItemStack);
+        if(this.getEntityWorld().isRemote) {
+            return;
         }
+
+        @Nonnull ItemStack armorItemStack = invBasic.getStackInSlot(ContainerWolfInventory.INVENTORY_SLOT_ARMOR);
+
+        this.setArmorItemStack(armorItemStack);
+
+        this.applyArmorModifiers(this.getEntityAttribute(SharedMonsterAttributes.ARMOR), armorItemStack);
+        this.applyArmorModifiers(this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS), armorItemStack);
     }
 
+    /**
+     * Gets the type of the wolf backpack as an item
+     * @return The chest type of the wolf backpack
+     * @since 3.0.20
+     */
     @Override
-    public void setArmorItemStack(@Nonnull ItemStack armorItemStack) {
-        if(armorItemStack != this.dataManager.get(DataHelper.ARMOR_ITEM)) {
-            this.dataManager.set(DataHelper.ARMOR_ITEM, armorItemStack);
-            setItemStackToSlot(EntityEquipmentSlot.MAINHAND, armorItemStack);
-            setDropChance(EntityEquipmentSlot.MAINHAND, 0.0F);
-            setItemStackToSlot(EntityEquipmentSlot.HEAD, armorItemStack);
-            setDropChance(EntityEquipmentSlot.HEAD, 0.0F);
-            setItemStackToSlot(EntityEquipmentSlot.CHEST, armorItemStack);
-            setDropChance(EntityEquipmentSlot.CHEST, 0.0F);
-            setItemStackToSlot(EntityEquipmentSlot.LEGS, armorItemStack);
-            setDropChance(EntityEquipmentSlot.LEGS, 0.0F);
-            setItemStackToSlot(EntityEquipmentSlot.FEET, armorItemStack);
-            setDropChance(EntityEquipmentSlot.FEET, 0.0F);
-        }
+    public Item getChestType() {
+        ItemStack chestType = this.dataManager.get(DataHelper.CHEST_TYPE);
+        return chestType.isEmpty() ? null : chestType.getItem();
     }
 
-    @Nonnull
-    @Override
-    public ItemStack getArmorItemStack() {
-        return this.dataManager.get(DataHelper.ARMOR_ITEM);
-    }
-
-    @Override
-    public boolean getHasArmor() {
-        return !this.getArmorItemStack().isEmpty();
-    }
-
-    @Override
-    public boolean getHasChest() {
-        return this.dataManager.get(DataHelper.HAS_CHEST);
-    }
-
-    @Override
-    public void setHasChest(boolean value) {
-        this.dataManager.set(DataHelper.HAS_CHEST, value);
-        if(!value) this.dataManager.set(DataHelper.CHEST_TYPE, ItemStack.EMPTY);
-    }
-
+    /**
+     * Sets the chest type of the wolf backpack to the specified item stack
+     * @param stack An item stack which describes the backpack chest type
+     * @since 3.0.20
+     */
     @Override
     public void setChestType(@Nonnull ItemStack stack) {
         ItemStack chestType = stack.copy();
@@ -118,18 +165,115 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         this.dataManager.set(DataHelper.CHEST_TYPE, chestType);
     }
 
+    /**
+     * Checks if the wolf has a backpack
+     * @return <c>true</c> if the wolf has a backpack; otherwise, <c>false</c>
+     * @since 3.0.20
+     */
     @Override
-    public Item getChestType() {
-        ItemStack chestType = this.dataManager.get(DataHelper.CHEST_TYPE);
-        return chestType.isEmpty() ? null : chestType.getItem();
+    public boolean getHasChest() { return this.dataManager.get(DataHelper.HAS_CHEST); }
+
+    /**
+     * Sets the wolf to either have or not have an backpack
+     * @param hasChest <c>true</c> to add a wolf backpack, <c>false</c> to remove it
+     * @since 3.0.20
+     */
+    @Override
+    public void setHasChest(boolean hasChest) {
+        this.dataManager.set(DataHelper.HAS_CHEST, hasChest);
+        if(!hasChest) {
+            this.dataManager.set(DataHelper.CHEST_TYPE, ItemStack.EMPTY);
+        }
     }
 
-    @Nonnull
+    /**
+     * Gets the maximum size of a wolf's inventory
+     * @return The maximum configured size of a wolf's inventory
+     * @since 3.0.20
+     */
     @Override
-    public InventoryBasic getInventory() {
-        return this.inventory;
+    public int getMaxSizeInventory() { return 1 + (this.config.getChestSize().getColumns() * this.config.getChestSize().getRows()); }
+
+    /**
+     * Gets the inventory instance
+     * @return The wolf's inventory instance
+
+     * @since 3.0.20
+     */
+    @Override
+    @Nonnull public InventoryBasic getInventory() { return this.inventory; }
+
+    /**
+     * Gets the armor item stack from the data manager
+     * @return The current armor item stack
+     * @since 3.0.20
+     */
+    @Override
+    @Nonnull public ItemStack getArmorItemStack() {
+        return this.dataManager.get(DataHelper.ARMOR_ITEM);
     }
 
+    /**
+     * Sets the wolf's armor item stack in its data manager
+     * @param armorItemStack The armor item stack
+     * @since 3.0.20
+     */
+    @Override
+    public void setArmorItemStack(@Nonnull ItemStack armorItemStack) {
+        if(armorItemStack != this.dataManager.get(DataHelper.ARMOR_ITEM)) {
+            this.dataManager.set(DataHelper.ARMOR_ITEM, armorItemStack);
+
+            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, armorItemStack);
+
+            this.setItemStackToSlot(EntityEquipmentSlot.HEAD, armorItemStack);
+            this.setItemStackToSlot(EntityEquipmentSlot.CHEST, armorItemStack);
+            this.setItemStackToSlot(EntityEquipmentSlot.LEGS, armorItemStack);
+            this.setItemStackToSlot(EntityEquipmentSlot.FEET, armorItemStack);
+
+            Arrays.fill(this.inventoryArmorDropChances, 0.0F);
+            Arrays.fill(this.inventoryHandsDropChances, 0.0F);
+        }
+    }
+
+    /**
+     * Checks if the wolf currently has armor equipped
+     * @return <c>true</c> if the armor item is set; otherwise, <c>false</c>
+     * @since 3.0.20
+     */
+    @Override
+    public boolean getHasArmor() {
+        return !this.getArmorItemStack().isEmpty();
+    }
+
+    /**
+     * Checks if a specific item stack can be equipped by the wolf as armor
+     * @param armorItemStack The armor item stack
+     * @return <c>true</c> if the armor item can be equipped; otherwise, <c>false</c>.
+     * @since 3.0.20
+     */
+    @Override
+    public boolean canEquipItem(@Nonnull ItemStack armorItemStack) {
+        return armorItemStack.isEmpty() || (!this.getHasArmor() && armorItemStack.getItem() instanceof ItemWolfArmor);
+    }
+
+    /**
+     * Equips an item stack as armor, if possible
+     * @param armorItemStack The armor item stack to equip, provided canEquipItem is <c>true</c>
+     * @since 3.0.20
+     */
+    @Override
+    public void equipArmor(@Nonnull ItemStack armorItemStack) {
+        if (canEquipItem(armorItemStack)) {
+            this.inventory.setInventorySlotContents(ContainerWolfInventory.INVENTORY_SLOT_ARMOR, armorItemStack);
+        }
+    }
+
+    /**
+     * Sets the inventory item in the specified slot
+     * @param index The index of the slot to alter in the inventory
+     * @param itemStack The item stack to insert into the specified slot
+     * @since 3.0.20
+     */
     @Override
     public void setInventoryItem(int index, @Nonnull ItemStack itemStack) {
         if (index >= 0 && index < this.inventory.getSizeInventory()) {
@@ -139,24 +283,10 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
     }
 
-    @Override
-    public void equipArmor(@Nonnull ItemStack armorItemStack) {
-        if (canEquipItem(armorItemStack)) {
-            this.inventory.setInventorySlotContents(ContainerWolfInventory.INVENTORY_SLOT_ARMOR, armorItemStack);
-        }
-    }
-
-    @Override
-    public boolean canEquipItem(@Nonnull ItemStack armorItemStack) {
-        return armorItemStack.isEmpty() || (!this.getHasArmor() && armorItemStack.getItem() instanceof ItemWolfArmor);
-    }
-
-    @Override
-    public void onDeath(DamageSource damageSource) {
-        super.onDeath(damageSource);
-        this.dropEquipment();
-    }
-
+    /**
+     * Drops the wolf's equipped armor
+     * @since 3.0.20
+     */
     @Override
     public void dropEquipment() {
         if(this.getHasArmor()) {
@@ -166,10 +296,27 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
             }
             this.equipArmor(ItemStack.EMPTY);
         }
-
-        this.dropChest();
     }
 
+    /**
+     * Drops the wolf's backpack as a chest
+     * @since 3.0.20
+     */
+    @Override
+    public void dropChest() {
+        if(this.getHasChest()) {
+            if (!this.getEntityWorld().isRemote) {
+                Item chestItem = this.getChestType();
+                this.entityDropItem(new ItemStack(chestItem == null ? Item.getItemFromBlock(Blocks.CHEST) : chestItem, 1), 0);
+            }
+            this.setHasChest(false);
+        }
+    }
+
+    /**
+     * Drops all of the items in the wolf's backpack
+     * @since 3.0.20
+     */
     @Override
     public void dropInventoryContents() {
         for(int slotIndex = ContainerWolfInventory.INVENTORY_SLOT_CHEST_START; slotIndex <= this.getMaxSizeInventory() - 1; ++slotIndex) {
@@ -183,9 +330,23 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
+    /**
+     * Shadows whether or not the wolf is angry
+     * @return <c>true</c> if the wolf is angry; otherwise, <c>false</c>
+     * @since 3.6.0
+     */
+    @Shadow public abstract boolean isAngry();
+
+    /**
+     * Damages the wolf's equipped armor when the wolf takes damage
+     * @param damage The damage taken by the wolf
+     * @implNote This method is intrinsically overwritten in EntityWolf
+     * @since 3.6.0
+     */
+    @Intrinsic
     @Override
     protected void damageArmor(float damage) {
+        super.damageArmor(damage);
         if (this.getHasArmor()) {
             ItemStack stackInSlot = this.inventory.getStackInSlot(ContainerWolfInventory.INVENTORY_SLOT_ARMOR);
             if (!stackInSlot.isEmpty()) {
@@ -200,16 +361,87 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
     }
 
+    /**
+     * Moves the entity through the world
+     * @param strafe The relative motion in the X axis
+     * @param vertical The relative motion in the Y axis
+     * @param forward The relative motion in the Z axis
+     * @implNote This method is intrinsically overwritten in EntityWolf
+
+     * @since 3.6.0
+     */
+    @Intrinsic
     @Override
-    public void dropChest() {
-        if(this.getHasChest()) {
-            this.dropInventoryContents();
-            if (!this.getEntityWorld().isRemote) {
-                Item chestItem = this.getChestType();
-                this.entityDropItem(new ItemStack(chestItem == null ? Item.getItemFromBlock(Blocks.CHEST) : chestItem, 1), 0);
-            }
-            this.setHasChest(false);
+    public void travel(float strafe, float vertical, float forward) {
+        double initX = this.posX;
+        double initY = this.posY;
+        double initZ = this.posZ;
+
+        super.travel(strafe, vertical, forward);
+
+        this.addMovementStat(this.posX - initX, this.posY - initY, this.posZ - initZ);
+    }
+
+    /**
+     * Called when a new potion effect is applied to the entity
+     * @param effect The new potion effect applied to the entity
+     * @implNote This method is intrinsically overwritten in EntityWolf
+     * @author Isabel Maskrey
+     * @since 3.6.0
+     */
+    @Intrinsic
+    @Override
+    protected void onNewPotionEffect(PotionEffect effect) {
+        super.onNewPotionEffect(effect);
+        if (!this.getEntityWorld().isRemote) {
+            this.dispatchPotionEffectMessage(effect, false);
         }
+    }
+
+    /**
+     * Called when a potion effect is altered
+     * @param effect The effect which changed
+     * @param sendUpdate if <c>true</c>, the client side will be notified of the change
+     * @implNote This method is intrinsically overwritten in EntityWolf
+
+     * @since 3.6.0
+     */
+    @Intrinsic
+    @Override
+    protected void onChangedPotionEffect(PotionEffect effect, boolean sendUpdate) {
+        super.onChangedPotionEffect(effect, sendUpdate);
+        if (sendUpdate && !this.getEntityWorld().isRemote) {
+            this.dispatchPotionEffectMessage(effect, false);
+        }
+    }
+
+    /**
+     * Called when a previously active potion effect ends.
+     * @param effect The effect which ended
+     * @implNote This method is intrinsically overwritten in EntityWolf
+
+     * @since 3.6.0
+     */
+    @Intrinsic
+    @Override
+    protected void onFinishedPotionEffect(PotionEffect effect) {
+        super.onFinishedPotionEffect(effect);
+        if (!this.getEntityWorld().isRemote) {
+            this.dispatchPotionEffectMessage(effect, true);
+        }
+    }
+
+    /**
+     * Called when the entity dies.
+     * @param damageSource
+     */
+    @Intrinsic
+    @Override
+    public void onDeath(DamageSource damageSource) {
+        this.dropEquipment();
+        this.dropChest();
+        this.dropInventoryContents();
+        super.onDeath(damageSource);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -238,15 +470,11 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
             }
 
             this.applyEnchantments((EntityLivingBase)(Object)this, entityIn);
+            this.foodStats.addExhaustion(0.1F);
         }
 
         cir.setReturnValue(atkFlag);
         cir.cancel();
-    }
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void onConstructed(CallbackInfo ci) {
-        this.inventoryInit();
     }
 
     @Inject(method = "entityInit", at = @At("RETURN"))
@@ -254,6 +482,63 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         this.dataManager.register(DataHelper.HAS_CHEST, false);
         this.dataManager.register(DataHelper.ARMOR_ITEM, ItemStack.EMPTY);
         this.dataManager.register(DataHelper.CHEST_TYPE, ItemStack.EMPTY);
+    }
+
+    @Inject(method = "onUpdate", at=@At("TAIL"))
+    private void onUpdate(CallbackInfo ci) {
+        // since we can't cast ourselves to EntityLivingBase we need to call food tick via reflection.
+        if (this.foodStats != null && this.isTamed() && !this.getEntityWorld().isRemote &&
+                this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED) {
+            //noinspection ConstantConditions this is actually fine it's a mixin
+            this.foodStats.onUpdate((EntityLivingBase)(Object)this);
+            this.connection.sendToAll(new UpdateFoodStatsMessage(this.getEntityId(), this.foodStats.getFoodLevel(), this.foodStats.getSaturationLevel()));
+        }
+        --this.entityXpCooldown;
+    }
+
+    @Inject(method="onLivingUpdate", at=@At("TAIL"))
+    private void onLivingUpdate(CallbackInfo ci) {
+        if (!this.isDead && !this.getEntityWorld().isRemote) {
+            @Nonnull ItemStack enchantedItem = EnchantmentHelper.getEnchantedItem(Enchantments.MENDING, (EntityLivingBase) (Object) this);
+            if (!enchantedItem.isEmpty() && enchantedItem.isItemDamaged()) {
+                AxisAlignedBB aabb;
+                if (this.isRiding() && !this.getRidingEntity().isDead) {
+                    aabb = this.getEntityBoundingBox().union(this.getRidingEntity().getEntityBoundingBox());
+                } else {
+                    aabb = this.getEntityBoundingBox();
+                }
+
+                List<Entity> collidedEntities = this.getEntityWorld().getEntitiesWithinAABBExcludingEntity((Entity) (Object) this, aabb);
+
+                for (Entity entity : collidedEntities) {
+                    if (entity instanceof EntityXPOrb && !entity.isDead) {
+                        EntityXPOrb xpOrb = (EntityXPOrb)entity;
+                        if (xpOrb.delayBeforeCanPickup == 0 && this.entityXpCooldown == 0) {
+                            float ratio = enchantedItem.getItem().getXpRepairRatio(enchantedItem);
+                            int repairAmount = Math.min(this.xpRoundAverage(xpOrb.xpValue * ratio), enchantedItem.getItemDamage());
+                            xpOrb.xpValue -= this.xpRoundAverage(xpOrb.xpValue / ratio);
+                            enchantedItem.setItemDamage(enchantedItem.getItemDamage() - repairAmount);
+                            this.entityXpCooldown = 2;
+                        }
+                        if (xpOrb.xpValue == 0) {
+                            xpOrb.setDead();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Inject(method = "getAmbientSound", at=@At("HEAD"), cancellable = true)
+    private void onGetAmbientSound(CallbackInfoReturnable<SoundEvent> ci) {
+        if (this.isAngry() || !this.isTamed() || this.config.getFoodStatsLevel() == WolfFoodStatsLevel.DISABLED || this.foodStats == null) {
+            return;
+        }
+
+        if (this.getRNG().nextInt(3) == 0 && (this.foodStats.getFoodLevel() + this.foodStats.getSaturationLevel() <= 18F)) {
+            ci.setReturnValue(SoundEvents.ENTITY_WOLF_WHINE);
+            ci.cancel();
+        }
     }
 
     @Inject(method = "writeEntityToNBT", at = @At("RETURN"))
@@ -295,6 +580,10 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
                 compound.removeTag("ArmorItem");
             }
         }
+
+        if(this.foodStats != null) {
+            this.foodStats.writeNBT(compound);
+        }
     }
 
     @Inject(method = "readEntityFromNBT", at = @At("RETURN"))
@@ -334,33 +623,68 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
             @Nonnull ItemStack armorItemStack = new ItemStack(armorTags);
             this.equipArmor(armorItemStack);
         }
+
+        if (this.foodStats != null) {
+            this.foodStats.readNBT(compound);
+        }
     }
 
     @Inject(method = "processInteract", at = @At("HEAD"), cancellable = true)
     private void onProcessInteract(EntityPlayer player, EnumHand hand, CallbackInfoReturnable<Boolean> cir) {
-        if(this.isChild() || !(this.isTamed() && this.isOwner(player))) {
+        // Handle sneaking player (Open wolf inventory)
+        if(player.isSneaking() && this.isOwner(player) && this.isTamed() && !this.isChild()) {
+            this.openWolfInventory(player);
+            cir.setReturnValue(true);
+            cir.cancel();
             return;
         }
 
-        if(player.isSneaking()) {
-            this.openWolfInventory(player);
+        @Nonnull ItemStack itemStack = player.getHeldItem(hand);
+        if (!itemStack.isEmpty()) {
+            if (this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED && this.foodStats != null) {
+                if (itemStack.getItem() instanceof ItemFood) {
+                    ItemFood foodItem = (ItemFood) itemStack.getItem();
+                    cir.setReturnValue(false);
+                    if (foodItem.isWolfsFavoriteMeat() || this.isBreedingItem(itemStack)) {
+                        if (foodItem.isWolfsFavoriteMeat() && this.foodStats.needFood()) {
+                            this.foodStats.addStats(foodItem, itemStack);
+                            this.consumeItemFromStack(player, itemStack);
+                            cir.setReturnValue(true);
+                        } else if (this.isBreedingItem(itemStack)) {
+                            if (this.getGrowingAge() == 0 && !this.isInLove()) {
+                                this.consumeItemFromStack(player, itemStack);
+                                this.setInLove(player);
+                                cir.setReturnValue(true);
+                            } else if (this.isChild()) {
+                                this.consumeItemFromStack(player, itemStack);
+                                this.ageUp((int) ((float) (-this.getGrowingAge() / 20) * 0.1F), true);
+                                cir.setReturnValue(true);
+                            }
+                        } else {
+                            cir.setReturnValue(false);
+                        }
+                    } else {
+                        if (this.isOwner(player) && !this.world.isRemote) {
+                            this.setSitting(!this.isSitting());
+                            this.isJumping = false;
+                            this.getNavigator().clearPath();
+                            this.setAttackTarget((EntityLivingBase)null);
+                        }
+                    }
+                    cir.cancel();
+                    return;
+                }
+            }
 
-            // Return true and cancel
-            cir.setReturnValue(true);
-            cir.cancel();
-        } else {
-            @Nonnull ItemStack itemInHand = player.getHeldItem(hand);
-
-            if (!itemInHand.isEmpty()) {
-                boolean isWolfChestEnabled = WolfArmorMod.getConfiguration().getIsWolfChestEnabled();
-                if (isWolfChestEnabled && !this.getHasChest() &&
-                        OreDictHelper.isOre(false, "chestWood", itemInHand)) {
+            if (this.isTamed() && this.isOwner(player) && !this.isChild()) {
+                if (this.config.getChestEnabled() && !this.getHasChest() &&
+                        OreDictHelper.isOre(false, "chestWood", itemStack)) {
                     if (!this.getEntityWorld().isRemote) {
-                        this.playEquipSound(itemInHand);
+                        this.playEquipSound(itemStack);
                         this.setHasChest(true);
-                        this.setChestType(itemInHand);
+                        this.setChestType(itemStack);
                         if (!player.capabilities.isCreativeMode) {
-                            itemInHand.shrink(1);
+                            itemStack.shrink(1);
                         }
                         if (player instanceof EntityPlayerMP) {
                             ((WolfArmorTrigger) Criteria.EQUIP_WOLF_CHEST).trigger((EntityPlayerMP) player, (EntityWolf) (Object) this);
@@ -369,10 +693,14 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
 
                     cir.setReturnValue(true);
                     cir.cancel();
-                } else if (Items.isValidWolfArmor(itemInHand)) {
+                    return;
+                }
+
+                if (Items.isValidWolfArmor(itemStack)) {
                     this.openWolfInventory(player);
                     cir.setReturnValue(true);
                     cir.cancel();
+                    return;
                 }
             }
         }
@@ -390,6 +718,27 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         Multimap<String, AttributeModifier> map = armorItem.getAttributeModifiers(EntityEquipmentSlot.CHEST, stack);
         if (map.containsKey(instance.getAttribute().getName())) {
             map.get(instance.getAttribute().getName()).forEach(instance::applyModifier);
+        }
+    }
+
+    private void addMovementStat(double deltaX, double deltaY, double deltaZ) {
+        if (!this.isRiding()) {
+            if (this.isInsideOfMaterial(Material.WATER))  {
+                int magnitude3d = Math.round(MathHelper.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) * 100F);
+                if (magnitude3d > 0) {
+                    this.addExhaustion(0.01F * magnitude3d * 0.01F);
+                }
+            } else if (this.isInWater()) {
+                int magnitude2d = Math.round(MathHelper.sqrt(deltaX * deltaX + deltaZ * deltaZ) * 100F);
+                if (magnitude2d > 0) {
+                    this.addExhaustion(0.01F * magnitude2d * 0.01F);
+                }
+            } else if (this.onGround) {
+                int magnitude2d = Math.round(MathHelper.sqrt(deltaX * deltaX + deltaZ * deltaZ) * 100F);
+                if (magnitude2d > 0 && this.isSprinting()) {
+                    this.addExhaustion(0.1F * magnitude2d * 0.01F);
+                }
+            }
         }
     }
 
@@ -469,5 +818,17 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
             @Nonnull ItemStack armorItemStack = new ItemStack(armorTags);
             this.equipArmor(armorItemStack);
         }
+    }
+
+    private void dispatchPotionEffectMessage(PotionEffect effect, boolean removeEffect) {
+        MessageBase<?> message = removeEffect
+                ? new RemovePotionEffectMessage(this.getEntityId(), effect.getPotion())
+                : new UpdatePotionEffectMessage(this.getEntityId(), effect);
+        this.connection.sendToAll(message);
+    }
+
+    private int xpRoundAverage(float value) {
+        float floor = MathHelper.floor(value);
+        return (int) floor + (Math.random() < value - floor ? 1 : 0);
     }
 }

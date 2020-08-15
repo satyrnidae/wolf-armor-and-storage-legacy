@@ -32,11 +32,11 @@ repositories {
 def config = null
 def apiconfig = null
 
-file "./config.json" withReader {
+file "${projectDir.getAbsolutePath()}/config.json" withReader {
     config = new JsonSlurper().parseText(it.text)
 }
 
-file "./wolfarmor-api/config.json" withReader {
+file "${projectDir.getAbsolutePath()}/wolfarmor-api/config.json" withReader {
     apiconfig = new JsonSlurper().parseText(it.text)
 }
 
@@ -56,7 +56,9 @@ compileJava {
         copy {
             from sourceSets.main.allJava
             into "$buildDir/generated/main/java"
-            expand version: shortVersion, mcversion: config.minecraft.version, modname: config.name, modid: config.modid
+            filesMatching(["**/WolfArmorMod.java", "**/WolfArmorCore.java"]) {
+                expand version: shortVersion, mcversion: config.minecraft.version, modname: config.name, modid: config.modid
+            }
         }
         copy {
             from "$buildDir/generated/main/java"
@@ -81,11 +83,9 @@ dependencies {
     }
 }
 
-
-
 sourceSets.main {
     java {
-        srcDirs "src/main/java"
+        srcDirs 'src/main/java'
     }
     artifacts {
         archives shadowJar
@@ -107,7 +107,17 @@ sourceSets.test {
 
 build {
     dependsOn 'signJar'
-    finalizedBy 'incrementPatchVersion'
+}
+
+runClient {
+    jvmArgs "-Dfml.coreMods.load=dev.satyrn.wolfarmor.core.WolfArmorCore"
+    jvmArgs "-Dmixin.debug=true"
+    if (username) {
+        args '--username', username
+    }
+    if (password) {
+        args '--password', password
+    }
 }
 
 jar {
@@ -169,6 +179,7 @@ processResources {
     from('/') {
         include 'LICENSE'
         include 'CREDITS'
+        include 'THIRDPARTY'
     }
 }
 
@@ -195,41 +206,143 @@ task signJar(type: SignJar, dependsOn: shadowJar) {
 
 task saveConfig {
     doLast {
-        def configFile = new File('./config.json')
+        def configFile = new File("${projectDir.getAbsolutePath()}/config.json")
         configFile.delete()
         configFile.write(new JsonBuilder(config).toPrettyString())
     }
 }
 
-task reportVersionChange {
+def VERSIONING_GROUP = 'Versioning'
+def SCM_GROUP = 'sourcecontrol'
+
+task incrementPatch {
+    group VERSIONING_GROUP
+    dependsOn 'gitCheckWorkingTree'
+    finalizedBy 'saveConfig'
+    finalizedBy 'gitAddConfig'
+    finalizedBy 'gitTagVersion'
+    finalizedBy 'gitCommit'
+    finalizedBy 'reportVersionChange'
+
     doLast {
-        println "Semantic version updated to ${config.version.major}.${config.version.minor}.${config.version.patch}"
+        println projectDir.getAbsolutePath()
+        if (gitCheckWorkingTree.output() != "") {
+            saveConfig.enabled = false
+            gitAddConfig.enabled = false
+            gitTagVersion.enabled = false
+            gitCommit.enabled = false
+            throw new Error("Working directory not clean!")
+        } else {
+            config.version.patch += 1
+        }
     }
 }
 
-task incrementPatchVersion {
+task incrementMinor {
+    group VERSIONING_GROUP
+    dependsOn 'gitCheckWorkingTree'
     finalizedBy 'saveConfig'
+    finalizedBy 'gitAddConfig'
+    finalizedBy 'gitTagVersion'
+    finalizedBy 'gitCommit'
     finalizedBy 'reportVersionChange'
-    doLast {
-        config.version.patch += 1
-    }
-}
 
-task incrementMinorVersion {
-    finalizedBy 'saveConfig'
-    finalizedBy 'reportVersionChange'
     doLast {
-        config.version.patch = 0
-        config.version.minor += 1
+        println projectDir.getAbsolutePath()
+        if (gitCheckWorkingTree.output() != "") {
+            saveConfig.enabled = false
+            gitAddConfig.enabled = false
+            gitTagVersion.enabled = false
+            gitCommit.enabled = false
+            throw new Error("Working directory not clean!")
+        } else {
+            config.version.patch = 0
+            config.version.minor += 1
+        }
     }
 }
 
 task incrementMajor {
+    group VERSIONING_GROUP
+    dependsOn 'gitCheckWorkingTree'
     finalizedBy 'saveConfig'
+    finalizedBy 'gitAddConfig'
+    finalizedBy 'gitTagVersion'
+    finalizedBy 'gitCommit'
     finalizedBy 'reportVersionChange'
+
     doLast {
-        config.version.patch = 0
-        config.version.minor = 0
-        config.version.major += 1
+        println projectDir.getAbsolutePath()
+        if (gitCheckWorkingTree.output() != "") {
+            saveConfig.enabled = false
+            gitAddConfig.enabled = false
+            gitTagVersion.enabled = false
+            gitCommit.enabled = false
+            throw new Error("Working directory not clean!")
+        } else {
+            config.version.patch = 0
+            config.version.minor = 0
+            config.version.major += 1
+        }
+    }
+}
+
+task gitCheckWorkingTree(type:Exec) {
+    group SCM_GROUP
+    workingDir projectDir.getAbsolutePath()
+    executable 'git'
+    args '--no-pager', 'diff', 'HEAD'
+    standardOutput = new ByteArrayOutputStream()
+    ext.output = {
+        return standardOutput.toString()
+    }
+}
+
+task gitAddConfig() {
+    group SCM_GROUP
+    shouldRunAfter saveConfig
+    doLast {
+        exec {
+            workingDir projectDir.getAbsolutePath()
+            ignoreExitValue true
+            executable 'git'
+            args 'add', 'config.json'
+        }
+    }
+}
+
+task gitTagVersion() {
+    group SCM_GROUP
+    shouldRunAfter gitAddConfig
+    doLast {
+        exec {
+            workingDir projectDir.getAbsolutePath()
+            def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
+            ignoreExitValue true
+            executable 'git'
+            args 'tag', '-a', "${newVersionNum}", '-m', "\"${newVersionNum}\""
+        }
+    }
+}
+
+task gitCommit() {
+    group SCM_GROUP
+    shouldRunAfter gitTagVersion
+    doLast {
+        exec {
+            workingDir projectDir.getAbsolutePath()
+            def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
+            ignoreExitValue true
+            executable 'git'
+            args 'commit', '-m', "\"🏷 ${newVersionNum}\""
+        }
+    }
+}
+
+task reportVersionChange {
+    group VERSIONING_GROUP
+    shouldRunAfter gitCommit
+    doLast {
+        println "Current semver: ${config.version.major}.${config.version.minor}.${config.version.patch}"
     }
 }

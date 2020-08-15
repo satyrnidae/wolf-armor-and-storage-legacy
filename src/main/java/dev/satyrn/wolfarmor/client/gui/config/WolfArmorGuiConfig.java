@@ -50,6 +50,8 @@ public class WolfArmorGuiConfig extends GuiConfig {
      */
     @Nonnull
     private static List<IConfigElement> getConfigurationElements() {
+        //TODO: Update to new GUI
+        /*
         List<IConfigElement> list = new ArrayList<>();
 
         IConfiguration configuration = WolfArmorMod.getConfiguration();
@@ -110,6 +112,8 @@ public class WolfArmorGuiConfig extends GuiConfig {
         list.add(new ConfigElement(client));
 
         return list;
+         */
+        return new ArrayList<>();
     }
 
     //endregion Private Methods

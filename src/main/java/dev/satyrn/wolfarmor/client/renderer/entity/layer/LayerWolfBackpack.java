@@ -20,8 +20,8 @@ import javax.annotation.Nonnull;
 public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
     //region Fields
 
-    private ModelWolfBackpack modelWolfBackpack;
-    private final RenderLiving renderer;
+    private final ModelWolfBackpack modelWolfBackpack;
+    private final RenderLiving<?> renderer;
 
     //endregion Fields
 
@@ -32,7 +32,7 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
      *
      * @param renderer The parent renderer.
      */
-    public LayerWolfBackpack(@Nonnull RenderLiving renderer) {
+    public LayerWolfBackpack(@Nonnull RenderLiving<?> renderer) {
         this.renderer = renderer;
 
         this.modelWolfBackpack = new ModelWolfBackpack(0.0F);
@@ -65,7 +65,7 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
                               float headPitch,
                               float scale) {
 
-        if (!WolfArmorMod.getConfiguration().getIsWolfChestRenderEnabled()) {
+        if (!WolfArmorMod.getConfig().getChestRendered()) {
             return;
         }
         IArmoredWolf wolfArmor = (IArmoredWolf)entityWolf;

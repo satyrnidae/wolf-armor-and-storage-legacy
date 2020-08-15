@@ -2,11 +2,12 @@ package dev.satyrn.wolfarmor.client.gui;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
-import dev.satyrn.wolfarmor.api.item.IWolfArmorMaterial;
 import dev.satyrn.wolfarmor.api.util.Resources;
+import dev.satyrn.wolfarmor.client.renderer.WolfRenderHelper;
 import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
-import dev.satyrn.wolfarmor.common.network.PacketHandler;
 import dev.satyrn.wolfarmor.common.network.packets.WolfDropChestMessage;
+import dev.satyrn.wolfarmor.config.WolfArmorConfig;
+import dev.satyrn.wolfarmor.util.WolfFoodStatsLevel;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -15,6 +16,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.Point;
@@ -30,64 +33,60 @@ import java.util.List;
  */
 @SideOnly(Side.CLIENT)
 public class GuiWolfInventory extends GuiContainer {
-    //region Fields
+    private final IInventory wolfInventory;
+    private final IInventory playerInventory;
+    private final EntityWolf wolf;
+    private final IArmoredWolf armoredWolf;
+    private final WolfArmorConfig config;
 
-    private IInventory wolfInventory;
-    private IInventory playerInventory;
+    private float lastMouseX;
+    private float lastMouseY;
 
-    private EntityWolf theWolf;
+    private static final int Y_SIZE_INITIAL = 169;
+    private static final Rectangle EMPTY_SLOT = new Rectangle(176,72,18,18);
+    private static final Rectangle BUTTON_AREA = new Rectangle(7,35,18,18);
+    private static final Rectangle BUTTON_TEXTURE = new Rectangle(194,72,18,18);
+    private static final Rectangle EMPTY_CHEST_BG = new Rectangle(176,0,18,18);
+    private static final Rectangle STATS_BG_TEXTURE = new Rectangle(0,169,176,10);
+    private static final Rectangle UI_BOTTOM_TEXTURE = new Rectangle(0, 165, 176, 4);
+    private static final Rectangle WOLF_RENDER_AREA = new Rectangle(31, 28, 54, 54);
+    private static final Rectangle INVENTORY_TEXTURE = new Rectangle(0, 0, 176, 169);
 
-    private float screenPositionX;
-    private float screenPositionY;
-
-    private final IArmoredWolf wolfArmor;
-
-    // Empty Slot Graphic
-    private final Rectangle EMPTY_SLOT = new Rectangle(7, 83, 18, 18);
-
-    // Button Effective Area
-    private final Rectangle BUTTON_AREA = new Rectangle(7, 35, 18, 18);
-
-    // Button Graphic
-    private final Rectangle BUTTON_TEXTURE = new Rectangle(0, 173, 18, 18);
-
-    private final Rectangle EMPTY_CHEST_BG = new Rectangle(176, 0, 18, 18);
-
-    //endregion Fields
-
-    //region Constructors
+    private static final ResourceLocation TEXTURE_GUI_WOLF_INVENTORY = new ResourceLocation(Resources.MOD_ID, "textures/gui/wolf.png");
 
     /**
      * Initializes a new wolf inventory GUI
      *
      * @param playerInventory The player's inventory. Used to display player's current items
      * @param wolfInventory   The wolf's inventory
-     * @param theWolf         The wolf in question
+     * @param wolf         The wolf in question
      */
     public GuiWolfInventory(@Nonnull IInventory playerInventory,
                             @Nonnull IInventory wolfInventory,
-                            @Nonnull EntityWolf theWolf,
+                            @Nonnull EntityWolf wolf,
                             @Nonnull EntityPlayer player) {
-        super(new ContainerWolfInventory(playerInventory, wolfInventory, theWolf, player));
-        this.wolfArmor = (IArmoredWolf) theWolf;
+        super(new ContainerWolfInventory(playerInventory, wolfInventory, wolf, player));
+        this.config = WolfArmorMod.getConfig();
+        this.armoredWolf = (IArmoredWolf) wolf;
         this.wolfInventory = wolfInventory;
         this.playerInventory = playerInventory;
-        this.theWolf = theWolf;
+        this.wolf = wolf;
         this.allowUserInput = false;
-        this.ySize = 172;
+        this.ySize = Y_SIZE_INITIAL;
+        if (this.config.getStatsInGui()) {
+            this.ySize += 4;
+            if (this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED) {
+                this.ySize += 10;
+            }
+        }
     }
-
-    //endregion Constructors
-
-    //region Public / Protected Methods
-
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if (isChestButtonHovered(mouseX, mouseY)) {
-            PacketHandler.getChannel().sendToServer(new WolfDropChestMessage(theWolf.getEntityId()));
+            WolfArmorMod.getNetworkChannel().sendToServer(new WolfDropChestMessage(wolf.getEntityId()));
             this.mc.player.closeScreen();
         }
     }
@@ -100,14 +99,14 @@ public class GuiWolfInventory extends GuiContainer {
      */
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String wolfName = this.theWolf.getName();
+        String wolfName = this.wolf.getName();
 
         this.fontRenderer.drawString(this.wolfInventory.hasCustomName()
                 ? this.wolfInventory.getName()
                 : I18n.format(this.wolfInventory.getName(), wolfName), 8, 6, 0x404040);
         this.fontRenderer.drawString(this.playerInventory.hasCustomName()
                 ? this.playerInventory.getName()
-                : I18n.format(this.playerInventory.getName()), 8, this.ySize - 98, 0x404040);
+                : I18n.format(this.playerInventory.getName()), 8, 73, 0x404040);
 
         this.drawWolfHealthAndArmor();
 
@@ -124,8 +123,8 @@ public class GuiWolfInventory extends GuiContainer {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        this.screenPositionX = mouseX;
-        this.screenPositionY = mouseY;
+        this.lastMouseX = mouseX;
+        this.lastMouseY = mouseY;
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         this.renderHoveredToolTip(mouseX, mouseY);
@@ -135,7 +134,7 @@ public class GuiWolfInventory extends GuiContainer {
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
         super.renderHoveredToolTip(mouseX, mouseY);
 
-        if (this.wolfArmor.getHasChest() && this.isChestButtonHovered(mouseX, mouseY)) {
+        if (this.armoredWolf.getHasChest() && this.isChestButtonHovered(mouseX, mouseY)) {
             List<String> displayText = new ArrayList<>();
             displayText.add(I18n.format("gui.wolfarmor.inventory.remove_chest"));
             this.drawHoveringText(displayText, mouseX, mouseY, fontRenderer);
@@ -155,14 +154,16 @@ public class GuiWolfInventory extends GuiContainer {
 
         GlStateManager.pushMatrix();
         {
-            GlStateManager.color(1, 1, 1, 1);
+            GlStateManager.color(1F, 1F, 1F, 1F);
 
-            this.mc.getTextureManager().bindTexture(Resources.TEXTURE_GUI_WOLF_INVENTORY);
+            this.mc.getTextureManager().bindTexture(TEXTURE_GUI_WOLF_INVENTORY);
 
             // Draw screen background
-            this.drawTexturedModalRect(origin.getX(), origin.getY(), 0, 0, this.xSize, this.ySize);
+            this.drawTexturedModalRect(origin.getX(), origin.getY(),
+                    INVENTORY_TEXTURE.getX(), INVENTORY_TEXTURE.getY(),
+                    INVENTORY_TEXTURE.getWidth(), INVENTORY_TEXTURE.getHeight());
 
-            if (this.wolfArmor.getHasArmor()) {
+            if (this.armoredWolf.getHasArmor()) {
                 // Draw unlined wolf armor slot
                 this.drawTexturedModalRect(
                         origin.getX() + 7,
@@ -174,15 +175,15 @@ public class GuiWolfInventory extends GuiContainer {
             }
 
 
-            int wolfInventorySizeX = WolfArmorMod.getConfiguration().getWolfChestSizeHorizontal();
-            int wolfInventorySizeY = WolfArmorMod.getConfiguration().getWolfChestSizeVertical();
+            int columns = WolfArmorMod.getConfig().getChestSize().getColumns();
+            int rows = WolfArmorMod.getConfig().getChestSize().getRows();
 
-            Point chestOrigin = new Point((5 - wolfInventorySizeX) * 9 + 79, (3 - wolfInventorySizeY) * 9 + 17);
+            Point chestOrigin = new Point((5 - columns) * 9 + 79, (3 - rows) * 9 + 17);
 
-            if (this.wolfArmor.getHasChest()) {
+            if (this.armoredWolf.getHasChest()) {
                 //draw chest slots
-                for (int xOffset = 0; xOffset < wolfInventorySizeX; xOffset++) {
-                    for (int yOffset = 0; yOffset < wolfInventorySizeY; yOffset++) {
+                for (int xOffset = 0; xOffset < columns; xOffset++) {
+                    for (int yOffset = 0; yOffset < rows; yOffset++) {
                         this.drawTexturedModalRect(
                                 origin.getX() + chestOrigin.getX() + (EMPTY_SLOT.getWidth() * xOffset),
                                 origin.getY() + chestOrigin.getY() + (EMPTY_SLOT.getHeight() * yOffset),
@@ -193,10 +194,10 @@ public class GuiWolfInventory extends GuiContainer {
                     }
                 }
             } else {
-                for (int xSlot = 0; xSlot < wolfInventorySizeX; xSlot++) {
-                    for (int ySlot = 0; ySlot < wolfInventorySizeY; ySlot++) {
-                        int textureXOffset = (wolfInventorySizeX > 1 ? 1 : 0) + (xSlot > 0 ? (xSlot == wolfInventorySizeX - 1 ? 2 : 1) : 0);
-                        int textureYOffset = (wolfInventorySizeY > 1 ? 1 : 0) + (ySlot > 0 ? (ySlot == wolfInventorySizeY - 1 ? 2 : 1) : 0);
+                for (int xSlot = 0; xSlot < columns; xSlot++) {
+                    for (int ySlot = 0; ySlot < rows; ySlot++) {
+                        int textureXOffset = (columns > 1 ? 1 : 0) + (xSlot > 0 ? (xSlot == columns - 1 ? 2 : 1) : 0);
+                        int textureYOffset = (rows > 1 ? 1 : 0) + (ySlot > 0 ? (ySlot == rows - 1 ? 2 : 1) : 0);
 
                         drawTexturedModalRect(
                                 origin.getX() + chestOrigin.getX() + (EMPTY_CHEST_BG.getWidth() * xSlot),
@@ -209,19 +210,42 @@ public class GuiWolfInventory extends GuiContainer {
                 }
             }
 
-            GuiInventory.drawEntityOnScreen(origin.getX() + 51, origin.getY() + 60, 30,
-                    (float) (origin.getX() + 51) - this.screenPositionX,
-                    (float) (origin.getY() - 50) - this.screenPositionY, this.theWolf);
+            // Draw the inventory extension for non-food stats
+            if (this.config.getStatsInGui()) {
+                // Offset Y to directly below the container
+                int yOffset = this.getOrigin().getY() + 159;
+
+                // Draw more background
+                this.drawTexturedModalRect(origin.getX(), yOffset, STATS_BG_TEXTURE.getX(), STATS_BG_TEXTURE.getY(),
+                        STATS_BG_TEXTURE.getWidth(), STATS_BG_TEXTURE.getHeight());
+                yOffset += STATS_BG_TEXTURE.getHeight();
+
+                // Draw even more background if we need the second level for food stats
+                if (this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED && armoredWolf.getHasArmor()) {
+                    this.drawTexturedModalRect(origin.getX(), yOffset, STATS_BG_TEXTURE.getX(), STATS_BG_TEXTURE.getY(),
+                            STATS_BG_TEXTURE.getWidth(), STATS_BG_TEXTURE.getHeight());
+                    yOffset += STATS_BG_TEXTURE.getHeight();
+                }
+
+                // Draw the bottom of the UI
+                this.drawTexturedModalRect(origin.getX(), yOffset, UI_BOTTOM_TEXTURE.getX(), UI_BOTTOM_TEXTURE.getY(), UI_BOTTOM_TEXTURE.getWidth(), UI_BOTTOM_TEXTURE.getHeight());
+            }
+
+            float entityPosX = this.guiLeft + 52;
+            float entityPosY = this.guiTop + 62;
+            float entityMouseX = entityPosX - this.lastMouseX;
+            float entityMouseY = (entityPosY - 16) - this.lastMouseY;
+            
+            GuiInventory.drawEntityOnScreen(MathHelper.fastFloor(entityPosX), MathHelper.fastFloor(entityPosY), 30, entityMouseX, entityMouseY, this.wolf);
         }
         GlStateManager.popMatrix();
-        if (this.wolfArmor.getHasChest()) {
+        if (this.armoredWolf.getHasChest()) {
             GlStateManager.pushMatrix();
             {
                 // draw button at 7,35
+                GlStateManager.color(1F, 1F, 1F, 1F);
 
-                GlStateManager.color(1, 1, 1, 1);
-
-                this.mc.getTextureManager().bindTexture(Resources.TEXTURE_GUI_WOLF_INVENTORY);
+                this.mc.getTextureManager().bindTexture(TEXTURE_GUI_WOLF_INVENTORY);
                 this.drawTexturedModalRect(
                         origin.getX() + BUTTON_AREA.getX(),
                         origin.getY() + BUTTON_AREA.getY(),
@@ -234,74 +258,30 @@ public class GuiWolfInventory extends GuiContainer {
         }
     }
 
-    //endregion Public / Protected Methods
-
-    //region Private Methods
-
     /**
      * Draws the wolf's current health and armor rating.
      */
     private void drawWolfHealthAndArmor() {
+        if (!this.config.getStatsInGui()) return;
+        Point origin = this.getOrigin();
         GlStateManager.pushMatrix();
         {
             GlStateManager.color(1, 1, 1, 1);
 
-            this.mc.getTextureManager().bindTexture(Gui.ICONS);
+            Point renderPos;
+            int yPosition = 160;
 
-            if (WolfArmorMod.getConfiguration().getIsWolfHealthDisplayEnabled()) {
-                //TODO: Wolf potion effects should alter hearts like they do for the player GUI
-
-                int health = (int) Math.ceil(this.theWolf.getHealth());
-                float maxHealth = this.theWolf.getMaxHealth();
-                int rowOffset = (int) Math.min((maxHealth + 0.5F) / 2, 30);
-
-                int yPosition = 160;
-
-                for (int columnOffset = 0; rowOffset > 0; columnOffset += 20) {
-                    int rowIterate = Math.min(rowOffset, 10);
-                    rowOffset -= rowIterate;
-
-                    for (int row = rowIterate - 1; row >= 0; row--) {
-                        int xPosition = row * 8 + 5;
-
-                        this.drawTexturedModalRect(xPosition, yPosition, 16, 0, 9, 9);
-
-                        if (row * 2 + 1 + columnOffset < health) {
-                            this.drawTexturedModalRect(xPosition, yPosition, 52, 0, 9, 9);
-                        }
-
-                        if (row * 2 + 1 + columnOffset == health) {
-                            this.drawTexturedModalRect(xPosition, yPosition, 61, 0, 9, 9);
-                        }
-                    }
-                }
+            if (this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED && this.armoredWolf.getHasArmor()) {
+                renderPos = WolfRenderHelper.renderArmor(this.wolf, new Point(5, yPosition), false);
+                yPosition = renderPos.getY();
             }
 
-            if (WolfArmorMod.getConfiguration().getIsWolfArmorDisplayEnabled() && this.wolfArmor.getHasArmor()) {
-                int yPosition = 160;
+            renderPos = WolfRenderHelper.renderHealth(this.wolf, new Point(5, yPosition), false);
 
-                int armor = this.theWolf.getTotalArmorValue();
-                double maxArmor = IWolfArmorMaterial.MAX_VANILLA_ARMOR_VALUE;
-                int rowOffset = (int) Math.min((maxArmor + 0.5F) / 2, 30);
-
-                for (int columnOffset = 0; rowOffset > 0; columnOffset += 20) {
-                    int rowIterate = Math.min(rowOffset, 10);
-                    rowOffset -= rowIterate;
-
-                    for (int row = rowIterate - 1; row >= 0; row--) {
-                        int xPosition = xSize - row * 8 - 14;
-
-                        this.drawTexturedModalRect(xPosition, yPosition, 16, 9, 9, 9);
-
-                        if (row * 2 + 1 + columnOffset < armor) {
-                            this.drawTexturedModalRect(xPosition, yPosition, 34, 9, 9, 9);
-                        }
-
-                        if (row * 2 + 1 + columnOffset == armor) {
-                            this.drawTexturedModalRect(xPosition, yPosition, 25, 9, 9, 9);
-                        }
-                    }
-                }
+            if (this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED) {
+                WolfRenderHelper.renderHunger(this.wolf, new Point(this.xSize - 95, yPosition), true);
+            } else if(this.armoredWolf.getHasArmor()) {
+                WolfRenderHelper.renderArmor(this.wolf, new Point( this.xSize - 95, yPosition), true);
             }
         }
         GlStateManager.popMatrix();
