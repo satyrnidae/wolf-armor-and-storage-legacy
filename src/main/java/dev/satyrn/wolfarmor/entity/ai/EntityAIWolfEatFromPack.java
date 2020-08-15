@@ -105,18 +105,16 @@ public class EntityAIWolfEatFromPack extends EntityAIBase implements IInventoryC
             } else if (!hasHealedSinceLastReset) {
                 CreatureFoodStats foodStats = this.armoredWolf.getFoodStats();
                 boolean creatureFoodStatsEnabled = this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED;
-                if (foodStats != null || !creatureFoodStatsEnabled) {
-                    hasHealedSinceLastReset = true;
-                    TargetPoint targetPoint = new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 80);
-                    this.connection.sendToAllAround(new WolfHealMessage(entity.getEntityId()), targetPoint);
+                hasHealedSinceLastReset = true;
+                TargetPoint targetPoint = new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 80);
+                this.connection.sendToAllAround(new WolfHealMessage(entity.getEntityId()), targetPoint);
 
-                    if (creatureFoodStatsEnabled) {
-                        foodStats.addStats((ItemFood)this.eatingFood.getItem(), this.eatingFood);
-                    } else {
-                        this.entity.heal((float) ((ItemFood) eatingFood.getItem()).getHealAmount(eatingFood));
-                    }
-                    this.eatingFood.shrink(1);
+                if (creatureFoodStatsEnabled) {
+                    foodStats.addStats((ItemFood)this.eatingFood.getItem(), this.eatingFood);
+                } else {
+                    this.entity.heal((float) ((ItemFood) eatingFood.getItem()).getHealAmount(eatingFood));
                 }
+                this.eatingFood.shrink(1);
             }
         }
     }

@@ -106,7 +106,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.6.0
      */
     @Override
-    @Nullable public CreatureFoodStats getFoodStats() { return this.foodStats; }
+    @Nonnull public CreatureFoodStats getFoodStats() { return this.foodStats; }
 
     /**
      * Adds levels of exhaustion to the creature's food stats instance

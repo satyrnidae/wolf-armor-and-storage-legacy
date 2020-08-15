@@ -28,7 +28,7 @@ public class PotionEventHandler {
                 creacher.addExhaustion(0.005F * (event.getAmplifier() + 1F));
                 event.setCanceled(true);
             } else if (event.getPotion() == MobEffects.SATURATION) {
-                if (!entity.getEntityWorld().isRemote && creacher.getFoodStats() != null) {
+                if (!entity.getEntityWorld().isRemote) {
                     creacher.getFoodStats().addStats(event.getAmplifier() + 1, 1.0F);
                 }
                 event.setCanceled(true);

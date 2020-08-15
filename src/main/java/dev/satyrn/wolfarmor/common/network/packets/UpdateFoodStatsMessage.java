@@ -45,10 +45,8 @@ public class UpdateFoodStatsMessage extends MessageBase.ClientMessageBase<Update
         Entity entity = world.getEntityByID(this.entityId);
         if (entity != null && IFoodStatsCreature.class.isAssignableFrom(entity.getClass())) {
             CreatureFoodStats foodStats = ((IFoodStatsCreature) entity).getFoodStats();
-            if (foodStats != null) {
-                foodStats.setFoodLevel(this.foodLevel);
-                foodStats.setSaturationLevel(this.foodSaturationLevel);
-            }
+            foodStats.setFoodLevel(this.foodLevel);
+            foodStats.setSaturationLevel(this.foodSaturationLevel);
         }
         return null;
     }
