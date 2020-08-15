@@ -313,7 +313,7 @@ task gitAddConfig() {
     }
 }
 
-task gitTagVersion() {
+task gitCommit() {
     group SCM_GROUP
     shouldRunAfter gitAddConfig
     doLast {
@@ -322,21 +322,21 @@ task gitTagVersion() {
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
             ignoreExitValue true
             executable 'git'
-            args 'tag', '-a', "${newVersionNum}", '-m', "\"${newVersionNum}\""
+            args 'commit', '-m', "\"🏷 ${newVersionNum}\""
         }
     }
 }
 
-task gitCommit() {
+task gitTagVersion() {
     group SCM_GROUP
-    shouldRunAfter gitTagVersion
+    shouldRunAfter gitCommit
     doLast {
         exec {
             workingDir projectDir.getAbsolutePath()
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
             ignoreExitValue true
             executable 'git'
-            args 'commit', '-m', "\"🏷 ${newVersionNum}\""
+            args 'tag', '-a', "${newVersionNum}", '-m', "\"${newVersionNum}\""
         }
     }
 }

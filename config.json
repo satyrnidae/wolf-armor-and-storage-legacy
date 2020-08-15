@@ -5,7 +5,7 @@
         "extension": "universal",
         "major": 3,
         "minor": 6,
-        "patch": 0
+        "patch": 1
     },
     "forge": {
         "version": "14.23.5.2838"
