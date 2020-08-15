@@ -1,10 +1,12 @@
 package dev.satyrn.wolfarmor.client.renderer;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
+import dev.satyrn.wolfarmor.api.entity.IFoodStatsCreature;
 import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.util.CreatureFoodStats;
 import dev.satyrn.wolfarmor.util.WolfFoodStatsLevel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -17,6 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Point;
 
 import javax.annotation.Nonnull;
 
@@ -27,8 +30,6 @@ import javax.annotation.Nonnull;
  */
 @SideOnly(Side.CLIENT)
 public class WolfRenderHelper {
-    protected static final ResourceLocation ICONS_TEX_PATH = new ResourceLocation("minecraft:textures/gui/icons.png");
-
     /**
      * Renders the wolf stats below the nameplate.
      * @param wolf The wolf
@@ -44,7 +45,6 @@ public class WolfRenderHelper {
      */
     public static void drawStats(@Nonnull EntityWolf wolf, boolean renderNameplate, double x, double y, double z, float playerViewX, float playerViewY, boolean isThirdPerson, boolean isSneaking) {
         if (!wolf.isTamed()) return;
-        Minecraft.getMinecraft().getTextureManager().bindTexture(ICONS_TEX_PATH);
 
         // Set up a view matrix matching the nameplate matrix and scale it down
         GlStateManager.pushMatrix();
@@ -62,7 +62,7 @@ public class WolfRenderHelper {
         GlStateManager.depthFunc(GL11.GL_ALWAYS);
 
         // Render the wolf armor, health, and food levels above the wolf's head
-        WolfRenderHelper.renderStats(wolf, 5, renderNameplate ? 20 : 0);
+        WolfRenderHelper.renderStats(wolf, 5, renderNameplate ? 22 : 0);
 
         // Reenable lighting, rest the depth function, and pop the view matrix from the stack
         GlStateManager.depthFunc(GL11.GL_LEQUAL);
@@ -70,38 +70,63 @@ public class WolfRenderHelper {
         GlStateManager.popMatrix();
     }
 
+    private static final int ICON_SIZE = 9;
+
     /**
-     * Draws a textured rectangle
+     * Draws an icon
      * @param x The X location of the rectangle's upper-left point
      * @param y The Y location of the rectangle's upper-left point
      * @param texX The texture coordinate's X position
      * @param texY The texture coordinate's Y position
-     * @param width The width of the
-     * @param height
+     * @since 3.6.0
      */
-    private static void drawTexturedModalRect(int x, int y, int texX, int texY, int width, int height) {
+    private static void drawIcon(int x, int y, int texX, int texY) {
         final float pixelScale = 0.00390625F;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder builder = tessellator.getBuffer();
         builder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        builder.pos(x, y + height, 0).tex(texX * pixelScale, (texY + height) * pixelScale).endVertex();
-        builder.pos(x + width, y + height, 0).tex((texX + width) * pixelScale, (texY + height) * pixelScale).endVertex();
-        builder.pos(x + width, y, 0).tex((texX + width) * pixelScale, texY * pixelScale).endVertex();
+        builder.pos(x, y + ICON_SIZE, 0).tex(texX * pixelScale, (texY + ICON_SIZE) * pixelScale).endVertex();
+        builder.pos(x + ICON_SIZE, y + ICON_SIZE, 0).tex((texX + ICON_SIZE) * pixelScale, (texY + ICON_SIZE) * pixelScale).endVertex();
+        builder.pos(x + ICON_SIZE, y, 0).tex((texX + ICON_SIZE) * pixelScale, texY * pixelScale).endVertex();
         builder.pos(x, y, 0).tex(texX * pixelScale, texY * pixelScale).endVertex();
         tessellator.draw();
     }
 
-    private static void drawReverseTexturedModalRect(int x, int y, int texX, int texY, int width, int height) {
-        float pixelX = 0.00390625F;
-        float pixelY = 0.00390625F;
+    /**
+     * Draws a texture-reversed icon
+     * @param x The X location of the rectangle's upper-left point
+     * @param y The Y location of the rectangle's upper-left point
+     * @param texX The texture coordinate's X position
+     * @param texY The texture coordinate's Y position
+     * @since 3.6.0
+     */
+    private static void drawReversedIcon(int x, int y, int texX, int texY) {
+        float pixelScale = 0.00390625F;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder builder = tessellator.getBuffer();
         builder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        builder.pos(x, y + height, 0).tex((texX + width) * pixelX, (texY + height) * pixelY).endVertex();
-        builder.pos(x + width, y + height, 0).tex(texX * pixelX, (texY + height) * pixelY).endVertex();
-        builder.pos(x + width, y, 0).tex(texX * pixelX, texY * pixelY).endVertex();
-        builder.pos(x, y, 0).tex((texX + width) * pixelX, texY * pixelY).endVertex();
+        builder.pos(x, y + ICON_SIZE, 0).tex((texX + ICON_SIZE) * pixelScale, (texY + ICON_SIZE) * pixelScale).endVertex();
+        builder.pos(x + ICON_SIZE, y + ICON_SIZE, 0).tex(texX * pixelScale, (texY + ICON_SIZE) * pixelScale).endVertex();
+        builder.pos(x + ICON_SIZE, y, 0).tex(texX * pixelScale, texY * pixelScale).endVertex();
+        builder.pos(x, y, 0).tex((texX + ICON_SIZE) * pixelScale, texY * pixelScale).endVertex();
         tessellator.draw();
+    }
+
+    /**
+     * Draws an icon
+     * @param x The X location of the rectangle's upper-left point
+     * @param y The Y location of the rectangle's upper-left point
+     * @param texX The texture coordinate's X position
+     * @param texY The texture coordinate's Y position
+     * @param reverse Whether or not the texture of the icon should be flipped horizontally
+     * @since 3.6.0
+     */
+    public static void drawIcon(int x, int y, int texX, int texY, boolean reverse) {
+        if (reverse) {
+            drawReversedIcon(x, y, texX, texY);
+        } else {
+            drawIcon(x, y, texX, texY);
+        }
     }
 
     private static void renderStats(EntityWolf wolf, int x, int y) {
@@ -109,111 +134,176 @@ public class WolfRenderHelper {
 
         int iconWidth = 9;
         int iconCount = 10;
-        int xOffsetInitial = x + (-iconWidth * iconCount / 2);
-        int yOffsetInitial = y;
+        Point renderPos;
+        int xOffset = x + (-iconWidth * iconCount / 2);
+        int yOffset = y;
+
 
         // Armor
         if (((IArmoredWolf)wolf).getHasArmor() && armorValue > 0) {
-            for (int index = 0; index < iconCount; ++index) {
-                int xOffset = index * 8 + xOffsetInitial;
-
-                if (index * 2 + 1 < armorValue) {
-                    // Full armor icon
-                    drawTexturedModalRect(xOffset, yOffsetInitial, 34, 9, 9, 9);
-                }
-                if (index * 2 + 1 == armorValue) {
-                    // Half armor icon
-                    drawTexturedModalRect(xOffset, yOffsetInitial, 25, 9, 9, 9);
-                }
-                if (index * 2 + 1 > armorValue) {
-                    // Empty armor icon
-                    drawTexturedModalRect(xOffset, yOffsetInitial, 16, 9, 9, 9);
-                }
-            }
-            yOffsetInitial += 10;
+            renderPos = renderArmor(wolf, new Point(xOffset, yOffset), false);
+            yOffset = renderPos.getY();
         }
 
         // Health
-        double maxHealth = wolf.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue();
-        int absorption = MathHelper.ceil(wolf.getAbsorptionAmount());
-        int absorptionIndex = absorption;
-        int absorptionHearts = MathHelper.ceil((maxHealth + absorption) / 2F / 10F);
-        int healthLevels = Math.max(10 - (absorptionHearts - 2), 3);
-        int regenHeartIndex = -1;
-        if (wolf.isPotionActive(MobEffects.REGENERATION)) {
-            regenHeartIndex = wolf.ticksExisted % MathHelper.ceil(maxHealth + 5F);
-        }
-        float health = MathHelper.ceil(wolf.getHealth());
-        xOffsetInitial = -MathHelper.floor((Math.min(10, maxHealth / 2f) * 9f) / 2f) + 5;
-
-        for (int index = MathHelper.ceil((maxHealth + absorption) / 2F) - 1; index >= 0; --index) {
-            int texXOffset = 16;
-            if (wolf.isPotionActive(MobEffects.POISON)) {
-                texXOffset += 36;
-            } else if (wolf.isPotionActive(MobEffects.WITHER)) {
-                texXOffset += 72;
-            }
-
-            int healthLayer = MathHelper.ceil((float)(index + 1) / 10F) - 1;
-            int xOffset = index % 10 * 8 + xOffsetInitial;
-            int yOffset = yOffsetInitial + healthLayer * healthLevels;
-            if (health <= 4) {
-                yOffset += wolf.getRNG().nextInt(2);
-            }
-
-            if (absorptionIndex <= 0 && index == regenHeartIndex) {
-                yOffset -= 2;
-            }
-
-            drawTexturedModalRect(xOffset, yOffset, 16, 0, 9, 9);
-            if (absorptionIndex > 0) {
-                if (absorptionIndex == absorption && absorption % 2 == 1) {
-                    drawTexturedModalRect(xOffset, yOffset, texXOffset + 153, 0, 9, 9);
-                    --absorptionIndex;
-                } else {
-                    drawTexturedModalRect(xOffset, yOffset, texXOffset + 144, 0, 9, 9);
-                    absorptionIndex -= 2;
-                }
-            } else {
-                if (index * 2 + 1 < health) {
-                    drawTexturedModalRect(xOffset, yOffset, texXOffset + 36, 0, 9, 9);
-                }
-                if (index * 2 + 1 == health) {
-                    drawTexturedModalRect(xOffset, yOffset, texXOffset + 45, 0, 9, 9);
-                }
-            }
-        }
-        yOffsetInitial += healthLevels - 1;
+        renderPos = renderHealth(wolf, new Point(xOffset, yOffset), false);
+        yOffset = renderPos.getY();
 
         // food
         if (WolfArmorMod.getConfig().getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED) {
-            CreatureFoodStats foodStats = ((IArmoredWolf) wolf).getFoodStats();
-            if (foodStats != null) {
-                xOffsetInitial = -iconWidth * iconCount / 2 + 5;
-                int foodLevel = foodStats.getFoodLevel();
-                for (int index = 0; index < iconCount; ++index) {
-                    int yOffset = yOffsetInitial;
-                    int texXOffset = 16;
-                    int hungerBackground = 0;
-                    if (wolf.isPotionActive(MobEffects.HUNGER)) {
-                        texXOffset += 36;
-                        hungerBackground = 13;
-                    }
+            renderHunger(wolf, new Point(xOffset, yOffset), false);
+        }
+    }
 
-                    if (foodStats.getSaturationLevel() <= 0.0F && wolf.ticksExisted % (foodLevel * 3 + 1) == 0) {
-                        yOffset += wolf.getRNG().nextInt(3) - 1;
-                    }
+    private static final Point ARMOR_FULL = new Point(34, 9);
+    private static final Point ARMOR_HALF = new Point(25, 9);
+    private static final Point ARMOR_EMPTY = new Point(16, 9);
 
-                    int xOffset = xOffsetInitial + index * 8;
-                    drawReverseTexturedModalRect(xOffset, yOffset, 16 + hungerBackground * 9, 27, 9, 9);
-                    if (index * 2 + 1 < foodLevel) {
-                        drawReverseTexturedModalRect(xOffset, yOffset, texXOffset + 36, 27, 9, 9);
-                    }
-                    if (index * 2 + 1 == foodLevel) {
-                        drawReverseTexturedModalRect(xOffset, yOffset, texXOffset + 45, 27, 9, 9);
-                    }
+    /**
+     * Renders the wolf's armor value as icons
+     * @param wolf The wolf
+     * @param coord The coordinate at which to render the icons
+     * @param reverse If <c>true</c>, the stat will be rendered right to left instead of left to right
+     * @return The location at the end of the render.
+     */
+    public static Point renderArmor(EntityWolf wolf, Point coord, boolean reverse) {
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Gui.ICONS);
+        final int armorValue = wolf.getTotalArmorValue();
+        final int xInitial = reverse ? coord.getX() + 81 : coord.getX();
+
+        for (int index = 0; index < 10; ++index) {
+            int xOffset = reverse ? xInitial - index * 8 : xInitial + index * 8;
+
+            int texX = -1;
+            if (index / 2 + 1 < armorValue) {
+                drawIcon(xOffset, coord.getY(), ARMOR_FULL.getX(), ARMOR_FULL.getY(), reverse);
+            } else if (index * 2 + 1 == armorValue) {
+                drawIcon(xOffset, coord.getY(), ARMOR_HALF.getX(), ARMOR_HALF.getY(), reverse);
+            } else if (index * 2 + 1 > armorValue) {
+                drawIcon(xOffset, coord.getY(), ARMOR_EMPTY.getX(), ARMOR_EMPTY.getY(), reverse);
+            }
+        }
+
+        return new Point(81 + coord.getX(), 10 + coord.getY());
+    }
+
+    private static final int HEART_POISON_OFFSET_X = 36;
+    private static final int HEART_WITHER_OFFSET_X = 72;
+    private static final int HEART_ABSORPTION_FULL_OFFSET_X = 144;
+    private static final int HEART_ABSORPTION_HALF_OFFSET_X = 153;
+    private static final int HEART_FULL_OFFSET = 36;
+    private static final int HEART_HALF_OFFSET = 45;
+    private static final Point HEART_EMPTY = new Point(16, 0);
+
+    /**
+     * Renders the wolf's current health as icons
+     * @param wolf The wolf
+     * @param coord The coordinate at which to render the icons
+     * @param reverse If <c>true</c>, the stat will be rendered right to left instead of the usual left to right
+     * @return The location at the end of the render.
+     */
+    public static Point renderHealth(EntityWolf wolf, Point coord, boolean reverse) {
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Gui.ICONS);
+        final float health = wolf.getHealth();
+        final double maxHealth = wolf.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue();
+        final int absorption = MathHelper.ceil(wolf.getAbsorptionAmount());
+        final int heartRows = MathHelper.ceil((maxHealth + absorption) / 2F / 10F);
+        final int heartHeight = Math.max(10 - (heartRows - 2), 3);
+
+        final int xInitial = reverse ? coord.getX() + 81 : coord.getX();
+
+        int currentAbsorption = absorption;
+        int regenHeartIndex = -1;
+
+        if (wolf.isPotionActive(MobEffects.REGENERATION)) {
+            regenHeartIndex = wolf.ticksExisted % MathHelper.ceil(maxHealth + 5F);
+        }
+
+        for (int index = MathHelper.ceil((maxHealth + absorption) / 2F) - 1; index >= 0; --index) {
+            int texX = HEART_EMPTY.getX();
+            if (wolf.isPotionActive(MobEffects.POISON)) {
+                texX += HEART_POISON_OFFSET_X;
+            } else if (wolf.isPotionActive(MobEffects.WITHER)) {
+                texX += HEART_WITHER_OFFSET_X;
+            }
+            final int heartRow = MathHelper.ceil((index + 1F) / 10F) - 1;
+            final int xOffset = reverse ? xInitial - index % 10 * 8 : xInitial + index % 10 * 8;
+            int yOffset = coord.getY() + heartRow * heartHeight;
+
+            // shake hearts at low health values
+            if (health <= 2) {
+                yOffset += wolf.getRNG().nextInt(2);
+            }
+
+            // Tick through hearts during regen
+            if (currentAbsorption <= 0 && index == regenHeartIndex) {
+                yOffset -= 2;
+            }
+
+            drawIcon(xOffset, yOffset, HEART_EMPTY.getX(), HEART_EMPTY.getY(), reverse);
+            if (currentAbsorption > 0) {
+                if (currentAbsorption == absorption && absorption % 2 == 1) {
+                    drawIcon(xOffset, yOffset, texX + HEART_ABSORPTION_HALF_OFFSET_X, HEART_EMPTY.getY(), reverse);
+                    --currentAbsorption;
+                } else {
+                    drawIcon(xOffset, yOffset, texX + HEART_ABSORPTION_FULL_OFFSET_X, HEART_EMPTY.getY(), reverse);
+                    currentAbsorption -= 2;
+                }
+            } else {
+                if (index * 2 + 1 < health) {
+                    drawIcon(xOffset, yOffset, texX + HEART_FULL_OFFSET, HEART_EMPTY.getY(), reverse);
+                } else if (index * 2 + 1 == health) {
+                    drawIcon(xOffset, yOffset, texX + HEART_HALF_OFFSET, HEART_EMPTY.getY(), reverse);
                 }
             }
         }
+
+        return new Point(81 + coord.getX(), heartHeight - 1 + coord.getY());
+    }
+
+    private static final int FOOD_HUNGER_OFFSET_X = 36;
+    private static final int FOOD_HUNGER_BG_MULT_X = 13;
+    private static final int FOOD_FULL_OFFSET_X = 36;
+    private static final int FOOD_HALF_OFFSET_X = 45;
+    private static final Point FOOD_EMPTY = new Point (16, 27);
+
+    /**
+     * Renders the wolf's current hunger level as icons
+     * @param wolf The wolf
+     * @param coord The coordinate at which to render the icons
+     * @param reverse If <c>true</c>, the stat will be rendered right to left instead of the usual left to right
+     * @return The location at the end of the render.
+     */
+    public static Point renderHunger(EntityWolf wolf, Point coord, boolean reverse) {
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Gui.ICONS);
+        final CreatureFoodStats foodStats = ((IFoodStatsCreature)wolf).getFoodStats();
+        final int foodLevel = foodStats.getFoodLevel();
+        final int xInitial = reverse ? coord.getX() + 81 : coord.getX();
+
+        for (int index = 0; index < 10; ++index) {
+            final int xOffset = reverse ? xInitial - index * 8 : xInitial + index * 8;
+            int yOffset = coord.getY();
+
+            int texX = FOOD_EMPTY.getX();
+            int hungerOffset = 0;
+
+            if (wolf.isPotionActive(MobEffects.HUNGER)) {
+                texX += FOOD_HUNGER_OFFSET_X;
+                hungerOffset = FOOD_HUNGER_BG_MULT_X;
+            }
+            if (foodStats.getSaturationLevel() <= 0F && wolf.ticksExisted % (foodLevel * 3 + 1) == 0) {
+                yOffset += wolf.getRNG().nextInt(3) - 1;
+            }
+
+            // For the draw routine we use !reverse, as food is reversed normally
+            drawIcon(xOffset, yOffset, FOOD_EMPTY.getX() + hungerOffset * ICON_SIZE, FOOD_EMPTY.getY(), !reverse);
+            if (index * 2 + 1 < foodLevel) {
+                drawIcon(xOffset, yOffset, texX + FOOD_FULL_OFFSET_X, FOOD_EMPTY.getY(), !reverse);
+            } else if (index * 2 + 1 == foodLevel) {
+                drawIcon(xOffset, yOffset, texX + FOOD_HALF_OFFSET_X, FOOD_EMPTY.getY(), !reverse);
+            }
+        }
+
+        return new Point(81 + coord.getX(), 10 + coord.getY());
     }
 }
