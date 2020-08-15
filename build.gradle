@@ -110,13 +110,15 @@ build {
 }
 
 runClient {
-    jvmArgs "-Dfml.coreMods.load=dev.satyrn.wolfarmor.core.WolfArmorCore"
-    jvmArgs "-Dmixin.debug=true"
-    if (project.hasProperty('username')) {
-        args '--username', project.getProperties()['username']
-    }
-    if (password) {
-        args '--password', project.getProperties()['password']
+    doFirst {
+        jvmArgs "-Dfml.coreMods.load=dev.satyrn.wolfarmor.core.WolfArmorCore"
+        jvmArgs "-Dmixin.debug=true"
+        if (project.hasProperty('username')) {
+            args '--username', project.getProperties()['username']
+        }
+        if (project.hasProperty('password')) {
+            args '--password', project.getProperties()['password']
+        }
     }
 }
 
