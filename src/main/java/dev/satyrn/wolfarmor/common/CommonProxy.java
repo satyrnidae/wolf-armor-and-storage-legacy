@@ -16,6 +16,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -70,6 +71,7 @@ public class CommonProxy implements IProxy {
         MinecraftForge.EVENT_BUS.register(new PlayerEventHandler());
         MinecraftForge.EVENT_BUS.register(new RegistrationEventHandler());
         MinecraftForge.EVENT_BUS.register(new PotionEventHandler());
+        MinecraftForge.EVENT_BUS.register(WolfArmorMod.getConfig());
     }
 
     @Override
