@@ -61,6 +61,11 @@ compileJava {
             }
         }
         copy {
+            from project(':wolfarmor-api').sourceSets.main.allJava
+            into "$buildDir/generated/main/java"
+            expand version: shortVersion, mcversion: config.minecraft.version, modname: config.name, modid: config.modid
+        }
+        copy {
             from "$buildDir/generated/main/java"
             into "$buildDir/sources/main/java"
         }
@@ -145,7 +150,6 @@ shadowJar {
     dependsOn reobfJar
     dependencies {
         include dependency('org.spongepowered:mixin')
-        include dependency(':wolfarmor-api')
     }
 
     manifest.attributes(
