@@ -15,13 +15,16 @@ import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.util.WolfInventorySize;
 import dev.satyrn.wolfarmor.common.network.packets.ConfigSyncMessage;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -59,7 +62,7 @@ public class WolfArmorConfig {
     public BehaviorCategory behavior;
 
     /**
-     * TODO: Document the purpose of this class
+     * This class contains settings related to wolf behavior
      * @author Isabel Maskrey (satyrnidae)
      * @since 3.6.0
      */
@@ -96,13 +99,15 @@ public class WolfArmorConfig {
                 .setSynchronizes(true);
     }
 
+    @SideOnly(Side.CLIENT)
     public ClientCategory client;
 
     /**
-     * TODO: Document the purpose of this class
+     * This class contains all settings related to display and rendering.  It is client-side only.
      * @author Isabel Maskrey (satyrnidae)
      * @since 3.6.0
      */
+    @SideOnly(Side.CLIENT)
     public static final class ClientCategory {
         private static final String CATEGORY = Configuration.CATEGORY_CLIENT;
 
@@ -136,8 +141,8 @@ public class WolfArmorConfig {
     private boolean connected;
 
     /**
-     * TODO: Document this method
-     * @param object
+     * Loads setting fields from a given class into the settings map
+     * @param object The class instance
      * @since 3.6.0
      */
     private void addSettingsFromClass(Object object) {
@@ -156,22 +161,22 @@ public class WolfArmorConfig {
     }
 
     /**
-     * TODO: Document this method
-     * @return
+     * Returns the settings currently present in the settings map.
+     * @return The settings currently registered in the settings map.
      * @since 3.6.0
      */
     public Collection<Setting<?>> getSettings() { return this.settings.values(); }
 
     /**
-     * TODO: Document this method
-     * @param fullName
-     * @return
+     * Gets a specific setting by name from the settings map.
+     * @param fullName The full name of the setting.
+     * @return A setting with a matching full name that was registered in the setting map.
      * @since 3.6.0
      */
     public Setting<?> getSetting(String fullName) { return this.settings.get(fullName); }
 
     /**
-     * TODO: Document this method
+     * Loads configuration settings from the config file
      * @since 3.5.13
      */
     public void load() {
@@ -182,7 +187,7 @@ public class WolfArmorConfig {
     }
 
     /**
-     * TODO: Document this method
+     * Saves the configuration settings to disk
      * @since 3.5.13
      */
     public void save() {
@@ -191,116 +196,81 @@ public class WolfArmorConfig {
     }
 
     /**
-     * TODO: Document this method
-     * @param data
-     * @since 3.5.13
-     */
-    @SideOnly(Side.CLIENT)
-    public void sync(@Nonnull NBTTagCompound data) {
-        if (this.connected) {
-            for (String key : data.getKeySet()) {
-                NBTBase tag = data.getTag(key);
-                Setting<?> setting = this.getSetting(key);
-                if ((setting != null) && setting.getSynchronizes()) {
-                    setting.readSynchronized(tag);
-                }
-            }
-        }
-    }
-
-    /**
-     * TODO: Document this method
-     * @param event
-     * @since 3.6.0
-     */
-    @SubscribeEvent
-    public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        this.connected = true;
-    }
-
-    /**
-     * TODO: Document this method
-     * @param event
-     * @since 3.6.0
-     */
-    @SubscribeEvent
-    public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
-        if (!this.connected) return;
-        this.getSettings().forEach(Setting::onDisconnect);
-        this.connected = false;
-    }
-
-    /**
      * Checks if wolf chests are enabled or disabled
-     *
      * @return <c>true</c> if wolf chests are enabled, <c>false</c> if they are disabled.
+     * @since 3.5.13
      */
     public boolean getChestEnabled() { return this.chestEnabled.getCurrentValue(); }
 
     /**
      * Checks if untamed wolves should howl at the full moon when untamed
-     *
      * @return <c>true</c> if they should howl, <c>false</c> otherwise
+     * @since 3.5.13
      */
     public boolean getHowlAtMoonEnabled() { return this.behavior.howlAtMoonEnabled.getCurrentValue(); }
 
     /**
      * Checks whether or not wolves should eat food present in their inventory
-     *
      * @return <c>true</c> if wolves should auto-heal, <c>false</c> if not
+     * @since 3.5.13
      */
     public boolean getAutoHealEnabled() { return this.behavior.autoHealEnabled.getCurrentValue(); }
 
     /**
      * Checks if the armor layers should be rendered
-     *
      * @return <c>true</c> if the armor layers should be rendered, <c>false</c> otherwise
+     * @since 3.5.13
      */
+    @SideOnly(Side.CLIENT)
     public boolean getArmorRendered() { return this.client.armorRendered.getCurrentValue(); }
 
     /**
      * Checks if the chest model should be rendered
-     *
      * @return <c>true</c> if the chests should be rendered; otherwise, <c>false</c>
+     * @since 3.5.13
      */
     public boolean getChestRendered() { return this.client.chestRendered.getCurrentValue(); }
 
     /**
      * Gets the current configured wolf chest size
-     *
      * @return The current configured wolf chest size
+     * @since 3.5.13
      */
     public WolfInventorySize getChestSize() { return this.chestSize.getCurrentValue(); }
 
     /**
-     * TODO: Document this method
-     * @return
+     * Gets the hunger option level
+     * @return See {@link WolfFoodStatsLevel} for potential setitngs
      * @since 3.6.0
      */
     public WolfFoodStatsLevel getFoodStatsLevel() { return this.behavior.useFoodStats.getCurrentValue(); }
 
     /**
-     * TODO: Document this method
-     * @return
+     * Checks whether or not wolves can starve to death.  Requires {@link #getFoodStatsLevel()} to be anything other
+     * than disabled.
+     * @return Whether or not wolves can starve to death from being unfed
      * @since 3.6.0
      */
     public boolean getCanStarve() { return this.behavior.wolvesCanStarve.getCurrentValue(); }
 
     /**
-     * TODO: Document this method
-     * @return
+     * Checks whether or not tamed wolf stats (health, armor, food) are rendered above their heads.
+     * @return Whether or not wolf health, armor, and hunger should be rendered above their heads
      * @since 3.6.0
      */
+    @SideOnly(Side.CLIENT)
     public boolean getStatsRendered() { return this.client.wolfStatsRendered.getCurrentValue(); }
 
     /**
-     * TODO: Document this method
-     * @return 3.6.0
+     * Checks whether or not wolf stats should be rendered in the wolf inventory UI
+     * @return Whether or not wolf health, armor, and hunger should be rendered in the wolf inventory
+     * @since 3.6.1
      */
+    @SideOnly(Side.CLIENT)
     public boolean getStatsInGui() { return this.client.statsInGui.getCurrentValue(); }
 
     /**
-     * Initializes the configuration file
+     * Initializes the configuration
      * @param configDirectory The path to the directory where the config file is stored
      * @since 3.5.13
      */
@@ -333,31 +303,83 @@ public class WolfArmorConfig {
         if (this.configuration.hasChanged()) {
             this.save();
         }
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     /**
-     * TODO: Document this method
-     * @param player
-     * @return
+     * Synchronizes the client side configuration file with data from the server
+     * @param data The server configuration data
+     * @since 3.5.13
+     */
+    @SideOnly(Side.CLIENT)
+    public void sync(@Nonnull NBTTagCompound data) {
+        if (this.connected) {
+            for (String key : data.getKeySet()) {
+                NBTBase tag = data.getTag(key);
+                Setting<?> setting = this.getSetting(key);
+                if ((setting != null) && setting.getSynchronizes()) {
+                    setting.readSynchronized(tag);
+                }
+            }
+        }
+    }
+
+    /**
+     * Event handler for when a client connects to a server
+     * @param event The event detials
+     * @since 3.6.0
+     */
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+        this.connected = true;
+    }
+
+    /**
+     * Event handler for when a client disconnects from a server.  Resets each of the client's settings back to their
+     * un-synchronized values.
+     * @param event The event data
+     * @since 3.6.0
+     */
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        if (!this.connected) return;
+        this.getSettings().forEach(Setting::onDisconnect);
+        this.connected = false;
+    }
+
+    /**
+     * Event handler for when the configuration is changed or reloaded.  From the server side, sends new config data to
+     * the clients. Both sides save the altered config to the disk.
+     * @param event The event data
      * @since 3.6.0
      */
     @SubscribeEvent
     public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent event) {
         if (!event.getModID().equals(Resources.MOD_ID)) return;
-
-        if (this.configuration.hasChanged()) {
-            if (event.isWorldRunning()) {
-                WolfArmorMod.getNetworkChannel().sendToAllWhere(ConfigSyncMessage.create(), WolfArmorConfig::isNotServerOwner);
-            }
-            this.save();
+        if (event.isWorldRunning()) {
+            WolfArmorMod.getNetworkChannel().sendToAllWhere(ConfigSyncMessage.create(), WolfArmorConfig::isNotServerOwner);
         }
+        this.save();
     }
 
     /**
-     * TODO: Document this method
-     * @param player
-     * @return
+     * Synchronizes a player's configuration with the server's when they log in
+     * @param event The log-in event data
+     * @since 3.6.3
+     */
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (isNotServerOwner(event.player) || !(event.player instanceof EntityPlayerMP)) {
+            return;
+        }
+        WolfArmorMod.getNetworkChannel().sendTo(ConfigSyncMessage.create(), (EntityPlayerMP)event.player);
+    }
+
+    /**
+     * Provider method which ensures that a player entity is not the server owner.
+     * @param player The player to check
+     * @return Whether or not the player entity is also hosting the server.
      * @since 3.6.0
      */
     private static boolean isNotServerOwner(EntityPlayer player) {
