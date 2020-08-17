@@ -209,7 +209,7 @@ public class WolfRenderHelper {
      */
     public static Point renderHealth(EntityWolf wolf, Point coord, boolean reverse) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(Gui.ICONS);
-        final float health = wolf.getHealth();
+        final int health = MathHelper.ceil(wolf.getHealth());
         final double maxHealth = wolf.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue();
         final int absorption = MathHelper.ceil(wolf.getAbsorptionAmount());
         final int heartRows = MathHelper.ceil((maxHealth + absorption) / 2F / 10F);
