@@ -197,6 +197,13 @@ mixin {
     add sourceSets.main, "mixins.wolfarmor.refmap.json"
 }
 
+task sourceJar(type: Jar, overwrite: true) {
+    dependsOn processResources
+    from "$buildDir/generated/main/java"
+    from processResources.outputs
+    archiveName = "$archivesBaseName-$version-sources.jar"
+}
+
 task signJar(type: SignJar, dependsOn: shadowJar) {
     onlyIf {
         project.hasProperty('keyStore');
