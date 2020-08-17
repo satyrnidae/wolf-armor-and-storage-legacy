@@ -1,7 +1,9 @@
 package dev.satyrn.wolfarmor.client.event;
 
 import dev.satyrn.wolfarmor.WolfArmorMod;
+import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
 import dev.satyrn.wolfarmor.client.renderer.WolfRenderHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.entity.Entity;
@@ -54,10 +56,16 @@ public class RenderEventHandler {
      */
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onRenderLiving(RenderLivingEvent.Post<EntityWolf> event) {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.gameSettings.hideGUI) {
+            return;
+        }
+
         EntityWolf wolf;
         if (!WolfArmorMod.getConfig().getStatsRendered()
                 || event == null
-                || !(event.getEntity() instanceof EntityWolf)) {
+                || !(event.getEntity() instanceof EntityWolf)
+                || !(event.getEntity() instanceof IArmoredWolf)) {
             return;
         }
 
