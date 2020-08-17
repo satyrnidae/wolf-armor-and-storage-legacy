@@ -175,7 +175,7 @@ public class WolfRenderHelper {
             int xOffset = reverse ? xInitial - index * 8 : xInitial + index * 8;
 
             int texX = -1;
-            if (index / 2 + 1 < armorValue) {
+            if (index * 2 + 1 < armorValue) {
                 drawIcon(xOffset, coord.getY(), ARMOR_FULL.getX(), ARMOR_FULL.getY(), reverse);
             } else if (index * 2 + 1 == armorValue) {
                 drawIcon(xOffset, coord.getY(), ARMOR_HALF.getX(), ARMOR_HALF.getY(), reverse);
