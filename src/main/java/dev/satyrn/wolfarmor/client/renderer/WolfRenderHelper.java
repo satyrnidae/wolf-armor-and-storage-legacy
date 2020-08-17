@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.init.MobEffects;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -129,6 +128,13 @@ public class WolfRenderHelper {
         }
     }
 
+    /**
+     * Renders the wolf's stats in the nameplate render area
+     * @param wolf The wolf
+     * @param x The X offset of the stats
+     * @param y The Y offset of the stats
+     * @since 3.6.0
+     */
     private static void renderStats(EntityWolf wolf, int x, int y) {
         int armorValue = wolf.getTotalArmorValue();
 
@@ -174,7 +180,6 @@ public class WolfRenderHelper {
         for (int index = 0; index < 10; ++index) {
             int xOffset = reverse ? xInitial - index * 8 : xInitial + index * 8;
 
-            int texX = -1;
             if (index * 2 + 1 < armorValue) {
                 drawIcon(xOffset, coord.getY(), ARMOR_FULL.getX(), ARMOR_FULL.getY(), reverse);
             } else if (index * 2 + 1 == armorValue) {
