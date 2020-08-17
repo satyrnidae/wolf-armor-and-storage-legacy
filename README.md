@@ -8,7 +8,6 @@
 
 **_Note 2: Since it gets asked a lot, yes, you may include this mod in your modpack._**
 
-
 **Wolf Armor and Storage** is a simple Minecraft mod that adds armor, storage, and other minor tweaks to wolves.
 
 I've long been irked by how fragile the vanilla wolves are.  If you do anything more than leave them sitting in your living room, you are very likely to quickly become wolf-less.  Now, equipped with the proper adornments, your wolves can become the veritable powerhouses that they were always meant to be, and you can gain a helpful adventuring companion to boot!
@@ -17,15 +16,11 @@ I've long been irked by how fragile the vanilla wolves are.  If you do anything 
 
 *Fig. 1: An armored wolf in action*
 
-
 ## Armor Up Your Wolves
-
 
 This mod adds five new armors for your wolves, each corresponding to one of the five armor types in vanilla Minecraft.  Armor can be found in generated loot chests, or crafted in a workbench.
 
-
 ### Crafting Armor for your Wolf
-
 
 To craft a piece of wolf armor, you must obtain three armor pieces (two sets of boots and a helmet) and some extra material (leather, iron nuggets, iron ingots, gold ingots, or diamonds), and arrange them as below:
 
@@ -49,9 +44,7 @@ To craft a piece of wolf armor, you must obtain three armor pieces (two sets of 
 
 *Fig 2c: The crafting recipe for iron armor*
 
-
 ### Interactions and Equipping Armor
-
 
 When armor is equipped on a wolf, they gain the same amount of protection as a player would with a full set of armor made from the corresponding material!  To apply armor to a wolf, either simply right-click them while holding the armor you wish to apply or sneak and right click them with any other item.  This opens the wolf's GUI and allows you to equip the armor of your choice.
 
@@ -65,9 +58,7 @@ Armor can also be equipped indirectly via dispenser! The wolf does have to be ta
 
 *Fig 3b: Applying armor via dispenser*
 
-
 ### Dyeing leather armor
-
 
 Like leather armor, leather wolf armor may be dyed any color:
 
@@ -83,9 +74,7 @@ Like leather armor, leather wolf armor may be dyed any color:
 
 *Fig 3c: Wolf armor dyed a questionable color*
 
-
 ## Wolf Pack? Pack Wolf!
-
 
 The second major addition of this mod is the ability to apply a chest to a tamed wolf, thus giving them some useful inventory space!
 
@@ -99,37 +88,75 @@ Simply right-click a tamed wolf that you own with any wooden chest (provided it 
 
 Chest size is configurable from one to fifteen slots, and chests can be disabled entirely if so desired.  Wolf auto-healing can also be disabled.
 
+## Show Me Those Stats!
+
+Since 3.6.4, there is now an option to show wolves' stats above their heads, just under their nameplates!  It even works for non-named wolves!
+
+![Fenrir and his friend sporting some snazzy stat bars](https://imgur.com/EJwK8ps.gif)
+
+*Fig 5: Tamed wolves will display stats above their heads (optional)*
+
+This option is disabled by default; to enable it, open the config file and set ``B:stats_in_nameplate`` to ``true``.
+
+## Hungry Hungry ~~Hippos~~ Wolves
+
+As a balancing option, you can enable a version of hunger for wolves!  The current hunger level can be displayed in the GUI and above the wolf's head (if either of those readouts are currently on).
+
+![Ashleigh has lots of mutton, but she's not hungry yet...](https://imgur.com/X0xheVy.png)
+
+*Fig 6: A wolf's hunger bar displayed over their head*
+
+Hunger and Saturation effects will now also affect wolves with hunger, so watch out when you're figting those husks!
+
+![Lillian gets a bit hungry fighting a husk](https://imgur.com/YQgor4F.gif)
+
+*Fig 7: Hunger potions affect wolves if hunger is enabled*
+
+If hunger is set to "full", a wolf can get damaged by starvation until it reaches 4 hearts (the same health level as a wild wolf).  By setting "starvation" to "true", you can also make them starve to death.  I have no idea why you would enable that.
+
+![Lillian starved to death](https://imgur.com/iuQRdPJ.png)
+
+*Fig 8: I feel bad for enabling this, and so should you.  Why would anyone let this happen.*
 
 ## Miscellaneous Additions
 
+I've also taken the liberty of adding a couple other new features.
 
-I've also taken the liberty of adding a couple other new features:
-* Advancements! There are two you can earn: "Armor Up!", by equipping armor to your wolves, and "Wolf Pack", by giving your wolf some inventory space.
-* Wolves can now howl on the full moon.  This can make it easier to find them when there's a full moon out.  You can enable or disable this feature per your preference.
+First, Advancements! There are two new "Husbandry" advancements you can earn: "Armor Up!", by equipping armor to your wolves, and "Wolf Pack", by giving your wolf some inventory space.
 
+![Armor Up and Wolf Pack, vissible in the Husbandry section](https://imgur.com/zfL35Vl.png)
+
+*Fig 9: The new advancements*
+
+Wild wolves can also be set to howl at the full moon.  This can make it easier to find them when there's a full moon out.  You can enable or disable this feature per your preference, but it is disabled by default.
 
 ## Mod Configuration
 
+There are several configurable options for this mod. Currently, they can only be configured via the configuration file, located in ``config\satyrn\wolfarmor.cfg``.  What follows is a list of all of the options and their default settings.
 
-There are several configurable options for this mod.  You can either access these through the mod configuration GUI, or by editing the configuration file under `config/attributestudios/wolfarmor.cfg`.
+``general`` category:
+* Enable wolf backpacks: ``B:backpack=true``
+* Backpack size (width by height): ``S:backpack_size=3x2``
 
-Server owners or single-player users can configure the following:
-* Enable or disable chests
-* Set the maximum size of the wolf chests (from 1x1 up to 5x3)
-* Enable or disable auto-healing wolves
-* Enable or disable wild wolves howling on a full moon
+``behavior`` category:
+* Allow wolves to heal themselves from their backpacks: ``B:auto_eat=true``
+* Allow wild wolves to howl at the moon: ``B:howl_at_moon=false``
+* Set tamed wolf hunger option (disabled/heal/full): ``S:hunger=disabled``
+* Set whether hungry wolves can starve to death when hunger is set to full: ``B:starvation=false``
 
-Client-side users can also specify a couple visual options:
-* Enable or disable wolf armor and health display in the GUI
-* Enable or disable armor and wolf backpack rendering
+``client`` category (these can only be set client-side):
+* Show the wolf armor model: ``B:armor_model=true``
+* Show the wolf backpack model: ``B:backpack_model=true``
+* Show tamed wolves' stats (health, armor, and hunger) in the wolf's inventory: ``B:stats_in_gui=true``
+* Show tamed wolves' stats (health, armor, and hunger) above the wolf's head: ``B:stats_in_nameplate=false``
 
 
 ## Compatibility
 
 
-This mod utilizes a shadowed copy of SpongePowered Mixin 0.7.5.  Mods which are incompatible with Sponge, or which implement from a different version of the Mixin library, or which also use Mixin to alter the wolf entity may be incompatible with this mod.
+This mod utilizes a shadowed copy of SpongePowered Mixin 0.8.  Mods which are incompatible with Sponge, or which implement from a different version of the Mixin library, or which also use Mixin to alter the wolf entity may be incompatible with this mod.
 
-Wolf Armor is generally compatible with any mod that does not alter the manner in which wolves function, and may be compatible with some that do.  If you encounter an incompatibility with a specific mod, please report it either here, or on the [github](https://github.com/satyrnidae/wolfarmor/issues) page for the mod.
+Wolf Armor is generally compatible with any mod that does not have its own mixins on EntityWolf, and potentially some that do.  If you encounter an incompatibility with a specific mod, please report it either here, or on the [github](https://github.com/satyrnidae/wolfarmor/issues) page for the mod.
 
 
 ### Supported Mods
@@ -139,7 +166,7 @@ These mods are explicitly supported, with known issues below.  If any further is
 
 [Phosphor](https://www.curseforge.com/minecraft/mc-mods/phosphor) by jellysquid_
 
-[Sophisticated Wolves](https://www.curseforge.com/minecraft/mc-mods/sophisticated-wolves) by NightKosh
+[Sophisticated Wolves](https://www.curseforge.com/minecraft/mc-mods/sophisticated-wolves) by NightKosh (Currently broken; future releases may be fixed)
 
 [Carry On](https://www.curseforge.com/minecraft/mc-mods/carry-on) by Tschipp and Purplicious_Cow_
 
