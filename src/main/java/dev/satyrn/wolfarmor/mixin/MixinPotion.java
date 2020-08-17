@@ -1,11 +1,7 @@
 package dev.satyrn.wolfarmor.mixin;
 
-import dev.satyrn.wolfarmor.WolfArmorMod;
-import dev.satyrn.wolfarmor.api.entity.IFoodStatsCreature;
 import dev.satyrn.wolfarmor.common.event.PotionEffectEvent;
-import dev.satyrn.wolfarmor.util.WolfFoodStatsLevel;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.MobEffects;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,7 +25,7 @@ public class MixinPotion {
      */
     @Inject(method="performEffect", at=@At("HEAD"), cancellable = true)
     private void beforePerformEffect(EntityLivingBase entityLivingBaseIn, int amplifier, CallbackInfo ci) {
-        if (!MinecraftForge.EVENT_BUS.post(new PotionEffectEvent((Potion)(Object)this, entityLivingBaseIn, amplifier))) {
+        if (MinecraftForge.EVENT_BUS.post(new PotionEffectEvent((Potion)(Object)this, entityLivingBaseIn, amplifier))) {
             ci.cancel();
         }
     }
