@@ -7,4 +7,4 @@ A concise description of the pull request.  Why was it created, what its for, et
 
 Any additional remarks or comments that will augment the comments on the merged commits.
 
-*Leave this mention so I can be notified of new pull requests:* @satyrnidae
+/cc @satyrnidae
