@@ -43,7 +43,10 @@ file "${projectDir.getAbsolutePath()}/wolfarmor-api/config.json" withReader {
 def apiVersion = "${apiconfig.version.major}.${apiconfig.version.minor}.${apiconfig.version.patch}"
 def shortVersion = "${config.version.major}.${config.version.minor}.${config.version.patch}"
 
-version = "${config.minecraft.version}-${shortVersion}-${config.version.extension}"
+version = "${config.minecraft.version}-${shortVersion}"
+if (project.hasProperty('channel')) {
+    version = version + "-${project.getProperties()['channel']}"
+}
 group= "dev.satyrn.wolfarmor"
 archivesBaseName = "wolfarmor"
 
@@ -135,6 +138,7 @@ jar {
             'Implementation-Title': project.name,
             'Implementation-Version': version,
             'Implementation-Vendor': 'https://satyrn.dev',
+            'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             'API-Version': apiVersion,
             'FMLCorePlugin': "${project.group}.coremod.WolfArmorCore",
             'ForceLoadAsMod': true,
