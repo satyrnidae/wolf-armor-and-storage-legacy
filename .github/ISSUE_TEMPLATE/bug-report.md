@@ -24,6 +24,7 @@ If applicable, add screenshots or videos to help explain your problem.
  - OS: [e.g. Linux, Mac, Windows]
  - Java: [e.g. MC Default, Java 8, Java 9]
  - Minecraft Version: [e.g. 1.7.10, 1.12.2]
+ - Forge Version: [e.g. 14.23.5.2838]
  - Mod Version: [e.g. 2.1.0.4-ALPHA]
 
 **Additional Context**
