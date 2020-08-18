@@ -117,7 +117,7 @@ When submitting pull requests, please be sure to follow these guidelines:
 * Follow the [style guidelines](#style-guidelines)
 * Ensure that the [build status](https://github.com/satyrnidae/wolfarmor/actions) for your branch is currently "passing"
 
-Please create pull requests against the ``versions`` branch that you are targeting (e.g. ``versions/1.12``)
+If your pull request is not being merged into the latest version, please make sure to target the correct ``versions`` branch instead of ``master`` (e.g. ``versions/1.12``)
 
 ## Style guidelines
 
