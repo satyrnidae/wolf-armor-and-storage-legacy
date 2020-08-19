@@ -4,18 +4,31 @@
     "version": {
         "major": 3,
         "minor": 6,
-        "patch": 8
-    },
-    "forge": {
-        "version": "14.23.5.2838"
-    },
-    "mcp": {
-        "version": "stable_39"
+        "patch": 10
     },
     "minecraft": {
-        "version": "1.12.2"
+        "version": "1.12.2",
+        "forge": "14.23.5.2838",
+        "mcp": "stable_39"
     },
-    "mixin": {
-        "version": "0.8-SNAPSHOT"
-    }
+    "dependencies": [
+        {
+            "group": "dev.satyrn.wolfarmor.api",
+            "archive": "wolfarmor-api",
+            "version": "4.4.11-SNAPSHOT",
+            "shadowed": true
+        },
+        {
+            "group": "org.spongepowered",
+            "archive": "mixin",
+            "version": "0.8-SNAPSHOT",
+            "shadowed": true,
+            "excludes": [
+                "launchwrapper",
+                "guava",
+                "gson",
+                "commons-io"
+            ]
+        }
+    ]
 }

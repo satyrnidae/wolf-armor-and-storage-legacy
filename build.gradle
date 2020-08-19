@@ -5,12 +5,12 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
-        maven { url = "http://files.minecraftforge.net/maven" }
-        maven { url = "http://repo.spongepowered.org/maven"}
+        maven { url = 'http://files.minecraftforge.net/maven' }
+        maven { url = 'http://repo.spongepowered.org/maven' }
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
-        classpath "org.spongepowered:mixingradle:0.6+"
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6+'
     }
 }
 
@@ -26,47 +26,42 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
     maven { url = 'http://repo.spongepowered.org/maven' }
-    maven { url = "https://oss.sonatype.org/content/repositories/snapshots/"}
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url = 'https://satyrn.dev/maven/' }
+    maven { url = 'https://www.cursemaven.com/' }
+}
+
+configurations {
+    shadowed
 }
 
 def config = null
-def apiconfig = null
 
 file "${projectDir.getAbsolutePath()}/config.json" withReader {
     config = new JsonSlurper().parseText(it.text)
 }
 
-file "${projectDir.getAbsolutePath()}/wolfarmor-api/config.json" withReader {
-    apiconfig = new JsonSlurper().parseText(it.text)
-}
-
-def apiVersion = "${apiconfig.version.major}.${apiconfig.version.minor}.${apiconfig.version.patch}"
 def shortVersion = "${config.version.major}.${config.version.minor}.${config.version.patch}"
 
 version = "${config.minecraft.version}-${shortVersion}"
 if (project.hasProperty('channel')) {
     version = version + "-${project.getProperties()['channel']}"
 }
-group= "dev.satyrn.wolfarmor"
-archivesBaseName = "wolfarmor"
+group= 'dev.satyrn.wolfarmor'
+archivesBaseName = 'wolfarmor'
 
 println "Current version is ${version}"
 
-sourceCompatibility = targetCompatibility = "1.8"
+sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
+    sourceCompatibility = targetCompatibility = '1.8'
     doFirst {
         copy {
             from sourceSets.main.allJava
             into "$buildDir/generated/main/java"
-            filesMatching(["**/WolfArmorMod.java", "**/WolfArmorCore.java"]) {
+            filesMatching(['**/WolfArmorMod.java', '**/WolfArmorCore.java']) {
                 expand version: shortVersion, mcversion: config.minecraft.version, modname: config.name, modid: config.modid
             }
-        }
-        copy {
-            from project(':wolfarmor-api').sourceSets.main.allJava
-            into "$buildDir/generated/main/java"
-            expand version: shortVersion, mcversion: config.minecraft.version, modname: config.name, modid: config.modid
         }
         copy {
             from "$buildDir/generated/main/java"
@@ -76,18 +71,25 @@ compileJava {
 }
 
 minecraft {
-    version = "${config.minecraft.version}-${config.forge.version}"
+    version = "${config.minecraft.version}-${config.minecraft.forge}"
     runDir = "run"
-    mappings = config.mcp.version
+    mappings = config.minecraft.mcp
 }
 
 dependencies {
-    compile project(':wolfarmor-api')
-    compile("org.spongepowered:mixin:${config.mixin.version}"){
-        exclude module: 'launchwrapper'
-        exclude module: 'guava'
-        exclude module: 'gson'
-        exclude module: 'commons-io'
+    for (dependency in config.dependencies) {
+        compile("${dependency.group}:${dependency.archive}:${dependency.version}") {
+            for (excludedModule in dependency.excludes) {
+                exclude module: excludedModule
+            }
+        }
+        if (dependency.shadowed == true) {
+            shadowed("${dependency.group}:${dependency.archive}:${dependency.version}") {
+                for (excludedModule in dependency.excludes) {
+                    exclude module: excludedModule
+                }
+            }
+        }
     }
 }
 
@@ -102,11 +104,11 @@ sourceSets.main {
 
 sourceSets.test {
     dependencies {
-        testCompile "org.codehaus.groovy:groovy-all:2.5.7"
-        testCompile "org.spockframework:spock-core:1.3-groovy-2.5"
-        testCompile "junit:junit:4.12"
-        testRuntime "org.objenesis:objenesis:2.6"
-        testRuntime "net.bytebuddy:byte-buddy:1.9.3"
+        testCompile 'org.codehaus.groovy:groovy-all:2.5.7'
+        testCompile 'org.spockframework:spock-core:1.3-groovy-2.5'
+        testCompile 'junit:junit:4.12'
+        testRuntime 'org.objenesis:objenesis:2.6'
+        testRuntime 'net.bytebuddy:byte-buddy:1.9.3'
     }
     java {
         srcDirs 'src/test/groovy'
@@ -119,8 +121,8 @@ build {
 
 runClient {
     doFirst {
-        jvmArgs "-Dfml.coreMods.load=dev.satyrn.wolfarmor.core.WolfArmorCore"
-        jvmArgs "-Dmixin.debug=true"
+        jvmArgs '-Dfml.coreMods.load=dev.satyrn.wolfarmor.core.WolfArmorCore'
+        jvmArgs '-Dmixin.debug=true'
         if (project.hasProperty('username')) {
             args '--username', project.getProperties()['username']
         }
@@ -139,7 +141,7 @@ jar {
             'Implementation-Version': version,
             'Implementation-Vendor': 'https://satyrn.dev',
             'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            'API-Version': apiVersion,
+            'API-Version': configurations.compile.resolvedConfiguration.firstLevelModuleDependencies.findAll { it.moduleName == 'wolfarmor-api' }[0].moduleVersion,
             'FMLCorePlugin': "${project.group}.coremod.WolfArmorCore",
             'ForceLoadAsMod': true,
             'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
@@ -151,14 +153,15 @@ jar {
 
 shadowJar {
     mainSpec.sourcePaths.clear()
+    configurations = [ project.configurations.shadowed ]
     dependsOn reobfJar
-    dependencies {
-        include dependency('org.spongepowered:mixin')
-    }
 
-    manifest.attributes(
-        'FMLCorePluginContainsFMLMod': true
-    )
+    manifest {
+        inheritFrom project.tasks.jar.manifest
+        attributes(
+                'FMLCorePluginContainsFMLMod': true
+        )
+    }
 
     exclude 'dummyThing'
     exclude 'LICENSES*'
@@ -170,8 +173,8 @@ shadowJar {
 
 processResources {
     // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+    inputs.property 'version', project.version
+    inputs.property 'mcversion', project.minecraft.version
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
@@ -232,7 +235,7 @@ task saveConfig {
 def VERSIONING_GROUP = 'Versioning'
 def SCM_GROUP = 'sourcecontrol'
 
-task incrementPatch {
+task versionPatch {
     group VERSIONING_GROUP
     dependsOn 'gitCheckWorkingTree'
     finalizedBy 'saveConfig'
@@ -255,7 +258,7 @@ task incrementPatch {
     }
 }
 
-task incrementMinor {
+task versionMinor {
     group VERSIONING_GROUP
     dependsOn 'gitCheckWorkingTree'
     finalizedBy 'saveConfig'
@@ -279,7 +282,7 @@ task incrementMinor {
     }
 }
 
-task incrementMajor {
+task versionMajor {
     group VERSIONING_GROUP
     dependsOn 'gitCheckWorkingTree'
     finalizedBy 'saveConfig'
@@ -337,7 +340,11 @@ task gitCommit() {
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
             ignoreExitValue true
             executable 'git'
-            args 'commit', '-m', "\"🏷 ${newVersionNum}\""
+            if (project.hasProperty('signing.password')) {
+                args 'commit', '-S', '-m', "\"🏷 ${newVersionNum}\""
+            } else {
+                args 'commit', '-m', "\"🏷 ${newVersionNum}\""
+            }
         }
     }
 }
@@ -351,7 +358,11 @@ task gitTagVersion() {
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
             ignoreExitValue true
             executable 'git'
-            args 'tag', '-a', "${newVersionNum}", '-m', "\"${newVersionNum}\""
+            if (project.hasProperty('signing.password')) {
+                args 'tag', '-s', "${newVersionNum}", '-m', "\"${newVersionNum}\""
+            } else {
+                args 'tag', '-a', "${newVersionNum}", '-m', "\"${newVersionNum}\""
+            }
         }
     }
 }
