@@ -6,6 +6,9 @@
         "minor": 6,
         "patch": 8
     },
+    "api": {
+        "version": "1.12.2-4.4.5-SNAPSHOT"
+    },
     "forge": {
         "version": "14.23.5.2838"
     },
