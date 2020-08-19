@@ -4,7 +4,7 @@
     "version": {
         "major": 3,
         "minor": 6,
-        "patch": 8
+        "patch": 9
     },
     "api": {
         "version": "1.12.2-4.4.5-SNAPSHOT"
