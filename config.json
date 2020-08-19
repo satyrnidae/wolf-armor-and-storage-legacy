@@ -7,7 +7,7 @@
         "patch": 9
     },
     "api": {
-        "version": "1.12.2-4.4.9"
+        "version": "4.4.11-SNAPSHOT"
     },
     "forge": {
         "version": "14.23.5.2838"
