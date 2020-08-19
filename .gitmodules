@@ -1,4 +1,0 @@
-[submodule "api"]
-	path = wolfarmor-api
-	url = https://github.com/satyrnidae/wolfarmor-api
-	branch = versions/1.12
