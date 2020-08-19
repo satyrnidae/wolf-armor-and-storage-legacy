@@ -29,11 +29,6 @@
                 "gson",
                 "commons-io"
             ]
-        },
-        {
-            "group": "curse.maven",
-            "archive": "let-sleeping-dogs-lie",
-            "version": "2803490"
         }
     ]
 }
