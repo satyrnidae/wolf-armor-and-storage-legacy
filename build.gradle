@@ -23,20 +23,11 @@ apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'maven'
 
 repositories {
     maven { url = 'http://repo.spongepowered.org/maven' }
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
     maven { url = 'https://satyrn.dev/maven/' }
-}
-
-configurations {
-    deployerJars
-}
-
-dependencies {
-    deployerJars 'org.apache.maven.wagon:wagon-ftp:2.2'
 }
 
 def config = null
@@ -70,15 +61,6 @@ compileJava {
         copy {
             from "$buildDir/generated/main/java"
             into "$buildDir/sources/main/java"
-        }
-    }
-}
-
-uploadArchives {
-    repositories.mavenDeployer {
-        configuration = configurations.deployerJars
-        repository(url: project.getProperties()['maven.url']) {
-            authentication (userName: project.getProperties()['maven.username'], password: project.getProperties()['maven.password'])
         }
     }
 }
@@ -346,7 +328,11 @@ task gitCommit() {
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
             ignoreExitValue true
             executable 'git'
-            args 'commit', '-m', "\"🏷 ${newVersionNum}\""
+            if (project.hasProperty('signing.password')) {
+                args 'commit', '-S', '-m', "\"🏷 ${newVersionNum}\""
+            } else {
+                args 'commit', '-m', "\"🏷 ${newVersionNum}\""
+            }
         }
     }
 }
@@ -360,7 +346,11 @@ task gitTagVersion() {
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
             ignoreExitValue true
             executable 'git'
-            args 'tag', '-a', "${newVersionNum}", '-m', "\"${newVersionNum}\""
+            if (project.hasProperty('signing.password')) {
+                args 'tag', '-s', "${newVersionNum}", '-m', "\"${newVersionNum}\""
+            } else {
+                args 'tag', '-a', "${newVersionNum}", '-m', "\"${newVersionNum}\""
+            }
         }
     }
 }
