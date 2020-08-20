@@ -1,6 +1,6 @@
 # Wolf Armor and Storage
 
-![Java CI with Gradle](https://github.com/satyrnidae/wolfarmor/workflows/Java%20CI%20with%20Gradle/badge.svg) [![Curseforge](http://cf.way2muchnoise.eu/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage?gameCategorySlug=mc-mods&projectID=253689) [![Versions](http://cf.way2muchnoise.eu/versions/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage/files)
+![Java CI with Gradle](https://github.com/satyrnidae/wolfarmor/workflows/Java%20CI%20with%20Gradle/badge.svg) [![CurseForge](http://cf.way2muchnoise.eu/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage?gameCategorySlug=mc-mods&projectID=253689) [![Versions](http://cf.way2muchnoise.eu/versions/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage/files)
 
 **_Note: the most recent supported version of this mod is 3.7.0, and this description is up-to-date with that version as of 2020-08-20._**
 
@@ -36,11 +36,11 @@ To craft a piece of wolf armor, you must obtain three armor pieces (two sets of 
 
 ![Gold armor; helmet in center above both boots, with two gold ingots surrounding the boots in the middle row](https://imgur.com/VacjTu8.gif)
 
-*Fig 2c: The crafting recipe for iron armor*
+*Fig 2d: The crafting recipe for gold armor*
 
 ![Diamond armor; helmet in center above both boots, with two diamonds surrounding the boots in the middle row](https://imgur.com/mQxMCRl.gif)
 
-*Fig 2c: The crafting recipe for iron armor*
+*Fig 2e: The crafting recipe for diamond armor*
 
 ### Interactions and Equipping Armor
 
@@ -104,13 +104,13 @@ As a balancing option, you can enable a version of hunger for wolves!  The curre
 
 *Fig 6: A wolf's hunger bar displayed over their head*
 
-Hunger and Saturation effects will now also affect wolves with hunger, so watch out when you're figting those husks!
+Hunger and Saturation effects will now also affect wolves with hunger, so watch out when you're fighting those husks!
 
 ![Lillian gets a bit hungry fighting a husk](https://imgur.com/YQgor4F.gif)
 
 *Fig 7: Hunger potions affect wolves if hunger is enabled*
 
-If hunger is set to "full", a wolf can get damaged by starvation until it reaches 4 hearts (the same health level as a wild wolf).  By setting "starvation" to "true", you can also make them starve to death.  I have no idea why you would enable that.
+If hunger is set to "full", a wolf can get damaged by starvation until it reaches 4 hearts (the same health level as a wild wolf).  By setting "starvation" to "true", you can also make them starve to death.
 
 ![Lillian starved to death](https://imgur.com/iuQRdPJ.png)
 
@@ -122,7 +122,7 @@ I've also taken the liberty of adding a couple other new features.
 
 First, Advancements! There are two new "Husbandry" advancements you can earn: "Armor Up!", by equipping armor to your wolves, and "Wolf Pack", by giving your wolf some inventory space.
 
-![Armor Up and Wolf Pack, vissible in the Husbandry section](https://imgur.com/zfL35Vl.png)
+![Armor Up and Wolf Pack, visible in the Husbandry section](https://imgur.com/zfL35Vl.png)
 
 *Fig 9: The new advancements*
 
@@ -159,33 +159,32 @@ Wolf Armor is generally compatible with any mod that does not have its own mixin
 
 ### Supported Mods
 
-
-These mods are explicitly supported, with known issues below.  If any further issues are found while running Wolf Armor and Storage alongside any of the following, please report it as an issue:
+These mods are explicitly supported, with any known issues below.  If any further issues are found while running Wolf Armor and Storage alongside any of the following, please report it as an issue:
 
 #### [Phosphor](https://www.curseforge.com/minecraft/mc-mods/phosphor) by jellysquid_
 
-#### [Sophisticated Wolves](https://www.curseforge.com/minecraft/mc-mods/sophisticated-wolves) by NightKosh (Currently broken; future releases may be fixed)
+#### ~~[Sophisticated Wolves](https://www.curseforge.com/minecraft/mc-mods/sophisticated-wolves) by NightKosh~~
+
+##### Currently functionality is broken due to an outdated API on the Sophisticated Wolves end.
 
 #### [Carry On](https://www.curseforge.com/minecraft/mc-mods/carry-on) by Tschipp and Purplicious_Cow_
 
-Interaction is slightly buggy due to the pick up functionality; must use a non-empty hand
+##### Interaction is slightly buggy due to the pick up functionality; must use a non-empty hand
 
 #### [Quark](https://www.curseforge.com/minecraft/mc-mods/quark) by Vazkii, mcvinnyq, and wiresegal
 
-Interaction is slightly buggy due to petting, etc.
+##### Interaction is slightly buggy due to petting, etc.
 
-Render layers on foxhounds are specifically disabled
+##### Render layers on foxhounds are specifically disabled
 
 #### [Let Sleeping Dogs Lie](https://www.curseforge.com/minecraft/mc-mods/let-sleeping-dogs-lie) by iChun
-
-Now fully compatible~!
+##### (Fully compatible since 3.7.0)
 
 ![Newly compatible!](https://imgur.com/4ILIvvv.png)
 
 *Fig 10: Lillian's enjoying this one!*
 
 ### Compatible mods
-
 
 These mods are compatible (i.e. won't crash horribly), but are not explicitly supported.  I have marked known issues or incompatibilities below each:
 
@@ -203,22 +202,17 @@ Wolf armor uses the vanilla model, and does not match up with the wolf when sitt
 
 Uses the vanilla wolf render model, which does not match up with the new wolf model.  Disable the chest and armor render in the configuration options to remedy this.
 
-
 ### Incompatible Mods
-
 
 The following mods are not compatible, and there are no plans to ensure compatibility at this time:
 
-[Stacy's Wolves](https://www.curseforge.com/minecraft/mc-mods/stacys-wolves/files) by stacyplays, nathan_oneday, Lyrael_Rayne, maddielines, SnowShock35, and AKTheKnight
+#### [Stacy's Wolves](https://www.curseforge.com/minecraft/mc-mods/stacys-wolves/files) by stacyplays, nathan_oneday, Lyrael_Rayne, maddielines, SnowShock35, and AKTheKnight
 
-[Doggy Talents](https://www.curseforge.com/minecraft/mc-mods/doggy-talents) by percivalalb, SimonMeskens, and XNovaViperX
-
+#### [Doggy Talents](https://www.curseforge.com/minecraft/mc-mods/doggy-talents) by percivalalb, SimonMeskens, and XNovaViperX
 
 ## Contact Me
 
-
 I can be reached via the comments or through github / the email I have listed on my github profile!  I might also start a Discord for this mod if I can find some trustworthy moderators; keep an eye out if you're interested.
-
 
 ## Special Thanks
 
