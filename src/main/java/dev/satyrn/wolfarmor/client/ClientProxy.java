@@ -1,5 +1,6 @@
 package dev.satyrn.wolfarmor.client;
 
+import dev.satyrn.wolfarmor.api.compatibility.Compatibility;
 import dev.satyrn.wolfarmor.client.event.RenderEventHandler;
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import dev.satyrn.wolfarmor.api.client.RenderLayerFactory;
@@ -39,10 +40,12 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerEntityRenderingHandlers() {
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+
+        @SuppressWarnings("unchecked")
         RenderLiving<?> renderWolf = (RenderLiving<?>) renderManager.entityRenderMap.get(EntityWolf.class);
 
-        LayerRenderer<?> armor = RenderLayerFactory.createArmorLayer(renderWolf);
-        LayerRenderer<?> backpack = (LayerWolfBackpack) RenderLayerFactory.createBackpackLayer(renderWolf);
+        LayerRenderer<?> armor = Compatibility.getArmorLayer(renderWolf);
+        LayerRenderer<?> backpack = Compatibility.getBackpackLayer(renderWolf);
         if(armor == null || backpack == null) throw new RuntimeException("Armor layer factory failed initialization!");
 
         renderWolf.addLayer(armor);
