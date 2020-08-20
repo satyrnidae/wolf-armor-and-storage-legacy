@@ -8,7 +8,6 @@ import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.common.event.PotionEventHandler;
 import dev.satyrn.wolfarmor.common.loot.LootHandler;
 import dev.satyrn.wolfarmor.common.network.WolfArmorGuiHandler;
-import dev.satyrn.wolfarmor.compatibility.CompatibilityHelper;
 import dev.satyrn.wolfarmor.common.event.EntityEventHandler;
 import dev.satyrn.wolfarmor.common.event.PlayerEventHandler;
 import dev.satyrn.wolfarmor.common.event.RegistrationEventHandler;
@@ -16,7 +15,6 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -33,7 +31,6 @@ public class CommonProxy implements IProxy {
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
         registerEventListeners();
         registerCriteriaTriggers();
-        CompatibilityHelper.preInit();
     }
 
     @Override
@@ -46,7 +43,6 @@ public class CommonProxy implements IProxy {
     public void init(@Nonnull FMLInitializationEvent initializationEvent) {
         registerItemRenders(initializationEvent);
         registerItemColorHandlers(initializationEvent);
-        CompatibilityHelper.init();
     }
 
     @Override
@@ -78,13 +74,11 @@ public class CommonProxy implements IProxy {
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
         this.registerGuiHandlers();
         this.registerLootTables();
-        this.registerEntityRenderingHandlers();
-        CompatibilityHelper.postInit();
     }
 
     @Override
     public void loadComplete(@Nonnull FMLLoadCompleteEvent loadCompleteEvent) {
-        CompatibilityHelper.loadComplete();
+        this.registerEntityRenderingHandlers();
     }
 
     @Override
