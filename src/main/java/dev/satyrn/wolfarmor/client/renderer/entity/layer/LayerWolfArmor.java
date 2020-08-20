@@ -6,6 +6,7 @@ import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.client.model.ModelWolfArmor;
 import com.google.common.collect.Maps;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
@@ -27,7 +28,7 @@ import java.util.Map;
 public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
     //region Fields
 
-    private ModelWolfArmor[] modelWolfArmors;
+    private final ModelBase[] armorLayers = new ModelBase[2];
     private final RenderLiving<?> renderer;
 
     private static final Map<String, ResourceLocation> WOLF_ARMOR_TEXTURE_MAP = Maps.newHashMap();
@@ -89,8 +90,8 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
         if (!itemStack.isEmpty() && itemStack.getItem() instanceof ItemWolfArmor) {
             ItemWolfArmor armorItem = (ItemWolfArmor) itemStack.getItem();
 
-            for (int layer = 0; layer < modelWolfArmors.length; layer++) {
-                ModelWolfArmor model = modelWolfArmors[layer];
+            for (int layer = 0; layer < armorLayers.length; layer++) {
+                ModelBase model = armorLayers[layer];
                 //TODO: API call to get model
 
                 model.setModelAttributes(this.renderer.getMainModel());
@@ -131,13 +132,27 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      */
     @SuppressWarnings("WeakerAccess")
     protected void initArmor() {
-        ModelWolfArmor modelWolfArmorLayer0 = new ModelWolfArmor(0.2F);
-        ModelWolfArmor modelWolfArmorLayer1 = new ModelWolfArmor(0.1F);
+        ModelWolfArmor armorOuterLayer = new ModelWolfArmor(0.2F);
+        ModelWolfArmor armorInnerLayer = new ModelWolfArmor(0.1F);
 
-        this.modelWolfArmors = new ModelWolfArmor[]{
-                modelWolfArmorLayer0,
-                modelWolfArmorLayer1
-        };
+        this.setArmorOuterLayer(armorOuterLayer);
+        this.setArmorInnerLayer(armorInnerLayer);
+    }
+
+    /**
+     * Sets the outer armor layer model
+     * @param armorOuterLayer The outer armor layer model
+     */
+    protected final void setArmorOuterLayer(ModelBase armorOuterLayer) {
+        this.armorLayers[0] = armorOuterLayer;
+    }
+
+    /**
+     * Sets the inner armor layer model
+     * @param armorInnerLayer The inner armor layer model
+     */
+    protected final void setArmorInnerLayer(ModelBase armorInnerLayer) {
+        this.armorLayers[1] = armorInnerLayer;
     }
 
     //endregion Public / Protected Methods
