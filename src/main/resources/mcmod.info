@@ -13,14 +13,15 @@
     "credits": "Copyright (C) 2014-2020 Isabel Maskrey. Licensed under MIT.",
     "logoFile": "assets/${modid}/logo.png",
     "screenshots": [
-        "assets/${modid}/screenshots/dispenser.png",
-        "assets/${modid}/screenshots/inventory.png",
-        "assets/${modid}/screenshots/wolves.png"
+      "assets/${modid}/screenshots/dispenser.png",
+      "assets/${modid}/screenshots/inventory.png",
+      "assets/${modid}/screenshots/wolves.png"
     ],
     "useDependencyInformation": true,
     "dependencies": [
-        "sophisticatedwolves",
-        "twilightforest"
+      "sophisticatedwolves",
+      "twilightforest",
+      "dogslie"
     ]
   }
 ]
