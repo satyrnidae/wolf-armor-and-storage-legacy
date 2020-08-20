@@ -1,10 +1,8 @@
-# Wolf Armor and Storage 
+# Wolf Armor and Storage
 
 ![Java CI with Gradle](https://github.com/satyrnidae/wolfarmor/workflows/Java%20CI%20with%20Gradle/badge.svg) [![Curseforge](http://cf.way2muchnoise.eu/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage?gameCategorySlug=mc-mods&projectID=253689) [![Versions](http://cf.way2muchnoise.eu/versions/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage/files)
 
-**CRITICAL ISSUE FIXED FROM VERSION 3.5.4, PLEASE UPDATE to 3.6.4+!.**
-
-**_Note: the most recent supported version of this mod is 3.6.4, and this description is up-to-date with that version as of 2020-04-11._**
+**_Note: the most recent supported version of this mod is 3.7.0, and this description is up-to-date with that version as of 2020-08-20._**
 
 **_Note 2: Since it gets asked a lot, yes, you may include this mod in your modpack._**
 
@@ -116,7 +114,7 @@ If hunger is set to "full", a wolf can get damaged by starvation until it reache
 
 ![Lillian starved to death](https://imgur.com/iuQRdPJ.png)
 
-*Fig 8: I feel bad for enabling this, and so should you.  Why would anyone let this happen.*
+*Fig 8: I feel bad for enabling this, and so should you.  Why would anyone do this!?*
 
 ## Miscellaneous Additions
 
@@ -164,37 +162,44 @@ Wolf Armor is generally compatible with any mod that does not have its own mixin
 
 These mods are explicitly supported, with known issues below.  If any further issues are found while running Wolf Armor and Storage alongside any of the following, please report it as an issue:
 
-[Phosphor](https://www.curseforge.com/minecraft/mc-mods/phosphor) by jellysquid_
+#### [Phosphor](https://www.curseforge.com/minecraft/mc-mods/phosphor) by jellysquid_
 
-[Sophisticated Wolves](https://www.curseforge.com/minecraft/mc-mods/sophisticated-wolves) by NightKosh (Currently broken; future releases may be fixed)
+#### [Sophisticated Wolves](https://www.curseforge.com/minecraft/mc-mods/sophisticated-wolves) by NightKosh (Currently broken; future releases may be fixed)
 
-[Carry On](https://www.curseforge.com/minecraft/mc-mods/carry-on) by Tschipp and Purplicious_Cow_
+#### [Carry On](https://www.curseforge.com/minecraft/mc-mods/carry-on) by Tschipp and Purplicious_Cow_
 
 Interaction is slightly buggy due to the pick up functionality; must use a non-empty hand
 
-[Quark](https://www.curseforge.com/minecraft/mc-mods/quark) by Vazkii, mcvinnyq, and wiresegal
+#### [Quark](https://www.curseforge.com/minecraft/mc-mods/quark) by Vazkii, mcvinnyq, and wiresegal
 
 Interaction is slightly buggy due to petting, etc.
 
 Render layers on foxhounds are specifically disabled
 
+#### [Let Sleeping Dogs Lie](https://www.curseforge.com/minecraft/mc-mods/let-sleeping-dogs-lie) by iChun
+
+Now fully compatible~!
+
+![Newly compatible!](https://imgur.com/4ILIvvv.png)
+
+*Fig 10: Lillian's enjoying this one!*
 
 ### Compatible mods
 
 
 These mods are compatible (i.e. won't crash horribly), but are not explicitly supported.  I have marked known issues or incompatibilities below each:
 
-[Zoology](https://www.curseforge.com/minecraft/mc-mods/zoology) by RWTema
+#### [Zoology](https://www.curseforge.com/minecraft/mc-mods/zoology) by RWTema
 
-[Atum 2: Return to the Sands](https://www.curseforge.com/minecraft/mc-mods/atum#c328) by Shadowclaimer and Girafi
+#### [Atum 2: Return to the Sands](https://www.curseforge.com/minecraft/mc-mods/atum#c328) by Shadowclaimer and Girafi
 
- Desert wolves remain unchanged
+Desert wolves remain unchanged
 
-[Better Animations Collection 2](https://www.curseforge.com/minecraft/mc-mods/better-animations-collection-2) by Fusz_
+#### [Better Animations Collection 2](https://www.curseforge.com/minecraft/mc-mods/better-animations-collection-2) by Fusz_
 
 Wolf armor uses the vanilla model, and does not match up with the wolf when sitting or when the tail is waving.
 
-[Better Animal Models](https://www.curseforge.com/minecraft/mc-mods/better-animal-models) by cybercat5555, ist_meow, and Ozelot5836 and [Better Animals Plus](https://www.curseforge.com/minecraft/mc-mods/betteranimalsplus) by cybercat5555 and ist_meow
+#### [Better Animal Models](https://www.curseforge.com/minecraft/mc-mods/better-animal-models) by cybercat5555, ist_meow, and Ozelot5836 and [Better Animals Plus](https://www.curseforge.com/minecraft/mc-mods/betteranimalsplus) by cybercat5555 and ist_meow
 
 Uses the vanilla wolf render model, which does not match up with the new wolf model.  Disable the chest and armor render in the configuration options to remedy this.
 
@@ -217,15 +222,26 @@ I can be reached via the comments or through github / the email I have listed on
 
 ## Special Thanks
 
+Thanks to everyone who has contributed to the continued development of Wolf Armor and Storage!
 
-Thanks to everyone who has submitted an idea, issue, or a pull request!  This wouldn't be possible without your interest in the mod.
+### Additional thanks to the contributors on GitHub
 
-Additional thanks go to:
+#### [SanAndreasP](https://www.curseforge.com/members/sanandreasp)
 
-[SanAndreasP](https://www.curseforge.com/members/sanandreasp) for fixing the incompatibility with Phosphor
+Fixed the incompatibility with Phosphor by updating Mixin
 
-[NightKosh](https://www.curseforge.com/members/nightkosh) for their help with Sophisticated Wolves compatibility and the Russian translation files
+#### [NightKosh](https://www.curseforge.com/members/nightkosh)
 
-[Romz24](https://github.com/Romz24) for their help on the Russian translation files
+Helped with Sophisticated Wolves compatibility and the Russian translation files
 
-[gsbaoge](https://github.com/gsbaoge) for their help with the original Capability system
+#### [Romz24](https://github.com/Romz24)
+
+Helped with the Russian translation files
+
+#### [gsbaoge](https://github.com/gsbaoge)
+
+Helped with the old Capability system and the Chinese translation files
+
+#### And, of course, anyone who's submitted an [issue](https://github.com/satyrnidae/wolfarmor/issues) on GitHub!
+
+Thanks for supporting Wolf Armor and Storage!
