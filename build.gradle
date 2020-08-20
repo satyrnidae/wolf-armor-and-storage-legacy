@@ -78,9 +78,17 @@ minecraft {
 
 dependencies {
     for (dependency in config.dependencies) {
-        compile("${dependency.group}:${dependency.archive}:${dependency.version}") {
-            for (excludedModule in dependency.excludes) {
-                exclude module: excludedModule
+        if (dependency.compileOnly == true) {
+            compileOnly("${dependency.group}:${dependency.archive}:${dependency.version}") {
+                for (excludedModule in dependency.excludes) {
+                    exclude module: excludedModule
+                }
+            }
+        } else {
+            compile("${dependency.group}:${dependency.archive}:${dependency.version}") {
+                for (excludedModule in dependency.excludes) {
+                    exclude module: excludedModule
+                }
             }
         }
         if (dependency.shadowed == true) {
@@ -142,7 +150,7 @@ jar {
             'Implementation-Vendor': 'https://satyrn.dev',
             'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             'API-Version': configurations.compile.resolvedConfiguration.firstLevelModuleDependencies.findAll { it.moduleName == 'wolfarmor-api' }[0].moduleVersion,
-            'FMLCorePlugin': "${project.group}.coremod.WolfArmorCore",
+            'FMLCorePlugin': "${project.group}.core.WolfArmorCore",
             'ForceLoadAsMod': true,
             'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
             'TweakOrder': 0,

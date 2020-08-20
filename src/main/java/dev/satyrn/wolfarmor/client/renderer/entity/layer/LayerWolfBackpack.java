@@ -4,6 +4,7 @@ import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.client.model.ModelWolfBackpack;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
@@ -20,7 +21,7 @@ import javax.annotation.Nonnull;
 public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
     //region Fields
 
-    private final ModelWolfBackpack modelWolfBackpack;
+    protected ModelBase modelWolfBackpack;
     private final RenderLiving<?> renderer;
 
     //endregion Fields
@@ -54,7 +55,6 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
      * @param headPitch       The pitch of the entity's head.
      * @param scale           The scale at which to render the layer.
      */
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void doRenderLayer(@Nonnull EntityWolf entityWolf,
                               float limbSwing,

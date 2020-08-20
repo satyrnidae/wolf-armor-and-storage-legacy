@@ -1,4 +1,4 @@
-package dev.satyrn.wolfarmor.coremod;
+package dev.satyrn.wolfarmor.core;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;

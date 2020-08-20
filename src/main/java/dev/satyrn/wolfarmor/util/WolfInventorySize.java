@@ -76,7 +76,7 @@ public final class WolfInventorySize implements INBTSerializable<NBTTagByteArray
 
     @Override
     public NBTTagByteArray serializeNBT() {
-        byte[] dimensions = { this.rows, this.columns};
+        byte[] dimensions = { this.columns, this.rows };
         return new NBTTagByteArray(dimensions);
     }
 
