@@ -16,7 +16,7 @@
             "__comment": "Wolf Armor and Storage API",
             "group": "dev.satyrn.wolfarmor.api",
             "archive": "wolfarmor-api",
-            "version": "4.5.0-SNAPSHOT",
+            "version": "4.6.0-SNAPSHOT",
             "shadowed": true
         },
         {
