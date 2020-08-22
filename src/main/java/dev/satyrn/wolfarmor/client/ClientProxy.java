@@ -1,5 +1,6 @@
 package dev.satyrn.wolfarmor.client;
 
+import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.compatibility.Compatibility;
 import dev.satyrn.wolfarmor.client.event.RenderEventHandler;
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
@@ -46,10 +47,17 @@ public class ClientProxy extends CommonProxy {
 
         LayerRenderer<?> armor = Compatibility.getArmorLayer(renderWolf);
         LayerRenderer<?> backpack = Compatibility.getBackpackLayer(renderWolf);
-        if(armor == null || backpack == null) throw new RuntimeException("Armor layer factory failed initialization!");
+        if (armor != null) {
+            renderWolf.addLayer(armor);
+        } else {
+            WolfArmorMod.getLogger().warning("Unable to initialize armor layer renderer!");
+        }
 
-        renderWolf.addLayer(armor);
-        renderWolf.addLayer(backpack);
+        if (backpack != null) {
+            renderWolf.addLayer(backpack);
+        } else {
+            WolfArmorMod.getLogger().warning("Unable to initialize backpack layer renderer!");
+        }
     }
 
     /**
