@@ -21,10 +21,10 @@ import static java.lang.Math.PI;
 public class ModelWolfBackpack extends ModelBase {
     //region Fields
 
-    private final ModelRenderer backpackRightTop;
-    private final ModelRenderer backpackRightBottom;
-    private final ModelRenderer backpackLeftTop;
-    private final ModelRenderer backpackLeftBottom;
+    protected final ModelRenderer backpackRightTop;
+    protected final ModelRenderer backpackRightBottom;
+    protected final ModelRenderer backpackLeftTop;
+    protected final ModelRenderer backpackLeftBottom;
 
     private final static float INITIAL_Z_ROTATION = 0.139626F;
 
@@ -174,7 +174,7 @@ public class ModelWolfBackpack extends ModelBase {
      * @param zRotation Z-axis rotation in radians
      */
     @SuppressWarnings("SameParameterValue")
-    private static void setRotation(@Nonnull ModelRenderer model,
+    protected static void setRotation(@Nonnull ModelRenderer model,
                                     float xRotation,
                                     float yRotation,
                                     float zRotation) {

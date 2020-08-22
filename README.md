@@ -1,10 +1,8 @@
-# Wolf Armor and Storage 
+# Wolf Armor and Storage
 
-![Java CI with Gradle](https://github.com/satyrnidae/wolfarmor/workflows/Java%20CI%20with%20Gradle/badge.svg) [![Curseforge](http://cf.way2muchnoise.eu/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage?gameCategorySlug=mc-mods&projectID=253689) [![Versions](http://cf.way2muchnoise.eu/versions/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage/files)
+![Java CI with Gradle](https://github.com/satyrnidae/wolfarmor/workflows/Java%20CI%20with%20Gradle/badge.svg) [![CurseForge](http://cf.way2muchnoise.eu/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage?gameCategorySlug=mc-mods&projectID=253689) [![Versions](http://cf.way2muchnoise.eu/versions/wolf-armor-and-storage.svg)](https://minecraft.curseforge.com/projects/wolf-armor-and-storage/files)
 
-**CRITICAL ISSUE FIXED FROM VERSION 3.5.4, PLEASE UPDATE to 3.6.4+!.**
-
-**_Note: the most recent supported version of this mod is 3.6.4, and this description is up-to-date with that version as of 2020-04-11._**
+**_Note: the most recent supported version of this mod is 3.7.0, and this description is up-to-date with that version as of 2020-08-20._**
 
 **_Note 2: Since it gets asked a lot, yes, you may include this mod in your modpack._**
 
@@ -38,11 +36,11 @@ To craft a piece of wolf armor, you must obtain three armor pieces (two sets of 
 
 ![Gold armor; helmet in center above both boots, with two gold ingots surrounding the boots in the middle row](https://imgur.com/VacjTu8.gif)
 
-*Fig 2c: The crafting recipe for iron armor*
+*Fig 2d: The crafting recipe for gold armor*
 
 ![Diamond armor; helmet in center above both boots, with two diamonds surrounding the boots in the middle row](https://imgur.com/mQxMCRl.gif)
 
-*Fig 2c: The crafting recipe for iron armor*
+*Fig 2e: The crafting recipe for diamond armor*
 
 ### Interactions and Equipping Armor
 
@@ -106,17 +104,17 @@ As a balancing option, you can enable a version of hunger for wolves!  The curre
 
 *Fig 6: A wolf's hunger bar displayed over their head*
 
-Hunger and Saturation effects will now also affect wolves with hunger, so watch out when you're figting those husks!
+Hunger and Saturation effects will now also affect wolves with hunger, so watch out when you're fighting those husks!
 
 ![Lillian gets a bit hungry fighting a husk](https://imgur.com/YQgor4F.gif)
 
 *Fig 7: Hunger potions affect wolves if hunger is enabled*
 
-If hunger is set to "full", a wolf can get damaged by starvation until it reaches 4 hearts (the same health level as a wild wolf).  By setting "starvation" to "true", you can also make them starve to death.  I have no idea why you would enable that.
+If hunger is set to "full", a wolf can get damaged by starvation until it reaches 4 hearts (the same health level as a wild wolf).  By setting "starvation" to "true", you can also make them starve to death.
 
 ![Lillian starved to death](https://imgur.com/iuQRdPJ.png)
 
-*Fig 8: I feel bad for enabling this, and so should you.  Why would anyone let this happen.*
+*Fig 8: I feel bad for enabling this, and so should you.  Why would anyone do this!?*
 
 ## Miscellaneous Additions
 
@@ -124,7 +122,7 @@ I've also taken the liberty of adding a couple other new features.
 
 First, Advancements! There are two new "Husbandry" advancements you can earn: "Armor Up!", by equipping armor to your wolves, and "Wolf Pack", by giving your wolf some inventory space.
 
-![Armor Up and Wolf Pack, vissible in the Husbandry section](https://imgur.com/zfL35Vl.png)
+![Armor Up and Wolf Pack, visible in the Husbandry section](https://imgur.com/zfL35Vl.png)
 
 *Fig 9: The new advancements*
 
@@ -161,71 +159,83 @@ Wolf Armor is generally compatible with any mod that does not have its own mixin
 
 ### Supported Mods
 
+These mods are explicitly supported, with any known issues below.  If any further issues are found while running Wolf Armor and Storage alongside any of the following, please report it as an issue:
 
-These mods are explicitly supported, with known issues below.  If any further issues are found while running Wolf Armor and Storage alongside any of the following, please report it as an issue:
+#### [Phosphor](https://www.curseforge.com/minecraft/mc-mods/phosphor) by jellysquid_
 
-[Phosphor](https://www.curseforge.com/minecraft/mc-mods/phosphor) by jellysquid_
+#### ~~[Sophisticated Wolves](https://www.curseforge.com/minecraft/mc-mods/sophisticated-wolves) by NightKosh~~
 
-[Sophisticated Wolves](https://www.curseforge.com/minecraft/mc-mods/sophisticated-wolves) by NightKosh (Currently broken; future releases may be fixed)
+##### Currently functionality is broken due to an outdated API on the Sophisticated Wolves end.
 
-[Carry On](https://www.curseforge.com/minecraft/mc-mods/carry-on) by Tschipp and Purplicious_Cow_
+#### [Carry On](https://www.curseforge.com/minecraft/mc-mods/carry-on) by Tschipp and Purplicious_Cow_
 
-Interaction is slightly buggy due to the pick up functionality; must use a non-empty hand
+##### Interaction is slightly buggy due to the pick up functionality; must use a non-empty hand
 
-[Quark](https://www.curseforge.com/minecraft/mc-mods/quark) by Vazkii, mcvinnyq, and wiresegal
+#### [Quark](https://www.curseforge.com/minecraft/mc-mods/quark) by Vazkii, mcvinnyq, and wiresegal
 
-Interaction is slightly buggy due to petting, etc.
+##### Interaction is slightly buggy due to petting, etc.
 
-Render layers on foxhounds are specifically disabled
+##### Render layers on foxhounds are specifically disabled
 
+#### [Let Sleeping Dogs Lie](https://www.curseforge.com/minecraft/mc-mods/let-sleeping-dogs-lie) by iChun
+##### (Fully compatible since 3.7.0)
+
+![Newly compatible!](https://imgur.com/4ILIvvv.png)
+
+*Fig 10: Lillian's enjoying this one!*
 
 ### Compatible mods
 
-
 These mods are compatible (i.e. won't crash horribly), but are not explicitly supported.  I have marked known issues or incompatibilities below each:
 
-[Zoology](https://www.curseforge.com/minecraft/mc-mods/zoology) by RWTema
+#### [Zoology](https://www.curseforge.com/minecraft/mc-mods/zoology) by RWTema
 
-[Atum 2: Return to the Sands](https://www.curseforge.com/minecraft/mc-mods/atum#c328) by Shadowclaimer and Girafi
+#### [Atum 2: Return to the Sands](https://www.curseforge.com/minecraft/mc-mods/atum#c328) by Shadowclaimer and Girafi
 
- Desert wolves remain unchanged
+Desert wolves remain unchanged
 
-[Better Animations Collection 2](https://www.curseforge.com/minecraft/mc-mods/better-animations-collection-2) by Fusz_
+#### [Better Animations Collection 2](https://www.curseforge.com/minecraft/mc-mods/better-animations-collection-2) by Fusz_
 
 Wolf armor uses the vanilla model, and does not match up with the wolf when sitting or when the tail is waving.
 
-[Better Animal Models](https://www.curseforge.com/minecraft/mc-mods/better-animal-models) by cybercat5555, ist_meow, and Ozelot5836 and [Better Animals Plus](https://www.curseforge.com/minecraft/mc-mods/betteranimalsplus) by cybercat5555 and ist_meow
+#### [Better Animal Models](https://www.curseforge.com/minecraft/mc-mods/better-animal-models) by cybercat5555, ist_meow, and Ozelot5836 and [Better Animals Plus](https://www.curseforge.com/minecraft/mc-mods/betteranimalsplus) by cybercat5555 and ist_meow
 
 Uses the vanilla wolf render model, which does not match up with the new wolf model.  Disable the chest and armor render in the configuration options to remedy this.
 
-
 ### Incompatible Mods
-
 
 The following mods are not compatible, and there are no plans to ensure compatibility at this time:
 
-[Stacy's Wolves](https://www.curseforge.com/minecraft/mc-mods/stacys-wolves/files) by stacyplays, nathan_oneday, Lyrael_Rayne, maddielines, SnowShock35, and AKTheKnight
+#### [Stacy's Wolves](https://www.curseforge.com/minecraft/mc-mods/stacys-wolves/files) by stacyplays, nathan_oneday, Lyrael_Rayne, maddielines, SnowShock35, and AKTheKnight
 
-[Doggy Talents](https://www.curseforge.com/minecraft/mc-mods/doggy-talents) by percivalalb, SimonMeskens, and XNovaViperX
-
+#### [Doggy Talents](https://www.curseforge.com/minecraft/mc-mods/doggy-talents) by percivalalb, SimonMeskens, and XNovaViperX
 
 ## Contact Me
 
-
 I can be reached via the comments or through github / the email I have listed on my github profile!  I might also start a Discord for this mod if I can find some trustworthy moderators; keep an eye out if you're interested.
-
 
 ## Special Thanks
 
+Thanks to everyone who has contributed to the continued development of Wolf Armor and Storage!
 
-Thanks to everyone who has submitted an idea, issue, or a pull request!  This wouldn't be possible without your interest in the mod.
+### Additional thanks to the contributors on GitHub
 
-Additional thanks go to:
+#### [SanAndreasP](https://www.curseforge.com/members/sanandreasp)
 
-[SanAndreasP](https://www.curseforge.com/members/sanandreasp) for fixing the incompatibility with Phosphor
+Fixed the incompatibility with Phosphor by updating Mixin
 
-[NightKosh](https://www.curseforge.com/members/nightkosh) for their help with Sophisticated Wolves compatibility and the Russian translation files
+#### [NightKosh](https://www.curseforge.com/members/nightkosh)
 
-[Romz24](https://github.com/Romz24) for their help on the Russian translation files
+Helped with Sophisticated Wolves compatibility and the Russian translation files
 
-[gsbaoge](https://github.com/gsbaoge) for their help with the original Capability system
+#### [Romz24](https://github.com/Romz24)
+
+Helped with the Russian translation files
+
+#### [gsbaoge](https://github.com/gsbaoge)
+
+Helped with the old Capability system and the Chinese translation files
+
+#### And, of course, anyone who's submitted an [issue](https://github.com/satyrnidae/wolfarmor/issues) on GitHub!
+
+Thanks for supporting Wolf Armor and Storage!

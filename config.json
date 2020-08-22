@@ -3,8 +3,8 @@
     "name": "Wolf Armor and Storage",
     "version": {
         "major": 3,
-        "minor": 6,
-        "patch": 10
+        "minor": 7,
+        "patch": 1
     },
     "minecraft": {
         "version": "1.12.2",
@@ -13,12 +13,14 @@
     },
     "dependencies": [
         {
+            "__comment": "Wolf Armor and Storage API",
             "group": "dev.satyrn.wolfarmor.api",
             "archive": "wolfarmor-api",
-            "version": "4.4.11-SNAPSHOT",
+            "version": "4.6.0-SNAPSHOT",
             "shadowed": true
         },
         {
+            "__comment": "SpongePowered Mixins",
             "group": "org.spongepowered",
             "archive": "mixin",
             "version": "0.8-SNAPSHOT",
@@ -29,6 +31,20 @@
                 "gson",
                 "commons-io"
             ]
+        },
+        {
+            "__comment": "Sophisticated Wolves",
+            "group": "curse.maven",
+            "archive": "sophisticated-wolves",
+            "version": "2713186",
+            "compileOnly": true
+        },
+        {
+            "__comment": "Let Sleeping Dogs Lie",
+            "group": "curse.maven",
+            "archive": "let-sleeping-dogs-lie",
+            "version": "2803490",
+            "compileOnly": true
         }
     ]
 }

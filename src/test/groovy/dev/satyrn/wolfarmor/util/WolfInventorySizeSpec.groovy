@@ -21,8 +21,8 @@ class WolfInventorySizeSpec extends Specification {
         def size = new WolfInventorySize(expectedCols, expectedRows)
         def tags = size.serializeNBT()
         expect:
-        tags.byteArray[0] == expectedRows
-        tags.byteArray[1] == expectedCols
+        tags.byteArray[0] == expectedCols
+        tags.byteArray[1] == expectedRows
     }
 
     def 'Should deserialize from NBT tag'() {
