@@ -680,12 +680,14 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
                 if (this.config.getChestEnabled() && !this.getHasChest() &&
                         OreDictHelper.isOre(false, "chestWood", itemStack)) {
                     if (!this.getEntityWorld().isRemote) {
-                        this.playEquipSound(itemStack);
+                        ItemStack chestItem = itemStack.copy();
+                        chestItem.setCount(1);
+                        this.playEquipSound(chestItem);
                         this.setHasChest(true);
-                        this.setChestType(itemStack);
-                        if (!player.capabilities.isCreativeMode) {
-                            itemStack.shrink(1);
-                        }
+                        this.setChestType(chestItem);
+
+                        this.consumeItemFromStack(player, itemStack);
+
                         if (player instanceof EntityPlayerMP) {
                             ((WolfArmorTrigger) Criteria.EQUIP_WOLF_CHEST).trigger((EntityPlayerMP) player, (EntityWolf) (Object) this);
                         }
@@ -697,10 +699,16 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
                 }
 
                 if (Items.isValidWolfArmor(itemStack)) {
-                    this.openWolfInventory(player);
+                    if (this.getArmorItemStack().isEmpty()) {
+                        ItemStack toEquip = itemStack.copy();
+                        toEquip.setCount(1);
+                        this.equipArmor(toEquip);
+                        this.consumeItemFromStack(player, itemStack);
+                    } else {
+                        this.openWolfInventory(player);
+                    }
                     cir.setReturnValue(true);
                     cir.cancel();
-                    return;
                 }
             }
         }
