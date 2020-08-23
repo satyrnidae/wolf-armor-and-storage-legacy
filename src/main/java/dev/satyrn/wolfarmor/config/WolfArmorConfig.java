@@ -59,6 +59,13 @@ public class WolfArmorConfig {
                     .setRequiresWorldReload()
                     .setConfigWidgetClassName("dev.satyrn.wolfarmor.client.gui.config.WolfInventorySizeWidget");
 
+    private final Setting<Boolean> enableRecipes = new BooleanSetting(true)
+            .setCategory(Configuration.CATEGORY_GENERAL)
+            .setName("allow_crafting")
+            .setComment("Allows or disallows players to craft the wolf armor items.")
+            .setSynchronizes(true)
+            .setRequiresMinecraftRestart();
+
     public BehaviorCategory behavior;
 
     /**
