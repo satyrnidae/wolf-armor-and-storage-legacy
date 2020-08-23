@@ -278,7 +278,7 @@ public class WolfArmorConfig {
     /**
      * Checks whether or not the vanilla-based armor recipes are enabled or not
      * @return {@code true} if enabled, otherwise {@code false}
-     * @since 3.7.2
+     * @since 3.7.3
      */
     public boolean getEnableCrafting() { return this.enableRecipes.getCurrentValue(); }
 
