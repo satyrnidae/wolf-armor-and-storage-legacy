@@ -63,7 +63,6 @@ public class WolfArmorConfig {
             .setCategory(Configuration.CATEGORY_GENERAL)
             .setName("allow_crafting")
             .setComment("Allows or disallows players to craft the wolf armor items.")
-            .setSynchronizes(true)
             .setRequiresMinecraftRestart();
 
     public BehaviorCategory behavior;
@@ -275,6 +274,13 @@ public class WolfArmorConfig {
      */
     @SideOnly(Side.CLIENT)
     public boolean getStatsInGui() { return this.client.statsInGui.getCurrentValue(); }
+
+    /**
+     * Checks whether or not the vanilla-based armor recipes are enabled or not
+     * @return {@code true} if enabled, otherwise {@code false}
+     * @since 3.7.2
+     */
+    public boolean getEnableCrafting() { return this.enableRecipes.getCurrentValue(); }
 
     /**
      * Initializes the configuration
