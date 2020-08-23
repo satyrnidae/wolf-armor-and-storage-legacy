@@ -42,5 +42,10 @@
       "has_the_item",
       "has_the_ingredients"
     ]
+  ],
+  "conditions": [
+    {
+      "type": "wolfarmor:enable_crafting_advancement"
+    }
   ]
 }

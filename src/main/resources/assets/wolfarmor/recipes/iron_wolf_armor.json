@@ -18,5 +18,10 @@
   },
   "result": {
     "item": "wolfarmor:iron_wolf_armor"
-  }
+  },
+  "conditions": [
+    {
+      "type": "wolfarmor:enable_crafting"
+    }
+  ]
 }
