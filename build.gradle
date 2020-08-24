@@ -18,12 +18,10 @@ buildscript {
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.4'
     id 'groovy'
-    id 'scala'
 }
 
 apply plugin: 'java'
 apply plugin: 'groovy'
-apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
