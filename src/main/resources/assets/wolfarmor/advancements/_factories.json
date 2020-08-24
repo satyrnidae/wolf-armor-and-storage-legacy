@@ -1,0 +1,9 @@
+{
+  "_comment": [
+    "Checks the configuration setting enable_crafting to ensure that the recipe should or should not be enabled.",
+    "https://github.com/satyrnidae/wolfarmor/issues/83"
+  ],
+  "conditions": {
+    "enable_crafting_advancement": "dev.satyrn.wolfarmor.factories.conditions.EnableCraftingCondition"
+  }
+}

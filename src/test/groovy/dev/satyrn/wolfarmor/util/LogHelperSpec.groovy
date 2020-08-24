@@ -1,6 +1,5 @@
 package dev.satyrn.wolfarmor.util
 
-import dev.satyrn.wolfarmor.util.LogHelper
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.LoggingException
