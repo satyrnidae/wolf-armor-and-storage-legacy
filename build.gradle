@@ -1,26 +1,32 @@
+import net.minecraftforge.gradle.common.task.SignJar
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
 buildscript {
     repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'http://repo.spongepowered.org/maven' }
         jcenter()
         mavenCentral()
-        maven { url = 'http://files.minecraftforge.net/maven' }
-        maven { url = 'http://repo.spongepowered.org/maven' }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6+'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+        classpath 'org.spongepowered:mixingradle:0.7+'
     }
 }
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.4'
     id 'groovy'
+    id 'scala'
 }
 
 apply plugin: 'java'
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'groovy'
+apply plugin: 'scala'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
 
@@ -32,163 +38,169 @@ repositories {
 }
 
 configurations {
-    shadowed
+    shadow
 }
 
 def config = null
-
 file "${projectDir.getAbsolutePath()}/config.json" withReader {
     config = new JsonSlurper().parseText(it.text)
 }
 
 def shortVersion = "${config.version.major}.${config.version.minor}.${config.version.patch}"
 
-version = "${config.minecraft.version}-${shortVersion}"
-if (project.hasProperty('channel')) {
-    version = version + "-${project.getProperties()['channel']}"
-}
-group= 'dev.satyrn.wolfarmor'
+version = "${config.minecraft}-${shortVersion}"
+group = 'dev.satyrn.wolfarmor'
 archivesBaseName = 'wolfarmor'
 
 println "Current version is ${version}"
 
-sourceCompatibility = targetCompatibility = '1.8'
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-    doFirst {
-        copy {
-            from sourceSets.main.allJava
-            into "$buildDir/generated/main/java"
-            filesMatching(['**/WolfArmorMod.java', '**/WolfArmorCore.java']) {
-                expand version: shortVersion, mcversion: config.minecraft.version, modname: config.name, modid: config.modid
-            }
-        }
-        copy {
-            from "$buildDir/generated/main/java"
-            into "$buildDir/sources/main/java"
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact shadowJar
         }
     }
+    repositories {
+        maven {
+            credentials {
+                username project.getProperties()['maven.username']
+                password project.getProperties()['maven.password']
+            }
+            url 'sftp://ftp.satyrn.dev:22/maven'
+        }
+    }
+}
+
+if (project.hasProperty('channel')) {
+    version = version + "-${project.getProperties()['channel']}"
+}
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${config.minecraft}-${config.forge}"
+
+    compile "dev.satyrn.wolfarmor.api:wolfarmor-api:${config.api}"
+    compile('org.spongepowered:mixin:0.8-SNAPSHOT'){
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
+
+    shadow "dev.satyrn.wolfarmor.api:wolfarmor-api:${config.api}"
+    shadow('org.spongepowered:mixin:0.8-SNAPSHOT'){
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
+
+    testCompile 'org.codehaus.groovy:groovy-all:2.5.7'
+    testCompile 'org.spockframework:spock-core:1.3-groovy-2.5'
+    testCompile 'junit:junit:4.12'
+
+    testRuntime 'org.objenesis:objenesis:2.6'
+    testRuntime 'net.bytebuddy:byte-buddy:1.9.3'
+
+    compileOnly 'curse.maven:let-sleeping-dogs-lie:2803490'
+    compileOnly 'curse.maven:sophisticated-wolves:2713186'
 }
 
 minecraft {
-    version = "${config.minecraft.version}-${config.minecraft.forge}"
-    runDir = "run"
-    mappings = config.minecraft.mcp
-}
+    // The mappings can be changed at any time, and must be in the following format.
+    // snapshot_YYYYMMDD   Snapshot are built nightly.
+    // stable_#            Stables are built at the discretion of the MCP team.
+    // Use non-default mappings at your own risk. they may not always work.
+    // Simply re-run your setup task after changing the mappings to update your workspace.
+    //mappings channel: 'snapshot', version: '20171003-1.12'
+    mappings channel: 'snapshot', version: '20171003-1.12'
+    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
-dependencies {
-    for (dependency in config.dependencies) {
-        if (dependency.compileOnly == true) {
-            compileOnly("${dependency.group}:${dependency.archive}:${dependency.version}") {
-                for (excludedModule in dependency.excludes) {
-                    exclude module: excludedModule
-                }
-            }
-        } else {
-            compile("${dependency.group}:${dependency.archive}:${dependency.version}") {
-                for (excludedModule in dependency.excludes) {
-                    exclude module: excludedModule
-                }
-            }
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+            property 'fml.coreMods.load', 'dev.satyrn.wolfarmor.core.WolfArmorCore'
+            property 'mixin.debug', 'true'
+
+            //TODO: Yggdrasil auth
         }
-        if (dependency.shadowed == true) {
-            shadowed("${dependency.group}:${dependency.archive}:${dependency.version}") {
-                for (excludedModule in dependency.excludes) {
-                    exclude module: excludedModule
-                }
-            }
+
+        server {
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+            property 'fml.coreMods.load', 'dev.satyrn.wolfarmor.core.WolfArmorCore'
+            property 'mixin.debug', 'true'
         }
     }
 }
 
-sourceSets.main {
-    java {
-        srcDirs 'src/main/java'
-    }
-    artifacts {
-        archives shadowJar
+sourceSets {
+    main {
+        output.resourcesDir = output.classesDir
     }
 }
 
-sourceSets.test {
-    dependencies {
-        testCompile 'org.codehaus.groovy:groovy-all:2.5.7'
-        testCompile 'org.spockframework:spock-core:1.3-groovy-2.5'
-        testCompile 'junit:junit:4.12'
-        testRuntime 'org.objenesis:objenesis:2.6'
-        testRuntime 'net.bytebuddy:byte-buddy:1.9.3'
-    }
-    java {
-        srcDirs 'src/test/groovy'
-    }
-}
+sourceSets.test.groovy.srcDirs = ['src/test/groovy']
 
-build {
-    dependsOn 'signJar'
-}
-
-runClient {
+compileJava {
     doFirst {
-        jvmArgs '-Dfml.coreMods.load=dev.satyrn.wolfarmor.core.WolfArmorCore'
-        jvmArgs '-Dmixin.debug=true'
-        if (project.hasProperty('username')) {
-            args '--username', project.getProperties()['username']
-        }
-        if (project.hasProperty('password')) {
-            args '--password', project.getProperties()['password']
+        copy {
+            from sourceSets.main.allSource
+            into "$buildDir/generated/main/java"
+            filesMatching(['**/WolfArmorMod.java', '**/WolfArmorCore.java']) {
+                expand version: shortVersion, mcversion: '1.12.2',
+                        modname: config.name, modid: config.modid
+            }
         }
     }
+    source = project.fileTree("$buildDir/generated/main/java")
 }
 
+// Example for how to get properties into the manifest for reading by the runtime..
 jar {
-    from sourceSets.main.output
-    manifest.attributes(
+    manifest {
+        attributes([
             'Built-By': System.properties['user.name'],
             'Created-By': "${System.properties['java.vm.version']} (${System.properties['java.vm.vendor']})",
             'Implementation-Title': project.name,
             'Implementation-Version': version,
             'Implementation-Vendor': 'https://satyrn.dev',
             'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            'API-Version': configurations.compile.resolvedConfiguration.firstLevelModuleDependencies.findAll { it.moduleName == 'wolfarmor-api' }[0].moduleVersion,
+            'API-Version': config.api,
             'FMLCorePlugin': "${project.group}.core.WolfArmorCore",
             'ForceLoadAsMod': true,
             'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
             'TweakOrder': 0,
             'MixinConfigs': 'mixins.wolfarmor.core.json',
-            'FMLAT': 'wolfarmor_at.cfg'
-    )
-}
-
-shadowJar {
-    mainSpec.sourcePaths.clear()
-    configurations = [ project.configurations.shadowed ]
-    dependsOn reobfJar
-
-    manifest {
-        inheritFrom project.tasks.jar.manifest
-        attributes(
-                'FMLCorePluginContainsFMLMod': true
-        )
-    }
-
-    exclude 'dummyThing'
-    exclude 'LICENSES*'
-
-    afterEvaluate {
-        from zipTree(reobfJar.jar)
+            'FMLAT': 'accesstransformer.cfg'
+        ])
     }
 }
 
 processResources {
-    // this will ensure that this task is redone when the versions change.
     inputs.property 'version', project.version
-    inputs.property 'mcversion', project.minecraft.version
+    inputs.property 'mcversion', '1.12.2'
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
         // replace version and mcversion
-        expand version: shortVersion, mcversion: config.minecraft.version, modname: config.name, modid: config.modid
+        expand version: shortVersion, mcversion: '1.12.2', modname: config.name, modid: config.modid
     }
 
     // copy everything else, thats not the mcmod.info
@@ -196,7 +208,7 @@ processResources {
         exclude 'mcmod.info'
     }
 
-	// copy LICENSE
+    // copy LICENSE
     from('/') {
         include 'LICENSE'
         include 'CREDITS'
@@ -204,19 +216,8 @@ processResources {
     }
 }
 
-sourceTestJava { }
-
-javadoc { }
-
 mixin {
     add sourceSets.main, "mixins.wolfarmor.refmap.json"
-}
-
-task sourceJar(type: Jar, overwrite: true) {
-    dependsOn processResources
-    from "$buildDir/generated/main/java"
-    from processResources.outputs
-    archiveName = "$archivesBaseName-$version-sources.jar"
 }
 
 task signJar(type: SignJar, dependsOn: shadowJar) {
@@ -232,6 +233,39 @@ task signJar(type: SignJar, dependsOn: shadowJar) {
     outputFile = "$buildDir/libs/$archivesBaseName-$version-signed.jar"
 }
 
+build {
+    finalizedBy signJar
+}
+
+shadowJar {
+    mainSpec.sourcePaths.clear()
+    configurations = [ project.configurations.shadow ]
+    dependsOn jar
+
+    manifest {
+        inheritFrom project.tasks.jar.manifest
+        attributes(
+                'FMLCorePluginContainsFMLMod': true
+        )
+    }
+
+    exclude 'dummyThing'
+    exclude 'LICENSES*'
+
+    afterEvaluate {
+        from jar
+    }
+}
+
+
+// Example configuration to allow publishing using the maven-publish task
+// This is the preferred method to reobfuscate your jar file
+jar.finalizedBy('reobfJar')
+// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
+//publish.dependsOn('reobfJar')
+publish.dependsOn('shadowJar')
+
+
 task saveConfig {
     doLast {
         def configFile = new File("${projectDir.getAbsolutePath()}/config.json")
@@ -241,7 +275,7 @@ task saveConfig {
 }
 
 def VERSIONING_GROUP = 'Versioning'
-def SCM_GROUP = 'sourcecontrol'
+def SCM_GROUP = 'Source Control'
 
 task versionPatch {
     group VERSIONING_GROUP
@@ -371,6 +405,12 @@ task gitTagVersion() {
             } else {
                 args 'tag', '-a', "${newVersionNum}", '-m', "\"${newVersionNum}\""
             }
+        }
+        exec {
+            workingDir projectDir.getAbsolutePath()
+            ignoreExitValue true
+            executable 'git'
+            args 'push', 'origin', '--tags'
         }
     }
 }
