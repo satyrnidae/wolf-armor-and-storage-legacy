@@ -154,17 +154,22 @@ sourceSets {
     }
 }
 
-compileJava {
-    doFirst {
-        copy {
-            from sourceSets.main.allSource
-            into "$buildDir/generated/main/java"
-            filesMatching(['**/WolfArmorMod.java', '**/WolfArmorCore.java']) {
-                expand version: shortVersion, mcversion: '1.12.2',
-                        modname: config.name, modid: config.modid
-            }
-        }
+task cleanGeneratedSource(type: Delete) {
+    delete "$buildDir/generated"
+}
+
+task generateSource(type: Copy) {
+    dependsOn cleanGeneratedSource
+    from sourceSets.main.allSource
+    into "$buildDir/generated/main/java"
+    filesMatching(['**/WolfArmorMod.java', '**/WolfArmorCore.java']) {
+        expand version: shortVersion, mcversion: '1.12.2',
+                modname: config.name, modid: config.modid
     }
+}
+
+compileJava {
+    dependsOn generateSource
     source = project.fileTree("$buildDir/generated/main/java")
 }
 
