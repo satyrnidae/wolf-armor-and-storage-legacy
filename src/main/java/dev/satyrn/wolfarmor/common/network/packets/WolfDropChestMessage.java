@@ -38,6 +38,7 @@ public class WolfDropChestMessage extends MessageBase.ServerMessageBase<WolfDrop
             IArmoredWolf armoredWolf = (IArmoredWolf)entity;
 
             armoredWolf.dropChest();
+            armoredWolf.dropInventoryContents();
         }
         return null;
     }
