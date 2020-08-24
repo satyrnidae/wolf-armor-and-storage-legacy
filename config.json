@@ -6,45 +6,7 @@
         "minor": 7,
         "patch": 3
     },
-    "minecraft": {
-        "version": "1.12.2",
-        "forge": "14.23.5.2838",
-        "mcp": "stable_39"
-    },
-    "dependencies": [
-        {
-            "__comment": "Wolf Armor and Storage API",
-            "group": "dev.satyrn.wolfarmor.api",
-            "archive": "wolfarmor-api",
-            "version": "4.6.0-SNAPSHOT",
-            "shadowed": true
-        },
-        {
-            "__comment": "SpongePowered Mixins",
-            "group": "org.spongepowered",
-            "archive": "mixin",
-            "version": "0.8-SNAPSHOT",
-            "shadowed": true,
-            "excludes": [
-                "launchwrapper",
-                "guava",
-                "gson",
-                "commons-io"
-            ]
-        },
-        {
-            "__comment": "Sophisticated Wolves",
-            "group": "curse.maven",
-            "archive": "sophisticated-wolves",
-            "version": "2713186",
-            "compileOnly": true
-        },
-        {
-            "__comment": "Let Sleeping Dogs Lie",
-            "group": "curse.maven",
-            "archive": "let-sleeping-dogs-lie",
-            "version": "2803490",
-            "compileOnly": true
-        }
-    ]
+    "api": "4.6.0-SNAPSHOT",
+    "minecraft": "1.12.2",
+    "forge": "14.23.5.2854"
 }
