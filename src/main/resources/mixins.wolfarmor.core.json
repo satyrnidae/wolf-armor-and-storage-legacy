@@ -4,7 +4,7 @@
   "required": true,
   "target": "@env(DEFAULT)",
   "compatibilityLevel": "JAVA_8",
-  "minVersion": "0.7.5",
+  "minVersion": "0.8",
   "mixins": [
     "MixinEntity",
     "MixinEntityAgeable",

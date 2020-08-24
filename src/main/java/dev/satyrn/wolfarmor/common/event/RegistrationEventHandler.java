@@ -21,11 +21,11 @@ public class RegistrationEventHandler {
         WolfArmorMaterial.initializeMaterials();
 
         event.getRegistry().registerAll(
-                new ItemWolfArmor(WolfArmorMaterials.CLOTH).setTranslationKey("wolfarmor.leatherWolfArmor").setRegistryName(Resources.ITEM_LEATHER_WOLF_ARMOR),
-                new ItemWolfArmor(WolfArmorMaterials.CHAINMAIL).setTranslationKey("wolfarmor.chainWolfArmor").setRegistryName(Resources.ITEM_CHAINMAIL_WOLF_ARMOR),
-                new ItemWolfArmor(WolfArmorMaterials.IRON).setTranslationKey("wolfarmor.ironWolfArmor").setRegistryName(Resources.ITEM_IRON_WOLF_ARMOR),
-                new ItemWolfArmor(WolfArmorMaterials.GOLD).setTranslationKey("wolfarmor.goldWolfArmor").setRegistryName(Resources.ITEM_GOLD_WOLF_ARMOR),
-                new ItemWolfArmor(WolfArmorMaterials.DIAMOND).setTranslationKey("wolfarmor.diamondWolfArmor").setRegistryName(Resources.ITEM_DIAMOND_WOLF_ARMOR)
+                new ItemWolfArmor(WolfArmorMaterials.CLOTH).setUnlocalizedName("wolfarmor.leatherWolfArmor").setRegistryName(Resources.ITEM_LEATHER_WOLF_ARMOR),
+                new ItemWolfArmor(WolfArmorMaterials.CHAINMAIL).setUnlocalizedName("wolfarmor.chainWolfArmor").setRegistryName(Resources.ITEM_CHAINMAIL_WOLF_ARMOR),
+                new ItemWolfArmor(WolfArmorMaterials.IRON).setUnlocalizedName("wolfarmor.ironWolfArmor").setRegistryName(Resources.ITEM_IRON_WOLF_ARMOR),
+                new ItemWolfArmor(WolfArmorMaterials.GOLD).setUnlocalizedName("wolfarmor.goldWolfArmor").setRegistryName(Resources.ITEM_GOLD_WOLF_ARMOR),
+                new ItemWolfArmor(WolfArmorMaterials.DIAMOND).setUnlocalizedName("wolfarmor.diamondWolfArmor").setRegistryName(Resources.ITEM_DIAMOND_WOLF_ARMOR)
         );
     }
 

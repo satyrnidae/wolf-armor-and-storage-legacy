@@ -10,12 +10,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 @SideOnly(Side.CLIENT)
 public class ModelWolfArmor extends ModelWolf {
-    //region Fields
-
-    //endregion Fields
-
-    //region Constructors
-
     /**
      * Create a wolf armor model with the specified scale.
      *
@@ -50,6 +44,4 @@ public class ModelWolfArmor extends ModelWolf {
         this.wolfTail.addBox(0, 0, -1, 2, 8, 2, scale);
         this.wolfTail.setRotationPoint(-1, 12, 8);
     }
-
-    //endregion Constructors
 }

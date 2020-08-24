@@ -11,10 +11,8 @@ import dev.satyrn.wolfarmor.config.WolfArmorConfig;
 import dev.satyrn.wolfarmor.util.LogHelper;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.*;
+import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nonnull;
 
@@ -26,7 +24,8 @@ import javax.annotation.Nonnull;
         modid = Resources.MOD_ID,
         name = Resources.MOD_NAME,
         version = WolfArmorMod.MOD_VERSION,
-        guiFactory = "dev.satyrn.wolfarmor.client.gui.config.WolfArmorGuiFactory")
+        guiFactory = "dev.satyrn.wolfarmor.client.gui.config.WolfArmorGuiFactory",
+        certificateFingerprint = "e94e38a605842477f3ec218e6fcf781f6b3f7f89")
 public class WolfArmorMod {
     //region Fields
 
@@ -101,6 +100,11 @@ public class WolfArmorMod {
     public void loadComplete(@Nonnull FMLLoadCompleteEvent loadCompleteEvent) {
         Compatibility.loadComplete(loadCompleteEvent);
         proxy.loadComplete(loadCompleteEvent);
+    }
+
+    @Mod.EventHandler
+    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
+        LogManager.getLogger(Resources.MOD_ID).warn("Invalid fingerprint detected! This might mean the mod is compromised, or maybe you're just in a dev environment...");
     }
 
     //endregion Public / Protected Methods

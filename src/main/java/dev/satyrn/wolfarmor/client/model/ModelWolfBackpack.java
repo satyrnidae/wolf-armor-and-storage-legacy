@@ -19,18 +19,12 @@ import static java.lang.Math.PI;
  */
 @SideOnly(Side.CLIENT)
 public class ModelWolfBackpack extends ModelBase {
-    //region Fields
-
     protected final ModelRenderer backpackRightTop;
     protected final ModelRenderer backpackRightBottom;
     protected final ModelRenderer backpackLeftTop;
     protected final ModelRenderer backpackLeftBottom;
 
     private final static float INITIAL_Z_ROTATION = 0.139626F;
-
-    //endregion Fields
-
-    //region Constructors
 
     /**
      * Constructs a new wolf backpack model
@@ -65,10 +59,6 @@ public class ModelWolfBackpack extends ModelBase {
         setRotation(this.backpackLeftTop, 0, 0, INITIAL_Z_ROTATION);
         setRotation(this.backpackLeftBottom, 0, 0, INITIAL_Z_ROTATION);
     }
-
-    //endregion Constructors
-
-    //region Public / Protected Methods
 
     /**
      * Sets various angles and then renders the model.
@@ -160,10 +150,6 @@ public class ModelWolfBackpack extends ModelBase {
                     entityWolfArmored.getShakeAngle(partialTickTime, -0.16F) + INITIAL_Z_ROTATION + MathHelper.sin(limbSwing * 1.2F) * 0.15F * limbSwingAmount);
         }
     }
-
-    //endregion Public / Protected Methods
-
-    //region Private Methods
 
     /**
      * Sets the rotation of the model renderer
