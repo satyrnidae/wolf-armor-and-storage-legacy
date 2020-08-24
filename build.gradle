@@ -18,6 +18,7 @@ buildscript {
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.4'
     id 'groovy'
+    id 'scala'
 }
 
 apply plugin: 'java'
@@ -75,26 +76,36 @@ if (project.hasProperty('channel')) {
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${config.minecraft}-${config.forge}"
+    minecraft group: 'net.minecraftforge', name: 'forge', version: "${config.minecraft}-${config.forge}"
 
-    compile "dev.satyrn.wolfarmor.api:wolfarmor-api:${config.api}"
-    compile('org.spongepowered:mixin:0.8-SNAPSHOT'){
+    implementation group: 'dev.satyrn.wolfarmor.api', name: 'wolfarmor-api', version: config.api
+    implementation(group: 'org.spongepowered', name: 'mixin', version: '0.8-SNAPSHOT'){
         exclude module: 'launchwrapper'
         exclude module: 'guava'
         exclude module: 'gson'
         exclude module: 'commons-io'
     }
 
-    shadow "dev.satyrn.wolfarmor.api:wolfarmor-api:${config.api}"
-    shadow('org.spongepowered:mixin:0.8-SNAPSHOT'){
+    shadow group: 'dev.satyrn.wolfarmor.api', name: 'wolfarmor-api', version: config.api
+    shadow(group: 'org.spongepowered', name: 'mixin', version: '0.8-SNAPSHOT'){
         exclude module: 'launchwrapper'
         exclude module: 'guava'
         exclude module: 'gson'
         exclude module: 'commons-io'
     }
 
-    compileOnly 'curse.maven:let-sleeping-dogs-lie:2803490'
-    compileOnly 'curse.maven:sophisticated-wolves:2713186'
+    compileOnly group: 'curse.maven', name: 'let-sleeping-dogs-lie', version: '2803490'
+    compileOnly group: 'curse.maven', name: 'sophisticated-wolves', version: '2713186'
+
+    implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.7'
+    implementation group: 'org.scala-lang', name: 'scala-library', version: '2.11.12'
+
+    testImplementation group: 'org.scalatest', name: 'scalatest_2.11', version: '3.0.0'
+    testImplementation group: 'org.spockframework', name: 'spock-core', version: '1.3-groovy-2.5'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+
+    testRuntime group: 'org.objenesis', name: 'objenesis', version: '2.6'
+    testRuntime group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.3'
 }
 
 minecraft {
@@ -142,15 +153,6 @@ minecraft {
 sourceSets {
     main {
         output.resourcesDir = output.classesDir
-    }
-    test {
-        dependencies {
-            testCompile 'org.codehaus.groovy:groovy-all:2.5.7'
-            testCompile 'org.spockframework:spock-core:1.3-groovy-2.5'
-            testCompile 'junit:junit:4.12'
-            testRuntime 'org.objenesis:objenesis:2.6'
-            testRuntime 'net.bytebuddy:byte-buddy:1.9.3'
-        }
     }
 }
 
