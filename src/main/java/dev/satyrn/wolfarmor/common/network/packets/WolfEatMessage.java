@@ -51,7 +51,7 @@ public class WolfEatMessage extends ClientMessageBase<WolfEatMessage> {
             Vec3d position = new Vec3d(world.rand.nextFloat() - 0.5D, -world.rand.nextFloat() * 0.6D - 0.3D, 0.6D);
             position = position.rotatePitch(-entity.rotationPitch * (float)(Math.PI / 180));
             position = position.rotateYaw(-entity.rotationYaw * (float)(Math.PI / 180));
-            position = position.add(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
+            position = position.addVector(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
 
             if(foodItem.getHasSubtypes()) {
                 world.spawnParticle(EnumParticleTypes.ITEM_CRACK,
