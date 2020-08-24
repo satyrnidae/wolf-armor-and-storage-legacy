@@ -152,10 +152,11 @@ minecraft {
 sourceSets {
     main {
         output.resourcesDir = output.classesDir
+        java.srcDirs = ['src/main/java','src/main/groovy','src/main/scala']
     }
 }
 
-sourceSets.test.groovy.srcDirs = ['src/test/groovy']
+sourceSets.test.java.srcDirs = ['src/test/java','src/test/groovy','src/test/scala']
 
 compileJava {
     doFirst {
