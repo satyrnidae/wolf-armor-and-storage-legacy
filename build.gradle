@@ -142,7 +142,6 @@ minecraft {
 sourceSets {
     main {
         output.resourcesDir = output.classesDir
-        java.srcDirs = ['src/main/java']
     }
     test {
         dependencies {
@@ -152,7 +151,6 @@ sourceSets {
             testRuntime 'org.objenesis:objenesis:2.6'
             testRuntime 'net.bytebuddy:byte-buddy:1.9.3'
         }
-        java.srcDirs = ['src/test/groovy']
     }
 }
 
