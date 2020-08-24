@@ -21,7 +21,6 @@ plugins {
 }
 
 apply plugin: 'java'
-apply plugin: 'groovy'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
@@ -150,11 +149,11 @@ minecraft {
 sourceSets {
     main {
         output.resourcesDir = output.classesDir
-        java.srcDirs = ['src/main/java','src/main/groovy','src/main/scala']
+        java.srcDirs = ['src/main/java']
     }
 }
 
-sourceSets.test.java.srcDirs = ['src/test/java','src/test/groovy','src/test/scala']
+sourceSets.test.java.srcDirs = ['src/test/groovy']
 
 compileJava {
     doFirst {
