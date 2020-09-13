@@ -4,7 +4,7 @@
     "version": {
         "major": 3,
         "minor": 7,
-        "patch": 4
+        "patch": 5
     },
     "api": "4.6.0-SNAPSHOT",
     "minecraft": "1.12.2",
