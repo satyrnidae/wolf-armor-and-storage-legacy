@@ -5,7 +5,7 @@ import groovy.json.JsonSlurper
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url = 'http://repo.spongepowered.org/maven' }
+        maven { url = 'https://repo.spongepowered.org/maven' }
         jcenter()
         mavenCentral()
     }
@@ -29,7 +29,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
-    maven { url = 'http://repo.spongepowered.org/maven' }
+    maven { url = 'https://repo.spongepowered.org/maven' }
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
     maven { url = 'https://satyrn.dev/maven/' }
     maven { url = 'https://www.cursemaven.com/' }
