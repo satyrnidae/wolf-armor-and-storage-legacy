@@ -13,13 +13,16 @@ import java.util.List;
  * @author Isabel Maskrey (satyrnidae)
  * @since 4.5.0-alpha
  */
+
 public abstract class CompatibilityProvider implements IProvider {
     /**
      * The mod ID which is handled by this provider
      * @return The mod ID which is provided
      * @since 4.5.0-alpha
      */
-    public abstract String getModId();
+    public final String getModId() {
+        return this.getClass().getAnnotation(Provider.class).value();
+    }
 
     /**
      * Method which is called on loadComplete which can register custom renderers

@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Compatibility registry for Wolf Armor and Storage.
@@ -36,33 +35,44 @@ public class Compatibility {
 
     /**
      * Registers a compatibility provider with Wolf Armor and Storage
-     * @param provider Supplier for the provider instance
+     * @param providerName Fully-qualified provider class name
      * @return {@code true} if the registration succeeded, {@code false} if not.
      */
-    public static synchronized boolean register(@Nonnull Supplier<CompatibilityProvider> provider) {
-        CompatibilityProvider instance = provider.get();
-        String modId = instance.getModId();
-
-        CompatibilityProvider registeredProvider = compatibilityProviders.get(modId);
-        if (registeredProvider != null) {
-            if (instance.getPriority() != Priority.HIGHEST
-                    && (registeredProvider.getPriority() >= instance.getPriority()
-                    || instance.getPriority() == Priority.LOWEST)) {
-                logger.warn("Skipped registering provider {} for {}: the provider {} is already registered for this mod",
-                        instance.getClass().getSimpleName(), modId, registeredProvider.getClass().getSimpleName());
+    public static synchronized boolean register(@Nonnull String providerName) {
+        try {
+            Class<?> providerClass = Compatibility.class.getClassLoader().loadClass(providerName);
+            if (!(CompatibilityProvider.class.isAssignableFrom(providerClass) && providerClass.isAnnotationPresent(Provider.class))) {
+                logger.info("Skipped invalid provider {}.", providerName);
                 return false;
             }
 
-            logger.warn("Replacing provider {} with higher priority provider {} for mod {}",
-                    registeredProvider.getClass().getSimpleName(), instance.getClass().getSimpleName(),
-                    modId);
-            compatibilityProviders.replace(modId, instance);
-            return true;
-        }
+            CompatibilityProvider instance = (CompatibilityProvider) Compatibility.class.getClassLoader().loadClass(providerName).newInstance();
+            String modId = instance.getModId();
 
-        compatibilityProviders.put(modId, instance);
-        logger.info("Registered new provider {} for mod {}", instance.getClass().getSimpleName(), modId);
-        return true;
+            CompatibilityProvider registeredProvider = compatibilityProviders.get(modId);
+            if (registeredProvider != null) {
+                if (instance.getPriority() != Priority.HIGHEST
+                        && (registeredProvider.getPriority() >= instance.getPriority()
+                        || instance.getPriority() == Priority.LOWEST)) {
+                    logger.warn("Skipped registering provider {} for {}: the provider {} is already registered for this mod",
+                            instance.getClass().getSimpleName(), modId, registeredProvider.getClass().getSimpleName());
+                    return false;
+                }
+
+                logger.warn("Replacing provider {} with higher priority provider {} for mod {}",
+                        registeredProvider.getClass().getSimpleName(), instance.getClass().getSimpleName(),
+                        modId);
+                compatibilityProviders.replace(modId, instance);
+                return true;
+            }
+
+            compatibilityProviders.put(modId, instance);
+            logger.info("Registered new provider {} for mod {}", instance.getClass().getSimpleName(), modId);
+            return true;
+        } catch (NoClassDefFoundError | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            logger.info("Skipped registering provider {}: {}", providerName, e.toString());
+            return false;
+        }
     }
 
     @SideOnly(Side.CLIENT)

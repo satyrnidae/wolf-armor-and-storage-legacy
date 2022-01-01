@@ -5,8 +5,6 @@ import dev.satyrn.wolfarmor.api.compatibility.Compatibility;
 import dev.satyrn.wolfarmor.api.util.ILogHelper;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.common.network.WolfArmorChannel;
-import dev.satyrn.wolfarmor.compatibility.dogslie.LetSleepingDogsLieProvider;
-import dev.satyrn.wolfarmor.compatibility.sophisticatedwolves.SophisticatedWolvesProvider;
 import dev.satyrn.wolfarmor.config.WolfArmorConfig;
 import dev.satyrn.wolfarmor.util.LogHelper;
 import net.minecraftforge.fml.common.Mod;
@@ -68,8 +66,8 @@ public class WolfArmorMod {
         logger.initializeLogger(preInitializationEvent.getModLog());
         channel = new WolfArmorChannel();
 
-        Compatibility.register(SophisticatedWolvesProvider::new);
-        Compatibility.register(LetSleepingDogsLieProvider::new);
+        Compatibility.register("dev.satyrn.wolfarmor.compatibility.sophisticatedwolves.SophisticatedWolvesProvider");
+        Compatibility.register("dev.satyrn.wolfarmor.compatibility.dogslie.LetSleepingDogsLieProvider");
 
         config.initialize(preInitializationEvent.getModConfigurationDirectory() + "/satyrn");
         proxy.preInit(preInitializationEvent);

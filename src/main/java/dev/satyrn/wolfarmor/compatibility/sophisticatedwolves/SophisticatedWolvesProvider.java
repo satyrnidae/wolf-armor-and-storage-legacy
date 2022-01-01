@@ -1,6 +1,7 @@
 package dev.satyrn.wolfarmor.compatibility.sophisticatedwolves;
 
 import dev.satyrn.wolfarmor.api.compatibility.CompatibilityProvider;
+import dev.satyrn.wolfarmor.api.compatibility.Provider;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
 import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
@@ -18,17 +19,10 @@ import sophisticated_wolves.entity.EntitySophisticatedWolf;
 import java.util.HashMap;
 import java.util.Map;
 
+@Provider("sophisticatedwolves")
 public class SophisticatedWolvesProvider extends CompatibilityProvider {
 
     private static final Logger logger = LogManager.getLogger(Resources.MOD_ID);
-
-    /**
-     * Gets the mod ID for which this instance is providing compatibility
-     * @return {@code sophisticatedwolves}
-     */
-    public String getModId() {
-        return "sophisticatedwolves";
-    }
 
     /**
      * Method which is called on loadComplete which can register custom renderers
