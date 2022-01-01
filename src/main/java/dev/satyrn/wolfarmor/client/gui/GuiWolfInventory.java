@@ -8,7 +8,6 @@ import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import dev.satyrn.wolfarmor.common.network.packets.WolfDropChestMessage;
 import dev.satyrn.wolfarmor.config.WolfArmorConfig;
 import dev.satyrn.wolfarmor.util.WolfFoodStatsLevel;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;

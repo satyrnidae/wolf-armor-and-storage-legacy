@@ -4,7 +4,6 @@ import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
 import dev.satyrn.wolfarmor.config.WolfArmorConfig;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.passive.EntityWolf;
 
 /**

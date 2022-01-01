@@ -19,7 +19,6 @@ import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import dev.satyrn.wolfarmor.api.util.CreatureFoodStats;
 import dev.satyrn.wolfarmor.util.OreDictHelper;
 import net.minecraft.block.material.Material;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

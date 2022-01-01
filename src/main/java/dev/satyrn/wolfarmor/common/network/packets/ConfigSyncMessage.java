@@ -3,14 +3,11 @@ package dev.satyrn.wolfarmor.common.network.packets;
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.config.settings.Setting;
 import dev.satyrn.wolfarmor.common.network.MessageBase;
-import dev.satyrn.wolfarmor.config.WolfArmorConfig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
-
-import java.io.IOException;
 
 public class ConfigSyncMessage extends MessageBase.ClientMessageBase<ConfigSyncMessage> {
 
