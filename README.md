@@ -96,7 +96,7 @@ Since 3.6.4, there is now an option to show wolves' stats above their heads, jus
 
 This option is disabled by default; to enable it, open the config file and set ``B:stats_in_nameplate`` to ``true``.
 
-## Hungry Hungry ~~Hippos~~ Wolves
+## Hungry Hungry Hippos— er, Wolves
 
 As a balancing option, you can enable a version of hunger for wolves!  The current hunger level can be displayed in the GUI and above the wolf's head (if either of those readouts are currently on).
 
@@ -163,9 +163,8 @@ These mods are explicitly supported, with any known issues below.  If any furthe
 
 #### [Phosphor](https://www.curseforge.com/minecraft/mc-mods/phosphor) by jellysquid_
 
-#### ~~[Sophisticated Wolves](https://www.curseforge.com/minecraft/mc-mods/sophisticated-wolves) by NightKosh~~
-
-##### Currently functionality is broken due to an outdated API on the Sophisticated Wolves end.
+#### [Sophisticated Wolves](https://www.curseforge.com/minecraft/mc-mods/sophisticated-wolves) by NightKosh
+##### Fully compatible since 3.8.0
 
 #### [Carry On](https://www.curseforge.com/minecraft/mc-mods/carry-on) by Tschipp and Purplicious_Cow_
 
