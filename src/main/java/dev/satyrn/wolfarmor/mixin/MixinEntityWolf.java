@@ -88,7 +88,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @param ci The callback info
      * @since 3.0.20
      */
-    @Inject(method = "<init>", at = @At("TAIL"))
+    @Inject(method = "<init>", at = @At("RETURN"))
     private void onConstructed(CallbackInfo ci) {
         this.config = WolfArmorMod.getConfig();
         this.connection = WolfArmorMod.getNetworkChannel();

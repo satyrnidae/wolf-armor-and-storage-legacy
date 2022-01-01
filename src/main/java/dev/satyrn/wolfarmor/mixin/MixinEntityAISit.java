@@ -25,7 +25,7 @@ public class MixinEntityAISit {
      * @param ci Callback info
      * @since 3.6.0
      */
-    @Inject(method = "<init>", at=@At("TAIL"))
+    @Inject(method = "<init>", at=@At("RETURN"))
     private void onInit(EntityTameable entityIn, CallbackInfo ci) {
         if (entityIn instanceof IFoodStatsCreature) {
             this.creacher = (IFoodStatsCreature)entityIn;
