@@ -1,5 +1,6 @@
 package dev.satyrn.wolfarmor.compatibility.sophisticatedwolves;
 
+import dev.satyrn.wolfarmor.api.compatibility.Compatibility;
 import dev.satyrn.wolfarmor.api.compatibility.CompatibilityProvider;
 import dev.satyrn.wolfarmor.api.compatibility.Provider;
 import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
@@ -34,8 +35,8 @@ public class SophisticatedWolvesProvider extends CompatibilityProvider {
             if (render == null) {
                 logger.warn("Renderer for {} could not be found.", className);
             } else {
-                render.addLayer(new LayerWolfArmor(render));
-                render.addLayer(new LayerWolfBackpack(render));
+                render.addLayer(Compatibility.getArmorLayer(render, "!dogslie"));
+                render.addLayer(Compatibility.getBackpackLayer(render, "!dogslie"));
             }
         } catch (ClassNotFoundException e) {
             logger.warn("Failed to load class {}: {}", className, e.toString());

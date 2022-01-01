@@ -107,7 +107,13 @@ public class Compatibility {
     public static synchronized LayerRenderer<?> getArmorLayer(@Nonnull RenderLiving<?> renderer, @Nullable String modId) {
         Optional<LayerProvider> provider = Optional.empty();
         if (modId != null) {
-            provider = layerOverrides.stream().filter(LayerProvider::getProvidesArmorLayer).filter(layerProvider -> Objects.equals(layerProvider.getModId(), modId)).max(new ProviderComparator());
+            provider = layerOverrides.stream().filter(LayerProvider::getProvidesArmorLayer).filter(layerProvider -> {
+                if (modId.startsWith("!")) {
+                    final String excludeModId = modId.substring(1, modId.length() - 1);
+                    return !Objects.equals(layerProvider.getModId(), excludeModId);
+                }
+                return Objects.equals(layerProvider.getModId(), modId);
+            }).max(new ProviderComparator());
         }
 
         if (!provider.isPresent()) {
@@ -133,7 +139,13 @@ public class Compatibility {
     public static synchronized LayerRenderer<?> getBackpackLayer(@Nonnull RenderLiving<?> renderer, @Nullable String modId) {
         Optional<LayerProvider> provider = Optional.empty();
         if (modId != null) {
-            provider = layerOverrides.stream().filter(LayerProvider::getProvidesBackpackLayer).filter(layerProvider -> Objects.equals(layerProvider.getModId(), modId)).max(new ProviderComparator());
+            provider = layerOverrides.stream().filter(LayerProvider::getProvidesBackpackLayer).filter(layerProvider -> {
+                if (modId.startsWith("!")) {
+                    final String excludeModId = modId.substring(1, modId.length() - 1);
+                    return !Objects.equals(layerProvider.getModId(), excludeModId);
+                }
+                return Objects.equals(layerProvider.getModId(), modId);
+            }).max(new ProviderComparator());
         }
 
         if (!provider.isPresent()) {
@@ -143,7 +155,7 @@ public class Compatibility {
         return provider.<LayerRenderer<?>>map(layerProvider -> layerProvider.getBackpackLayer(renderer)).orElse(new LayerWolfBackpack(renderer));
     }
 
-    private static boolean isModLoaded(String modId) {
+    public static boolean isModLoaded(String modId) {
         final List<ModContainer> mods = Loader.instance().getActiveModList();
         Optional<ModContainer> provided = mods.stream().filter(mod -> modId.equalsIgnoreCase(mod.getModId())).findFirst();
         return provided.isPresent();
