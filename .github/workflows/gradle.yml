@@ -10,8 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: textbook/git-checkout-submodule-action@2.1.1
+    - name: Checkout Submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
