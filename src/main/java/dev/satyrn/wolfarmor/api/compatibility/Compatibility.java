@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.satyrn.wolfarmor.api.compatibility.client.LayerProvider;
 import dev.satyrn.wolfarmor.api.util.Resources;
+import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
+import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraftforge.fml.common.Loader;
@@ -17,6 +19,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -51,9 +54,9 @@ public class Compatibility {
 
             CompatibilityProvider registeredProvider = compatibilityProviders.get(modId);
             if (registeredProvider != null) {
-                if (instance.getPriority() != Priority.HIGHEST
+                if (instance.getPriority() != Provider.Priority.HIGHEST
                         && (registeredProvider.getPriority() >= instance.getPriority()
-                        || instance.getPriority() == Priority.LOWEST)) {
+                        || instance.getPriority() == Provider.Priority.LOWEST)) {
                     logger.warn("Skipped registering provider {} for {}: the provider {} is already registered for this mod",
                             instance.getClass().getSimpleName(), modId, registeredProvider.getClass().getSimpleName());
                     return false;
@@ -88,11 +91,30 @@ public class Compatibility {
      * @return The armor layer renderer
      */
     @SideOnly(Side.CLIENT)
-    @Nullable
+    @Nonnull
     public static synchronized LayerRenderer<?> getArmorLayer(@Nonnull RenderLiving<?> renderer) {
-        Optional<LayerProvider> provider = layerOverrides.stream().filter(LayerProvider::getProvidesArmorLayer).max(new PriorityComparator());
+        return getArmorLayer(renderer, null);
+    }
 
-        return provider.<LayerRenderer<?>>map(layerProvider -> layerProvider.getArmorLayer(renderer)).orElse(null);
+    /**
+     * Gets an armor render layer. Can specify a mod id for a specific layer provider.
+     * @param renderer The renderer to which the layer will be added.
+     * @param modId The mod ID, or null
+     * @return The
+     */
+    @SideOnly(Side.CLIENT)
+    @Nonnull
+    public static synchronized LayerRenderer<?> getArmorLayer(@Nonnull RenderLiving<?> renderer, @Nullable String modId) {
+        Optional<LayerProvider> provider = Optional.empty();
+        if (modId != null) {
+            provider = layerOverrides.stream().filter(LayerProvider::getProvidesArmorLayer).filter(layerProvider -> Objects.equals(layerProvider.getModId(), modId)).max(new ProviderComparator());
+        }
+
+        if (!provider.isPresent()) {
+            provider = layerOverrides.stream().filter(LayerProvider::getProvidesArmorLayer).max(new ProviderComparator());
+        }
+
+        return provider.<LayerRenderer<?>>map(layerProvider -> layerProvider.getArmorLayer(renderer)).orElse(new LayerWolfArmor(renderer));
     }
 
     /**
@@ -101,11 +123,24 @@ public class Compatibility {
      * @return The backpack layer renderer
      */
     @SideOnly(Side.CLIENT)
-    @Nullable
+    @Nonnull
     public static synchronized LayerRenderer<?> getBackpackLayer(@Nonnull RenderLiving<?> renderer) {
-        Optional<LayerProvider> provider = layerOverrides.stream().filter(LayerProvider::getProvidesBackpackLayer).max(new PriorityComparator());
+        return getBackpackLayer(renderer, null);
+    }
 
-        return provider.<LayerRenderer<?>>map(layerProvider -> layerProvider.getBackpackLayer(renderer)).orElse(null);
+    @SideOnly(Side.CLIENT)
+    @Nonnull
+    public static synchronized LayerRenderer<?> getBackpackLayer(@Nonnull RenderLiving<?> renderer, @Nullable String modId) {
+        Optional<LayerProvider> provider = Optional.empty();
+        if (modId != null) {
+            provider = layerOverrides.stream().filter(LayerProvider::getProvidesBackpackLayer).filter(layerProvider -> Objects.equals(layerProvider.getModId(), modId)).max(new ProviderComparator());
+        }
+
+        if (!provider.isPresent()) {
+            provider = layerOverrides.stream().filter(LayerProvider::getProvidesBackpackLayer).max(new ProviderComparator());
+        }
+
+        return provider.<LayerRenderer<?>>map(layerProvider -> layerProvider.getBackpackLayer(renderer)).orElse(new LayerWolfBackpack(renderer));
     }
 
     private static boolean isModLoaded(String modId) {

@@ -1,8 +1,11 @@
 package dev.satyrn.wolfarmor.api.compatibility;
 
 import dev.satyrn.wolfarmor.api.compatibility.client.LayerProvider;
+import dev.satyrn.wolfarmor.api.util.Resources;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -14,16 +17,7 @@ import java.util.List;
  * @since 4.5.0-alpha
  */
 
-public abstract class CompatibilityProvider implements IProvider {
-    /**
-     * The mod ID which is handled by this provider
-     * @return The mod ID which is provided
-     * @since 4.5.0-alpha
-     */
-    public final String getModId() {
-        return this.getClass().getAnnotation(Provider.class).value();
-    }
-
+public abstract class CompatibilityProvider extends Provider.ProviderType {
     /**
      * Method which is called on loadComplete which can register custom renderers
      * @since 4.5.0-alpha-2
@@ -44,4 +38,6 @@ public abstract class CompatibilityProvider implements IProvider {
     @Nonnull
     @SideOnly(Side.CLIENT)
     public List<LayerProvider> getLayerProviders() { return new ArrayList<>(); }
+
+    protected final static Logger logger = LogManager.getLogger(Resources.MOD_ID);
 }

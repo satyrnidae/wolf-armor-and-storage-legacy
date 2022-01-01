@@ -1,4 +1,4 @@
-package dev.satyrn.wolfarmor.compatibility.dogslie.client.model;
+package dev.satyrn.wolfarmor.compatibility.dogslie.model;
 
 import dev.satyrn.wolfarmor.mixin.accessors.ModelWolfAccessor;
 import me.ichun.letsleepingdogslie.common.model.ModelWolf;

@@ -1,7 +1,7 @@
-package dev.satyrn.wolfarmor.compatibility.dogslie.client.renderer.entity.layer;
+package dev.satyrn.wolfarmor.compatibility.dogslie.layer;
 
 import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
-import dev.satyrn.wolfarmor.compatibility.dogslie.client.model.DogsLieWolfBackpackModel;
+import dev.satyrn.wolfarmor.compatibility.dogslie.model.DogsLieWolfBackpackModel;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

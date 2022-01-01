@@ -1,8 +1,9 @@
-package dev.satyrn.wolfarmor.compatibility.dogslie.client;
+package dev.satyrn.wolfarmor.compatibility.dogslie;
 
+import dev.satyrn.wolfarmor.api.compatibility.Provider;
 import dev.satyrn.wolfarmor.api.compatibility.client.LayerProvider;
-import dev.satyrn.wolfarmor.compatibility.dogslie.client.renderer.entity.layer.DogsLieBackpackLayer;
-import dev.satyrn.wolfarmor.compatibility.dogslie.client.renderer.entity.layer.DogsLieWolfArmorLayer;
+import dev.satyrn.wolfarmor.compatibility.dogslie.layer.DogsLieBackpackLayer;
+import dev.satyrn.wolfarmor.compatibility.dogslie.layer.DogsLieWolfArmorLayer;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -12,18 +13,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
+@Provider(value = "dogslie", priority = 255)
 public class LetSleepingDogsLieLayerProvider extends LayerProvider {
     /**
-     * Gets the priority of this layer provider
-     * @return {@code 0}, which is higher than the base priority
-     */
-    @Override
-    public short getPriority() {
-        return 0;
-    }
-
-    /**
-     * Checks whether or not the provider provides an armor layer.
+     * Checks whether the provider provides an armor layer.
      *
      * @return {@code false} by default, if not respecified as {@code true} this provider will not be used for armor
      * layers
@@ -35,7 +28,7 @@ public class LetSleepingDogsLieLayerProvider extends LayerProvider {
     }
 
     /**
-     * Checks whether or not the provider provides a backpack layer
+     * Checks whether the provider provides a backpack layer
      *
      * @return {@code false} by default, if not respecified as {@code true} this provider will not be used for armor
      * layers

@@ -1,6 +1,6 @@
 package dev.satyrn.wolfarmor.api.compatibility.client;
 
-import dev.satyrn.wolfarmor.api.compatibility.IProvider;
+import dev.satyrn.wolfarmor.api.compatibility.Provider;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
@@ -18,8 +18,7 @@ import java.lang.reflect.InvocationTargetException;
  * @since 4.5.0-alpha
  */
 @SideOnly(Side.CLIENT)
-public class LayerProvider implements IProvider {
-
+public class LayerProvider extends Provider.ProviderType {
     /**
      * Checks whether or not the provider provides an armor layer.
      * @return {@code true} by default, if not overridden as {@code false} this provider will be used for armor
