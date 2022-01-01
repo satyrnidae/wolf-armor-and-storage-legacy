@@ -1,3 +1,4 @@
+import net.minecraftforge.gradle.common.tasks.SignJar
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
@@ -10,6 +11,7 @@ buildscript {
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:5+'
         classpath 'org.spongepowered:mixingradle:0.7+'
+        classpath 'org.codehaus.groovy:groovy-all:3.0.8'
     }
 }
 
@@ -26,6 +28,7 @@ repositories {
     maven { name = "sonatype"; url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
     maven { name = "satyrn.dev"; url = 'https://satyrn.dev/maven/' }
     maven { name = "CurseMaven"; url = 'https://cursemaven.com/' }
+    mavenCentral()
 }
 
 def config = null
@@ -35,7 +38,7 @@ file "${projectDir.getAbsolutePath()}/config.json" withReader {
 
 def shortVersion = "${config.version.major}.${config.version.minor}.${config.version.patch}"
 
-version = "${config.minecraft}-${shortVersion}+forge"
+version = "${config.minecraft}-${shortVersion}-forge"
 group = 'dev.satyrn.wolfarmor'
 archivesBaseName = 'wolf-armor-and-storage'
 
@@ -52,8 +55,7 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    //implementation group: 'dev.satyrn.wolfarmor.api', name: 'wolfarmor-api', version: config.api
-    implementation(group: 'org.spongepowered', name: 'mixin', version: '0.7+'){
+    implementation (group: 'org.spongepowered', name: 'mixin', version: '0.7+') {
         exclude module: 'launchwrapper'
         exclude module: 'guava'
         exclude module: 'gson'
@@ -76,7 +78,7 @@ minecraft {
 
     runs {
         client {
-            workingDirectory project.file('run')
+            workingDirectory file('run')
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -89,10 +91,16 @@ minecraft {
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
-            //TODO: Yggdrasil auth
+            if (project.hasProperty('minecraft.username')) {
+                arg "--username=${project.getProperties()['minecraft.username']}"
+                if (project.hasProperty('minecraft.password')) {
+                    arg "--password=${project.getProperties()['minecraft.password']}"
+                }
+            }
         }
 
         server {
+            workingDirectory file('run')
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -149,6 +157,25 @@ jar {
             'MixinConfigs': 'mixins.wolfarmor.core.json'
         ])
     }
+}
+
+task signJar(type: SignJar, dependsOn: 'reobfJar') {
+    onlyIf {
+        project.hasProperty('keyStore')
+        project.hasProperty('keyStoreAlias')
+        project.hasProperty('keyStorePass')
+        project.hasProperty('keyStoreKeyPass')
+    }
+    keyStore = project.getProperties()['keyStore']
+    alias = project.getProperties()['keyStoreAlias']
+    storePass = project.getProperties()['keyStorePass']
+    keyPass = project.getProperties()['keyStoreKeyPass']
+    inputFile = jar.outputs.files[0]
+    outputFile = file("$buildDir/libs/$archivesBaseName-$version-signed.jar")
+}
+
+build {
+    dependsOn signJar
 }
 
 processResources {
