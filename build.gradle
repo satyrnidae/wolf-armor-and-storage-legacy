@@ -24,10 +24,21 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
 repositories {
-    maven { name = "SpongeMaven"; url = 'https://repo.spongepowered.org/maven' }
-    maven { name = "sonatype"; url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    maven { name = "satyrn.dev"; url = 'https://satyrn.dev/maven/' }
-    maven { name = "CurseMaven"; url = 'https://cursemaven.com/' }
+    maven {
+        name = "SpongeMaven"
+        url = 'https://repo.spongepowered.org/maven'
+    }
+    maven {
+        name = "satyrn.dev"
+        url = 'https://satyrn.dev/maven/'
+    }
+    maven {
+        name = "CurseMaven"
+        url = 'https://cursemaven.com/'
+        content {
+            includeGroup "curse.maven"
+        }
+    }
     mavenCentral()
 }
 
@@ -62,8 +73,9 @@ dependencies {
         exclude module: 'commons-io'
     }
 
-    compileOnly "curse.maven:letsleepingdogslie-334098:2803490"
-    compileOnly "curse.maven:sophisticatedwolves-220495:2713186"
+    compileOnly fg.deobf("curse.maven:letsleepingdogslie-334098:2803490")
+    compileOnly fg.deobf("curse.maven:sophisticatedwolves-220495:2713186")
+    compileOnly fg.deobf("curse.maven:electroblobswizardry-265642:3189062")
 }
 
 minecraft {
@@ -132,6 +144,10 @@ task generateSource(type: Copy) {
                 modname: config.name, modid: config.modid,
                 apiVersion: config.api
     }
+}
+
+clean {
+    dependsOn cleanGeneratedSource
 }
 
 compileJava {

@@ -1,11 +1,11 @@
 package dev.satyrn.wolfarmor.client.renderer.entity.layer;
 
+import com.google.common.collect.Maps;
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.entity.passive.IArmoredWolf;
-import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import dev.satyrn.wolfarmor.api.util.Resources;
 import dev.satyrn.wolfarmor.client.model.ModelWolfArmor;
-import com.google.common.collect.Maps;
+import dev.satyrn.wolfarmor.item.ItemWolfArmor;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
@@ -29,7 +29,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
     //region Fields
 
     private final ModelBase[] armorLayers = new ModelBase[2];
-    private final RenderLiving<?> renderer;
+    protected final RenderLiving<?> renderer;
 
     private static final Map<String, ResourceLocation> WOLF_ARMOR_TEXTURE_MAP = Maps.newHashMap();
 

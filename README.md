@@ -183,6 +183,12 @@ These mods are explicitly supported, with any known issues below.  If any furthe
 
 *Fig 10: Lillian's enjoying this one!*
 
+#### [Electroblob's Wizardry](https://www.curseforge.com/minecraft/mc-mods/electroblobs-wizardry)
+##### Fully Compatible since 3.8.0
+
+![Spirit wolf time!](https://i.imgur.com/6p4t0K4.png?1)
+*Fig 11: Spooky, yet also, snazzy!*
+
 ### Compatible mods
 
 These mods are compatible (i.e. won't crash horribly), but are not explicitly supported.  I have marked known issues or incompatibilities below each:
