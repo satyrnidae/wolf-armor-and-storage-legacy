@@ -1,9 +1,12 @@
 package dev.satyrn.wolfarmor.compatibility.dogslie.client.model;
 
+import dev.satyrn.wolfarmor.mixin.accessors.ModelWolfAccessor;
 import me.ichun.letsleepingdogslie.common.model.ModelWolf;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 /**
  * Models wolf armor overlays since the base ModelWolf does not support scaling
@@ -25,14 +28,14 @@ public class DogsLieWolfArmorModel extends ModelWolf {
         this.wolfHeadMain.setTextureOffset(16, 14).addBox(-2, -5, 0, 2, 2, 1, scale);
         this.wolfHeadMain.setTextureOffset(16, 14).addBox(2, -5, 0, 2, 2, 1, scale);
         this.wolfHeadMain.setTextureOffset(0, 10).addBox(-0.5F, 0, -5, 3, 3, 4, scale);
-        this.wolfTail = new ModelRenderer(this, 9, 18);
-        this.wolfTail.addBox(0, 0, -1, 2, 8, 2, scale);
-        this.wolfTail.setRotationPoint(-1, 12, 8);
+        @Nonnull final ModelRenderer wolfTail = new ModelRenderer(this, 9, 18);
+        wolfTail.addBox(0, 0, -1, 2, 8, 2, scale);
+        wolfTail.setRotationPoint(-1, 12, 8);
 
         // Below were altered to match Let Sleeping Dogs Lie
-        this.wolfMane = new ModelRenderer(this, 21, 0);
-        this.wolfMane.addBox(-4, -3, -3, 8, 6, 7, scale);
-        this.wolfMane.setRotationPoint(0, 14, 2);
+        @Nonnull final ModelRenderer wolfMane = new ModelRenderer(this, 21, 0);
+        wolfMane.addBox(-4, -3, -3, 8, 6, 7, scale);
+        wolfMane.setRotationPoint(0, 14, 2);
         this.wolfLeg1 = new ModelRenderer(this, 0, 18);
         this.wolfLeg1.addBox(-1, 0, -1, 2, 8, 2, scale);
         this.wolfLeg1.setRotationPoint(-1.5F, 16, 7);
@@ -45,5 +48,9 @@ public class DogsLieWolfArmorModel extends ModelWolf {
         this.wolfLeg4 = new ModelRenderer(this, 0, 18);
         this.wolfLeg4.addBox(-1, 0, -1, 2, 8, 2, scale);
         this.wolfLeg4.setRotationPoint(1.5F, 16, -4);
+
+        @Nonnull final ModelWolfAccessor accessor = (ModelWolfAccessor) this;
+        accessor.setWolfMane(wolfMane);
+        accessor.setWolfTail(wolfTail);
     }
 }

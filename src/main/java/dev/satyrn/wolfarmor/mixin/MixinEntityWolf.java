@@ -8,6 +8,7 @@ import dev.satyrn.wolfarmor.common.network.MessageBase;
 import dev.satyrn.wolfarmor.common.network.packets.RemovePotionEffectMessage;
 import dev.satyrn.wolfarmor.common.network.packets.UpdatePotionEffectMessage;
 import dev.satyrn.wolfarmor.config.WolfArmorConfig;
+import dev.satyrn.wolfarmor.mixin.accessors.EntityLivingAccessor;
 import dev.satyrn.wolfarmor.util.WolfFoodStatsLevel;
 import dev.satyrn.wolfarmor.common.network.packets.UpdateFoodStatsMessage;
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
@@ -229,8 +230,8 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
             this.setItemStackToSlot(EntityEquipmentSlot.LEGS, armorItemStack);
             this.setItemStackToSlot(EntityEquipmentSlot.FEET, armorItemStack);
 
-            Arrays.fill(this.inventoryArmorDropChances, 0.0F);
-            Arrays.fill(this.inventoryHandsDropChances, 0.0F);
+            Arrays.fill(((EntityLivingAccessor)this).getInventoryArmorDropChances(), 0.0F);
+            Arrays.fill(((EntityLivingAccessor)this).getInventoryHandsDropChances(), 0.0F);
         }
     }
 

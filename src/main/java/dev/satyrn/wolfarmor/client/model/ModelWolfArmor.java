@@ -1,9 +1,12 @@
 package dev.satyrn.wolfarmor.client.model;
 
+import dev.satyrn.wolfarmor.mixin.accessors.ModelWolfAccessor;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelWolf;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 /**
  * Models wolf armor overlays since the base ModelWolf does not support scaling
@@ -37,11 +40,15 @@ public class ModelWolfArmor extends ModelWolf {
         this.wolfHeadMain.setTextureOffset(16, 14).addBox(-2, -5, 0, 2, 2, 1, scale);
         this.wolfHeadMain.setTextureOffset(16, 14).addBox(2, -5, 0, 2, 2, 1, scale);
         this.wolfHeadMain.setTextureOffset(0, 10).addBox(-0.5F, 0, -5, 3, 3, 4, scale);
-        this.wolfMane = new ModelRenderer(this, 21, 0);
-        this.wolfMane.addBox(-3, -3, -3, 8, 6, 7, scale);
-        this.wolfMane.setRotationPoint(-1, 14, 2);
-        this.wolfTail = new ModelRenderer(this, 9, 18);
-        this.wolfTail.addBox(0, 0, -1, 2, 8, 2, scale);
-        this.wolfTail.setRotationPoint(-1, 12, 8);
+        @Nonnull final ModelRenderer wolfMane = new ModelRenderer(this, 21, 0);
+        wolfMane.addBox(-3, -3, -3, 8, 6, 7, scale);
+        wolfMane.setRotationPoint(-1, 14, 2);
+        @Nonnull final ModelRenderer wolfTail = new ModelRenderer(this, 9, 18);
+        wolfTail.addBox(0, 0, -1, 2, 8, 2, scale);
+        wolfTail.setRotationPoint(-1, 12, 8);
+
+        ModelWolfAccessor accessor = (ModelWolfAccessor) this;
+        accessor.setWolfTail(wolfTail);
+        accessor.setWolfMane(wolfMane);
     }
 }
