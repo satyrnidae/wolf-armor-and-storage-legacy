@@ -15,6 +15,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -43,6 +44,19 @@ public class CommonProxy implements IProxy {
     public void init(@Nonnull FMLInitializationEvent initializationEvent) {
         registerItemRenders(initializationEvent);
         registerItemColorHandlers(initializationEvent);
+        registerLegacyCapabilityStubs();
+    }
+
+    @Deprecated
+    private void registerLegacyCapabilityStubs() {
+        CapabilityManager.INSTANCE.register(
+                com.attributestudios.wolfarmor.api.IWolfArmorCapability.class,
+                com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor.STORAGE,
+                com.attributestudios.wolfarmor.common.capabilities.CapabilityWolfArmor::new);
+        CapabilityManager.INSTANCE.register(
+                dev.satyrn.wolfarmor.api.IWolfArmorCapability.class,
+                dev.satyrn.wolfarmor.common.capabilities.CapabilityWolfArmor.STORAGE,
+                dev.satyrn.wolfarmor.common.capabilities.CapabilityWolfArmor::new);
     }
 
     @Override
