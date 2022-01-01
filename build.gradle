@@ -40,7 +40,7 @@ def shortVersion = "${config.version.major}.${config.version.minor}.${config.ver
 
 version = "${config.minecraft}-${shortVersion}+forge"
 group = 'dev.satyrn.wolfarmor'
-archivesBaseName = 'wolf-armor-and-storage-legacy'
+archivesBaseName = 'wolf-armor-and-storage'
 
 println "Current version is ${version}"
 
