@@ -1,0 +1,42 @@
+item.wolfarmor.leatherWolfArmor.name=Armure de Loup en Cuir
+item.wolfarmor.chainWolfArmor.name=Armure de Loup en Maille
+item.wolfarmor.ironWolfArmor.name=Armure de Loup en Fer
+item.wolfarmor.goldWolfArmor.name=Armure de Loup en Or
+item.wolfarmor.diamondWolfArmor.name=Armure de Loup en Diamant
+
+config.wolfarmor.general.enableChests=Activer les Loups porteurs de coffres
+config.wolfarmor.general.enableChests.comment=Active ou désactive les sacs à dos de loup.
+config.wolfarmor.client.enableWolfArmorRender=Montrer le modèle de l'armure de Loup
+config.wolfarmor.client.enableWolfArmorRender.comment=Active ou désactive le rendu de l'armure du loup.
+config.wolfarmor.client.enableWolfChestRender=Afficher le modèle des Loups porteurs de coffres
+config.wolfarmor.client.enableWolfChestRender.comment=Active ou désactive le rendu des sacs à dos des loups.
+config.wolfarmor.client.enableWolfArmorDisplay=Montrer l'armure des Loups dans l'inventaire
+config.wolfarmor.client.enableWolfArmorDisplay.comment=Active ou désactive l'affichage de la valeur d'armure d'un loup dans l'inventaire des loups.
+config.wolfarmor.client.enableWolfHealthDisplay=Afficher la santé du Loup dans l'inventaire
+config.wolfarmor.client.enableWolfHealthDisplay.comment=Active ou désactive l'affichage de la valeur de santé d'un loup dans l'inventaire des loups.
+config.wolfarmor.behavior.enableHowlingUntamedWolves=Activer le hurlement du Loup sauvage
+config.wolfarmor.behavior.enableHowlingUntamedWolves.comment=Active ou désactive les loups sauvages qui hurlent à la pleine lune.
+config.wolfarmor.behavior.shouldWolvesEatWhenDamaged=Activer l'auto-guérison des loups
+config.wolfarmor.behavior.shouldWolvesEatWhenDamaged.comment=S'il est activé, les loups mangeront automatiquement la viande stockée dans leurs inventaires.
+config.wolfarmor.general.chestSize.horizontal=Taille du Corps Horizontale
+config.wolfarmor.general.chestSize.horizontal.comment=Définit la taille horizontale du corps du loup.
+config.wolfarmor.general.chestSize.vertical=Taille du corps verticale
+config.wolfarmor.general.chestSize.vertical.comment=Définit la taille verticale de la poitrine du loup.
+
+advancements.husbandry.armor_up.title=Loups Protéger
+advancements.husbandry.armor_up.description=Équipez votre loup d'une armure de loup
+advancements.husbandry.wolf_pack.title=Loup de Transport
+advancements.husbandry.wolf_pack.description=Equipez votre loup d'un coffre.
+
+inventory.wolfarmor.wolf=%1$s
+
+gui.wolfarmor.config=Armures de Loups
+gui.wolfarmor.config.subtitle=Paramètres de Configuration
+gui.wolfarmor.config.category.general=Paramètres Généraux
+gui.wolfarmor.config.category.client=Paramètres du côté client
+gui.wolfarmor.config.category.client.render=Paramètres de rendu
+gui.wolfarmor.config.category.client.gui=Paramètres de l'interface de l'utilisateur
+gui.wolfarmor.config.category.behavior=Comportements Personnalisés
+gui.wolfarmor.inventory.remove_chest=Retirer le Coffre
+
+entity.wolfarmor.wolf_armored.name=Loup
