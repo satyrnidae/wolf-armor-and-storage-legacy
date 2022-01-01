@@ -1,9 +1,9 @@
 package dev.satyrn.wolfarmor;
 
+import dev.satyrn.wolfarmor.api.common.IProxy;
 import dev.satyrn.wolfarmor.api.compatibility.Compatibility;
 import dev.satyrn.wolfarmor.api.util.ILogHelper;
 import dev.satyrn.wolfarmor.api.util.Resources;
-import dev.satyrn.wolfarmor.api.common.IProxy;
 import dev.satyrn.wolfarmor.common.network.WolfArmorChannel;
 import dev.satyrn.wolfarmor.compatibility.dogslie.LetSleepingDogsLieProvider;
 import dev.satyrn.wolfarmor.compatibility.sophisticatedwolves.SophisticatedWolvesProvider;
@@ -92,13 +92,11 @@ public class WolfArmorMod {
      */
     @Mod.EventHandler
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
-        Compatibility.postInit(postInitializationEvent);
         proxy.postInit(postInitializationEvent);
     }
 
     @Mod.EventHandler
     public void loadComplete(@Nonnull FMLLoadCompleteEvent loadCompleteEvent) {
-        Compatibility.loadComplete(loadCompleteEvent);
         proxy.loadComplete(loadCompleteEvent);
     }
 

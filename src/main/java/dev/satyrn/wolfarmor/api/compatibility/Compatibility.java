@@ -8,8 +8,6 @@ import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +27,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings("unused")
 public class Compatibility {
-    private static final Map<String, ICompatibilityProvider> compatibilityProviders = Maps.newLinkedHashMap();
+    private static final Map<String, CompatibilityProvider> compatibilityProviders = Maps.newLinkedHashMap();
 
     @SideOnly(Side.CLIENT)
     private static List<LayerProvider> layerOverrides;
@@ -41,11 +39,11 @@ public class Compatibility {
      * @param provider Supplier for the provider instance
      * @return {@code true} if the registration succeeded, {@code false} if not.
      */
-    public static synchronized boolean register(@Nonnull Supplier<ICompatibilityProvider> provider) {
-        ICompatibilityProvider instance = provider.get();
+    public static synchronized boolean register(@Nonnull Supplier<CompatibilityProvider> provider) {
+        CompatibilityProvider instance = provider.get();
         String modId = instance.getModId();
 
-        ICompatibilityProvider registeredProvider = compatibilityProviders.get(modId);
+        CompatibilityProvider registeredProvider = compatibilityProviders.get(modId);
         if (registeredProvider != null) {
             if (instance.getPriority() != Priority.HIGHEST
                     && (registeredProvider.getPriority() >= instance.getPriority()
@@ -107,31 +105,39 @@ public class Compatibility {
     }
 
     /**
-     * Initializes the provider layers.  Necessary to call during init to override the default wolf models
-     * @param event The FML initialization event
+     * Initializes the provider layers.  Necessary to call during init to override the default wolf models.
      */
-    public static void postInit(@Nonnull FMLPostInitializationEvent event) {
-        if (event.getSide() == Side.CLIENT) {
-            layerOverrides = Lists.newArrayList(new LayerProvider());
-            logger.info("Initializing layer providers...");
-            compatibilityProviders.values().forEach(provider -> {
-                if (isModLoaded(provider.getModId())) {
-                    List<LayerProvider> layerProviders = provider.getLayerProviders();
-                    layerProviders.forEach(Compatibility::registerLayer);
-                }
-            });
-        }
+    @SideOnly(Side.CLIENT)
+    public static void registerLayerProviders() {
+        layerOverrides = Lists.newArrayList(new LayerProvider());
+        logger.info("Initializing layer providers...");
+        compatibilityProviders.values().forEach(provider -> {
+            if (isModLoaded(provider.getModId())) {
+                logger.info("Loading layer providers for " + provider.getModId() + "...");
+                List<LayerProvider> layerProviders = provider.getLayerProviders();
+                layerProviders.forEach(Compatibility::registerLayer);
+            }
+        });
     }
 
     /**
      * Sets up the compatibility providers
-     * @param event The load complete event
      */
-    public static void loadComplete(@Nonnull FMLLoadCompleteEvent event) {
+    @SideOnly(Side.CLIENT)
+    public static void setupClient() {
         compatibilityProviders.values().forEach(provider -> {
-            logger.info("Setting up compatibility providers...");
             if(isModLoaded(provider.getModId())) {
-                provider.setup(event.getSide());
+                logger.info("Performing client-side compatibility setup for " + provider.getModId() + "...");
+                provider.setupClient();
+            }
+        });
+    }
+
+    public static void setup() {
+        compatibilityProviders.values().forEach(provider -> {
+            if(isModLoaded(provider.getModId())) {
+                logger.info("Performing server-side compatibility setup for " + provider.getModId() + "...");
+                provider.setup();
             }
         });
     }

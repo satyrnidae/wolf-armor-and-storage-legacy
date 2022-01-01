@@ -24,6 +24,8 @@ public interface IProxy {
     void registerItemRenders(@Nonnull FMLInitializationEvent initializationEvent);
     void registerItemColorHandlers(@Nonnull FMLInitializationEvent initializationEvent);
 
+    void setupCompatibilityProviders();
+
     /**
      * Registers criteria triggers.
      */

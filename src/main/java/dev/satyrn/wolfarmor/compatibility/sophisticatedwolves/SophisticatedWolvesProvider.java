@@ -1,21 +1,31 @@
 package dev.satyrn.wolfarmor.compatibility.sophisticatedwolves;
 
-import dev.satyrn.wolfarmor.api.compatibility.Compatibility;
-import dev.satyrn.wolfarmor.api.compatibility.ICompatibilityProvider;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderManager;
+import dev.satyrn.wolfarmor.api.compatibility.CompatibilityProvider;
+import dev.satyrn.wolfarmor.api.util.Resources;
+import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
+import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.entity.Entity;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import sophisticated_wolves.RenderSophisticatedWolf;
 import sophisticated_wolves.entity.EntitySophisticatedWolf;
 
-public class SophisticatedWolvesProvider implements ICompatibilityProvider {
+import java.util.HashMap;
+import java.util.Map;
+
+public class SophisticatedWolvesProvider extends CompatibilityProvider {
+
+    private static final Logger logger = LogManager.getLogger(Resources.MOD_ID);
+
     /**
      * Gets the mod ID for which this instance is providing compatibility
      * @return {@code sophisticatedwolves}
      */
-    @Override
     public String getModId() {
         return "sophisticatedwolves";
     }
@@ -24,20 +34,22 @@ public class SophisticatedWolvesProvider implements ICompatibilityProvider {
      * Method which is called on loadComplete which can register custom renderers
      */
     @Override
-    public void setup(Side side) {
-        if (side != Side.CLIENT) return;
-
-        RenderManager manager = Minecraft.getMinecraft().getRenderManager();
-        @SuppressWarnings("unchecked")
-        RenderLiving<? extends EntityWolf> renderer =
-                (RenderLiving<? extends EntityWolf>)manager.entityRenderMap.get(EntitySophisticatedWolf.class);
+    @SideOnly(Side.CLIENT)
+    public void setupClient() {
+        // This feels awful but works great so... whatever?
+        final Map<Class<? extends Entity>, Render<? extends Entity>> oldEntityRenderersPendingLoad = new HashMap<>();
+        RenderingRegistry.loadEntityRenderers(oldEntityRenderersPendingLoad);
+        RenderSophisticatedWolf renderer =
+                (RenderSophisticatedWolf) oldEntityRenderersPendingLoad.get(EntitySophisticatedWolf.class);
 
         if (renderer != null) {
-            LayerRenderer<?> layerArmor = Compatibility.getArmorLayer(renderer);
-            LayerRenderer<?> layerBackpack = Compatibility.getBackpackLayer(renderer);
+            LayerRenderer<?> layerArmor = new LayerWolfArmor(renderer);
+            LayerRenderer<?> layerBackpack = new LayerWolfBackpack(renderer);
 
             renderer.addLayer(layerArmor);
             renderer.addLayer(layerBackpack);
+        } else {
+            logger.warn("Unable to find renderer for EntitySophisticatedWolf!");
         }
     }
 }

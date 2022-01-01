@@ -5,10 +5,13 @@ import dev.satyrn.wolfarmor.compatibility.dogslie.client.renderer.entity.layer.D
 import dev.satyrn.wolfarmor.compatibility.dogslie.client.renderer.entity.layer.DogsLieWolfArmorLayer;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@SideOnly(Side.CLIENT)
 public class LetSleepingDogsLieLayerProvider extends LayerProvider {
     /**
      * Gets the priority of this layer provider

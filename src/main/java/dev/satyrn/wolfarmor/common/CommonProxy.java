@@ -3,14 +3,15 @@ package dev.satyrn.wolfarmor.common;
 import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.advancements.WolfArmorTrigger;
 import dev.satyrn.wolfarmor.api.common.IProxy;
+import dev.satyrn.wolfarmor.api.compatibility.Compatibility;
 import dev.satyrn.wolfarmor.api.util.Criteria;
 import dev.satyrn.wolfarmor.api.util.Resources;
-import dev.satyrn.wolfarmor.common.event.PotionEventHandler;
-import dev.satyrn.wolfarmor.common.loot.LootHandler;
-import dev.satyrn.wolfarmor.common.network.WolfArmorGuiHandler;
 import dev.satyrn.wolfarmor.common.event.EntityEventHandler;
 import dev.satyrn.wolfarmor.common.event.PlayerEventHandler;
+import dev.satyrn.wolfarmor.common.event.PotionEventHandler;
 import dev.satyrn.wolfarmor.common.event.RegistrationEventHandler;
+import dev.satyrn.wolfarmor.common.loot.LootHandler;
+import dev.satyrn.wolfarmor.common.network.WolfArmorGuiHandler;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
@@ -38,9 +39,15 @@ public class CommonProxy implements IProxy {
     public void registerEntityRenderingHandlers() {}
 
     @Override
+    public void setupCompatibilityProviders() {
+        Compatibility.setup();
+    }
+
+    @Override
     public void registerItemRenders(@Nonnull FMLInitializationEvent initializationEvent) {}
 
     @Override
+    @SuppressWarnings("deprecated")
     public void init(@Nonnull FMLInitializationEvent initializationEvent) {
         registerItemRenders(initializationEvent);
         registerItemColorHandlers(initializationEvent);
@@ -93,6 +100,7 @@ public class CommonProxy implements IProxy {
     @Override
     public void loadComplete(@Nonnull FMLLoadCompleteEvent loadCompleteEvent) {
         this.registerEntityRenderingHandlers();
+        this.setupCompatibilityProviders();
     }
 
     @Override
