@@ -23,7 +23,7 @@ about: Report an issue caused by another mod
 ## Screenshots / Videos
 *If applicable, add screenshots or videos to help explain your problem. Delete this section if not needed.*
 
-# Version Information
+## Version Information
  - OS: *e.g. Linux, Mac, Windows*
  - Java: *e.g. MC Default, Java 8, Java 9, Java 16, etc.*
  - Minecraft Version: *e.g. 1.7.10, 1.10.2, 1.11.2, 1.12.2, etc.*
