@@ -49,14 +49,16 @@ file "${projectDir.getAbsolutePath()}/config.json" withReader {
 
 def shortVersion = "${config.version.major}.${config.version.minor}.${config.version.patch}"
 
-version = "${config.minecraft}-${shortVersion}-forge"
+version = "${config.minecraft}-${shortVersion}"
 group = 'dev.satyrn.wolfarmor'
-archivesBaseName = 'wolf-armor-and-storage'
+archivesBaseName = 'WolfArmorAndStorage'
 
 println "Current version is ${version}"
 
 if (project.hasProperty('channel')) {
-    version = version + "-${project.getProperties()['channel']}"
+    version = version + "+${project.getProperties()['channel']}"
+} else {
+    version = version + "-universal"
 }
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
@@ -346,6 +348,9 @@ task gitCommit() {
         exec {
             workingDir projectDir.getAbsolutePath()
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
+            if (project.hasProperty('channel')) {
+                newVersionNum = newVersionNum + "+${project.getProperties()['channel']}"
+            }
             ignoreExitValue true
             executable 'git'
             if (project.hasProperty('signing.password')) {
@@ -364,6 +369,9 @@ task gitTagVersion() {
         exec {
             workingDir projectDir.getAbsolutePath()
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
+            if (project.hasProperty('channel')) {
+                newVersionNum = newVersionNum + "+${project.getProperties()['channel']}"
+            }
             ignoreExitValue true
             executable 'git'
             if (project.hasProperty('signing.password')) {
