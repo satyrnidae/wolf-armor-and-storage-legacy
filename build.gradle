@@ -400,7 +400,7 @@ task gitTagVersion() {
 
 task reportVersionChange {
     group VERSIONING_GROUP
-    shouldRunAfter gitCommit
+    shouldRunAfter gitCommitVersion
     doLast {
         println "Current semver: ${config.version.major}.${config.version.minor}.${config.version.patch}"
     }
