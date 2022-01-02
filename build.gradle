@@ -15,10 +15,6 @@ buildscript {
     }
 }
 
-plugins {
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
-}
-
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
@@ -49,6 +45,10 @@ file "${projectDir.getAbsolutePath()}/config.json" withReader {
 
 def shortVersion = "${config.version.major}.${config.version.minor}.${config.version.patch}"
 
+if (project.hasProperty("versionSuffix")) {
+    shortVersion = "$shortVersion+${project.getProperties()['versionSuffix']}"
+}
+
 version = "${config.minecraft}-${shortVersion}"
 group = 'dev.satyrn.wolfarmor'
 archivesBaseName = 'WolfArmorAndStorage'
@@ -56,19 +56,29 @@ archivesBaseName = 'WolfArmorAndStorage'
 println "Current version is ${version}"
 
 if (project.hasProperty('channel')) {
-    version = version + "+${project.getProperties()['channel']}"
+    version = version + "-${project.getProperties()['channel']}"
 } else {
     version = version + "-universal"
 }
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
+configurations {
+    release
+}
 dependencies {
     minecraft group: 'net.minecraftforge', name: 'forge', version: "${config.minecraft}-${config.forge}"
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    implementation (group: 'org.spongepowered', name: 'mixin', version: '0.7+') {
+    implementation (group: 'org.spongepowered', name: 'mixin', version: '(0.7,)') {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
+
+    release (group: 'org.spongepowered', name: 'mixin', version: '(0.7,)') {
         exclude module: 'launchwrapper'
         exclude module: 'guava'
         exclude module: 'gson'
@@ -175,6 +185,9 @@ jar {
             'MixinConfigs': 'mixins.wolfarmor.core.json'
         ])
     }
+    from(configurations.release.collect {it.isDirectory() ? it : zipTree(it) }){
+        exclude 'LICENSE.txt', 'META-INF/MANIFSET.MF', 'META-INF/*.SF', 'META-INF/*.RSA'
+    }
 }
 
 task signJar(type: SignJar, dependsOn: 'reobfJar') {
@@ -190,6 +203,8 @@ task signJar(type: SignJar, dependsOn: 'reobfJar') {
     keyPass = project.getProperties()['keyStoreKeyPass']
     inputFile = jar.outputs.files[0]
     outputFile = file("$buildDir/libs/$archivesBaseName-$version-signed.jar")
+    exclude 'org/spongepowered/**/*.*'
+    exclude 'META-INF/services/**/*.*'
 }
 
 build {
@@ -226,13 +241,7 @@ mixin {
     add sourceSets.main, "mixins.wolfarmor.refmap.json"
 }
 
-
-// Example configuration to allow publishing using the maven-publish task
-// This is the preferred method to reobfuscate your jar file
 jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-//publish.dependsOn('reobfJar')
-
 
 task saveConfig {
     doLast {
@@ -341,15 +350,15 @@ task gitAddConfig() {
     }
 }
 
-task gitCommit() {
+task gitCommitVersion() {
     group SCM_GROUP
     shouldRunAfter gitAddConfig
     doLast {
         exec {
             workingDir projectDir.getAbsolutePath()
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
-            if (project.hasProperty('channel')) {
-                newVersionNum = newVersionNum + "+${project.getProperties()['channel']}"
+            if (project.hasProperty('versionSuffix')) {
+                newVersionNum = newVersionNum + "+${project.getProperties()['versionSuffix']}"
             }
             ignoreExitValue true
             executable 'git'
@@ -364,13 +373,13 @@ task gitCommit() {
 
 task gitTagVersion() {
     group SCM_GROUP
-    shouldRunAfter gitCommit
+    shouldRunAfter gitCommitVersion
     doLast {
         exec {
             workingDir projectDir.getAbsolutePath()
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
-            if (project.hasProperty('channel')) {
-                newVersionNum = newVersionNum + "+${project.getProperties()['channel']}"
+            if (project.hasProperty('versionSuffix')) {
+                newVersionNum = newVersionNum + "+${project.getProperties()['versionSuffix']}"
             }
             ignoreExitValue true
             executable 'git'
@@ -391,7 +400,7 @@ task gitTagVersion() {
 
 task reportVersionChange {
     group VERSIONING_GROUP
-    shouldRunAfter gitCommit
+    shouldRunAfter gitCommitVersion
     doLast {
         println "Current semver: ${config.version.major}.${config.version.minor}.${config.version.patch}"
     }
