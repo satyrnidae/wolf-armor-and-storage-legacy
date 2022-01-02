@@ -12,9 +12,6 @@ import javax.annotation.Nullable;
 
 @Mixin(EntityLiving.class)
 public abstract class MixinEntityLiving extends MixinEntityLivingBase {
-    @Shadow public float[] inventoryHandsDropChances;
-    @Shadow public float[] inventoryArmorDropChances;
-
     @Shadow public abstract PathNavigate getNavigator();
 
     @Shadow public abstract void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack);

@@ -81,28 +81,20 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
                 this.modelWolfBackpack.render(entityWolf, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
             } else {
                 GlStateManager.pushMatrix();
-                {
-                    GlStateManager.color(1, 1, 1, 0.15F);
-                    GlStateManager.depthMask(false);
-                    {
-                        GlStateManager.enableBlend();
-                        {
-                            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
-                                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                GlStateManager.color(1, 1, 1, 0.15F);
+                GlStateManager.depthMask(false);
+                GlStateManager.enableBlend();
+                GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-                            this.modelWolfBackpack.render(entityWolf,
-                                    limbSwing,
-                                    limbSwingAmount,
-                                    ageInTicks,
-                                    netHeadYaw,
-                                    headPitch,
-                                    scale);
-
-                        }
-                        GlStateManager.disableBlend();
-                    }
-                    GlStateManager.depthMask(true);
-                }
+                this.modelWolfBackpack.render(entityWolf,
+                        limbSwing,
+                        limbSwingAmount,
+                        ageInTicks,
+                        netHeadYaw,
+                        headPitch,
+                        scale);
+                GlStateManager.depthMask(true);
+                GlStateManager.disableBlend();
                 GlStateManager.popMatrix();
             }
         }

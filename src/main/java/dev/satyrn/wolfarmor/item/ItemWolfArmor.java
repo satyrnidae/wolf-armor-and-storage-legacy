@@ -24,7 +24,6 @@ import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.UUID;
 
 public class ItemWolfArmor extends Item implements IItemWolfArmor {
 

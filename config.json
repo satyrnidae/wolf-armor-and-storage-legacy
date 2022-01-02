@@ -3,10 +3,10 @@
     "name": "Wolf Armor and Storage",
     "version": {
         "major": 3,
-        "minor": 7,
-        "patch": 5
+        "minor": 8,
+        "patch": 0
     },
-    "api": "4.6.0-SNAPSHOT",
+    "api": "4.6.0",
     "minecraft": "1.12.2",
-    "forge": "14.23.5.2854"
+    "forge": "14.23.5.2859"
 }

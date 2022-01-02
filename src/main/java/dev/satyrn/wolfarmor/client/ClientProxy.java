@@ -4,9 +4,7 @@ import dev.satyrn.wolfarmor.WolfArmorMod;
 import dev.satyrn.wolfarmor.api.compatibility.Compatibility;
 import dev.satyrn.wolfarmor.client.event.RenderEventHandler;
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
-import dev.satyrn.wolfarmor.api.client.RenderLayerFactory;
 import dev.satyrn.wolfarmor.api.util.Items;
-import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
 import dev.satyrn.wolfarmor.common.CommonProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -23,6 +21,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -129,6 +128,18 @@ public class ClientProxy extends CommonProxy {
     public void registerEventListeners() {
         super.registerEventListeners();
         MinecraftForge.EVENT_BUS.register(new RenderEventHandler());
+    }
+
+    @Override
+    public void setupCompatibilityProviders() {
+        super.setupCompatibilityProviders();
+        Compatibility.setupClient();
+    }
+
+    @Override
+    public void postInit(FMLPostInitializationEvent event) {
+        super.postInit(event);
+        Compatibility.registerLayerProviders();
     }
 
     //endregion Public / Protected Methods

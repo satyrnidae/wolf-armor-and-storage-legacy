@@ -4,8 +4,12 @@
   "required": true,
   "target": "@env(DEFAULT)",
   "compatibilityLevel": "JAVA_8",
-  "minVersion": "0.8",
+  "minVersion": "0.7",
+  "client": [
+    "accessors.ModelWolfAccessor"
+  ],
   "mixins": [
+    "accessors.EntityLivingAccessor",
     "MixinEntity",
     "MixinEntityAgeable",
     "MixinEntityAISit",

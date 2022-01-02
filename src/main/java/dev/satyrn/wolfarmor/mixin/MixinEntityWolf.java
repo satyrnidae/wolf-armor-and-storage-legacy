@@ -8,6 +8,7 @@ import dev.satyrn.wolfarmor.common.network.MessageBase;
 import dev.satyrn.wolfarmor.common.network.packets.RemovePotionEffectMessage;
 import dev.satyrn.wolfarmor.common.network.packets.UpdatePotionEffectMessage;
 import dev.satyrn.wolfarmor.config.WolfArmorConfig;
+import dev.satyrn.wolfarmor.mixin.accessors.EntityLivingAccessor;
 import dev.satyrn.wolfarmor.util.WolfFoodStatsLevel;
 import dev.satyrn.wolfarmor.common.network.packets.UpdateFoodStatsMessage;
 import dev.satyrn.wolfarmor.item.ItemWolfArmor;
@@ -19,7 +20,6 @@ import dev.satyrn.wolfarmor.common.inventory.ContainerWolfInventory;
 import dev.satyrn.wolfarmor.api.util.CreatureFoodStats;
 import dev.satyrn.wolfarmor.util.OreDictHelper;
 import net.minecraft.block.material.Material;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -88,7 +88,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @param ci The callback info
      * @since 3.0.20
      */
-    @Inject(method = "<init>", at = @At("TAIL"))
+    @Inject(method = "<init>", at = @At("RETURN"))
     private void onConstructed(CallbackInfo ci) {
         this.config = WolfArmorMod.getConfig();
         this.connection = WolfArmorMod.getNetworkChannel();
@@ -230,8 +230,8 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
             this.setItemStackToSlot(EntityEquipmentSlot.LEGS, armorItemStack);
             this.setItemStackToSlot(EntityEquipmentSlot.FEET, armorItemStack);
 
-            Arrays.fill(this.inventoryArmorDropChances, 0.0F);
-            Arrays.fill(this.inventoryHandsDropChances, 0.0F);
+            Arrays.fill(((EntityLivingAccessor)this).getInventoryArmorDropChances(), 0.0F);
+            Arrays.fill(((EntityLivingAccessor)this).getInventoryHandsDropChances(), 0.0F);
         }
     }
 

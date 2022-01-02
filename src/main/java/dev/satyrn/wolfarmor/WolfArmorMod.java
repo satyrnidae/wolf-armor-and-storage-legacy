@@ -1,12 +1,10 @@
 package dev.satyrn.wolfarmor;
 
+import dev.satyrn.wolfarmor.api.common.IProxy;
 import dev.satyrn.wolfarmor.api.compatibility.Compatibility;
 import dev.satyrn.wolfarmor.api.util.ILogHelper;
 import dev.satyrn.wolfarmor.api.util.Resources;
-import dev.satyrn.wolfarmor.api.common.IProxy;
 import dev.satyrn.wolfarmor.common.network.WolfArmorChannel;
-import dev.satyrn.wolfarmor.compatibility.dogslie.LetSleepingDogsLieProvider;
-import dev.satyrn.wolfarmor.compatibility.sophisticatedwolves.SophisticatedWolvesProvider;
 import dev.satyrn.wolfarmor.config.WolfArmorConfig;
 import dev.satyrn.wolfarmor.util.LogHelper;
 import net.minecraftforge.fml.common.Mod;
@@ -68,8 +66,9 @@ public class WolfArmorMod {
         logger.initializeLogger(preInitializationEvent.getModLog());
         channel = new WolfArmorChannel();
 
-        Compatibility.register(SophisticatedWolvesProvider::new);
-        Compatibility.register(LetSleepingDogsLieProvider::new);
+        Compatibility.register("dev.satyrn.wolfarmor.compatibility.sophisticatedwolves.SophisticatedWolvesProvider");
+        Compatibility.register("dev.satyrn.wolfarmor.compatibility.dogslie.LetSleepingDogsLieProvider");
+        Compatibility.register("dev.satyrn.wolfarmor.compatibility.ebwizardry.WizardryProvider");
 
         config.initialize(preInitializationEvent.getModConfigurationDirectory() + "/satyrn");
         proxy.preInit(preInitializationEvent);
@@ -92,13 +91,11 @@ public class WolfArmorMod {
      */
     @Mod.EventHandler
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
-        Compatibility.postInit(postInitializationEvent);
         proxy.postInit(postInitializationEvent);
     }
 
     @Mod.EventHandler
     public void loadComplete(@Nonnull FMLLoadCompleteEvent loadCompleteEvent) {
-        Compatibility.loadComplete(loadCompleteEvent);
         proxy.loadComplete(loadCompleteEvent);
     }
 
