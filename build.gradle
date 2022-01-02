@@ -45,6 +45,10 @@ file "${projectDir.getAbsolutePath()}/config.json" withReader {
 
 def shortVersion = "${config.version.major}.${config.version.minor}.${config.version.patch}"
 
+if (project.hasProperty("versionSuffix")) {
+    shortVersion = "$shortVersion+${project.getProperties()['versionSuffix']}"
+}
+
 version = "${config.minecraft}-${shortVersion}"
 group = 'dev.satyrn.wolfarmor'
 archivesBaseName = 'WolfArmorAndStorage'
@@ -52,7 +56,7 @@ archivesBaseName = 'WolfArmorAndStorage'
 println "Current version is ${version}"
 
 if (project.hasProperty('channel')) {
-    version = version + "+${project.getProperties()['channel']}"
+    version = version + "-${project.getProperties()['channel']}"
 } else {
     version = version + "-universal"
 }
@@ -346,15 +350,15 @@ task gitAddConfig() {
     }
 }
 
-task gitCommit() {
+task gitCommitVersion() {
     group SCM_GROUP
     shouldRunAfter gitAddConfig
     doLast {
         exec {
             workingDir projectDir.getAbsolutePath()
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
-            if (project.hasProperty('channel')) {
-                newVersionNum = newVersionNum + "+${project.getProperties()['channel']}"
+            if (project.hasProperty('versionSuffix')) {
+                newVersionNum = newVersionNum + "+${project.getProperties()['versionSuffix']}"
             }
             ignoreExitValue true
             executable 'git'
@@ -369,13 +373,13 @@ task gitCommit() {
 
 task gitTagVersion() {
     group SCM_GROUP
-    shouldRunAfter gitCommit
+    shouldRunAfter gitCommitVersion
     doLast {
         exec {
             workingDir projectDir.getAbsolutePath()
             def newVersionNum = "v${config.version.major}.${config.version.minor}.${config.version.patch}"
-            if (project.hasProperty('channel')) {
-                newVersionNum = newVersionNum + "+${project.getProperties()['channel']}"
+            if (project.hasProperty('versionSuffix')) {
+                newVersionNum = newVersionNum + "+${project.getProperties()['versionSuffix']}"
             }
             ignoreExitValue true
             executable 'git'
