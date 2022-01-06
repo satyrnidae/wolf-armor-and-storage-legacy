@@ -6,10 +6,10 @@
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.7",
   "client": [
-    "accessors.ModelWolfAccessor"
+    "accessors.ModelWolfAccessor",
+    "accessors.RenderAccessor"
   ],
   "mixins": [
-    "accessors.EntityLivingAccessor",
     "MixinEntity",
     "MixinEntityAgeable",
     "MixinEntityAISit",
@@ -19,7 +19,8 @@
     "MixinEntityLivingBase",
     "MixinEntityTameable",
     "MixinEntityWolf",
-    "MixinPotion"
+    "MixinPotion",
+    "accessors.EntityLivingAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
