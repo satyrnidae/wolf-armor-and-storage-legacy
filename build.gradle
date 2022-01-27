@@ -86,9 +86,10 @@ dependencies {
         exclude module: 'commons-io'
     }
 
-    compileOnly fg.deobf("curse.maven:letsleepingdogslie-334098:2803490")
-    compileOnly fg.deobf("curse.maven:sophisticatedwolves-220495:2713186")
-    compileOnly fg.deobf("curse.maven:electroblobswizardry-265642:3189062")
+    compileOnly fg.deobf("curse.maven:let-sleeping-dogs-lie-334098:2803490")
+    compileOnly fg.deobf("curse.maven:sophisticated-wolves-220495:2713186")
+    compileOnly fg.deobf("curse.maven:electroblobs-wizardry-265642:3189062")
+    compileOnly fg.deobf("curse.maven:mo-bends-231347:3573346")
 }
 
 minecraft {
