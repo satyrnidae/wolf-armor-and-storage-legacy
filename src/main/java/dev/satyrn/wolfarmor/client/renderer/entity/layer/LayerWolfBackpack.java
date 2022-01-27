@@ -20,7 +20,6 @@ import javax.annotation.Nonnull;
 @SideOnly(Side.CLIENT)
 public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
     //region Fields
-
     protected ModelBase modelWolfBackpack;
     private final RenderLiving<?> renderer;
 
@@ -42,6 +41,14 @@ public class LayerWolfBackpack implements LayerRenderer<EntityWolf> {
     //endregion Constructors
 
     //region Public / Protected Methods
+
+    /**
+     * Gets the wolf backpack model.
+     * @return
+     */
+    public ModelBase getModelWolfBackpack() {
+        return modelWolfBackpack;
+    }
 
     /**
      * Renders the layer.

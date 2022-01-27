@@ -33,17 +33,11 @@ public class CommonProxy implements IProxy {
     public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
         registerEventListeners();
         registerCriteriaTriggers();
+        Compatibility.preInit(preInitializationEvent);
     }
 
-    @Override
     public void registerEntityRenderingHandlers() {}
 
-    @Override
-    public void setupCompatibilityProviders() {
-        Compatibility.setup();
-    }
-
-    @Override
     public void registerItemRenders(@Nonnull FMLInitializationEvent initializationEvent) {}
 
     @Override
@@ -52,6 +46,7 @@ public class CommonProxy implements IProxy {
         registerItemRenders(initializationEvent);
         registerItemColorHandlers(initializationEvent);
         registerLegacyCapabilityStubs();
+        Compatibility.init(initializationEvent);
     }
 
     @Deprecated
@@ -66,10 +61,8 @@ public class CommonProxy implements IProxy {
                 dev.satyrn.wolfarmor.common.capabilities.CapabilityWolfArmor::new);
     }
 
-    @Override
     public void registerItemColorHandlers(@Nonnull FMLInitializationEvent initializationEvent) {}
 
-    @Override
     public void registerCriteriaTriggers() {
         Criteria.EQUIP_WOLF_ARMOR = new WolfArmorTrigger(Resources.CRITERIA_TRIGGER_EQUIP_WOLF_ARMOR);
         Criteria.EQUIP_WOLF_CHEST = new WolfArmorTrigger(Resources.CRITERIA_TRIGGER_EQUIP_WOLF_CHEST);
@@ -77,12 +70,10 @@ public class CommonProxy implements IProxy {
         CriteriaTriggers.register(Criteria.EQUIP_WOLF_CHEST);
     }
 
-    @Override
     public void registerLootTables() {
         LootHandler.init();
     }
 
-    @Override
     public void registerEventListeners() {
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         MinecraftForge.EVENT_BUS.register(new PlayerEventHandler());
@@ -95,15 +86,15 @@ public class CommonProxy implements IProxy {
     public void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent) {
         this.registerGuiHandlers();
         this.registerLootTables();
+        Compatibility.postInit(postInitializationEvent);
     }
 
     @Override
     public void loadComplete(@Nonnull FMLLoadCompleteEvent loadCompleteEvent) {
         this.registerEntityRenderingHandlers();
-        this.setupCompatibilityProviders();
+        Compatibility.loadComplete(loadCompleteEvent);
     }
 
-    @Override
     public void registerGuiHandlers() {
         NetworkRegistry.INSTANCE.registerGuiHandler(WolfArmorMod.getInstance(), new WolfArmorGuiHandler());
     }

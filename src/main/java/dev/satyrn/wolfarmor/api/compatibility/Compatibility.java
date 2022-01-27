@@ -10,6 +10,10 @@ import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -99,20 +103,26 @@ public class Compatibility {
     /**
      * Gets an armor render layer. Can specify a mod id for a specific layer provider.
      * @param renderer The renderer to which the layer will be added.
-     * @param modId The mod ID, or null
+     * @param filterSpec The mod ID, or null
      * @return The
      */
     @SideOnly(Side.CLIENT)
     @Nonnull
-    public static synchronized LayerRenderer<?> getArmorLayer(@Nonnull RenderLiving<?> renderer, @Nullable String modId) {
+    public static synchronized LayerRenderer<?> getArmorLayer(@Nonnull RenderLiving<?> renderer, final @Nullable String filterSpec) {
         Optional<LayerProvider> provider = Optional.empty();
-        if (modId != null) {
+        if (filterSpec != null) {
+            final @Nonnull String[] filters = filterSpec.split(",");
             provider = layerOverrides.stream().filter(LayerProvider::getProvidesArmorLayer).filter(layerProvider -> {
-                if (modId.startsWith("!")) {
-                    final String excludeModId = modId.substring(1, modId.length() - 1);
-                    return !Objects.equals(layerProvider.getModId(), excludeModId);
+                boolean matches = true;
+                for (final String filter : filters) {
+                    if (filter.startsWith("!")) {
+                        final String exclude = filter.substring(1, filter.length() - 1);
+                        matches &= !Objects.equals(layerProvider.getModId(), exclude);
+                    } else {
+                        matches &= Objects.equals(layerProvider.getModId(), filter);
+                    }
                 }
-                return Objects.equals(layerProvider.getModId(), modId);
+                return matches;
             }).max(new ProviderComparator());
         }
 
@@ -181,20 +191,77 @@ public class Compatibility {
      * Sets up the compatibility providers
      */
     @SideOnly(Side.CLIENT)
-    public static void setupClient() {
+    public static void loadComplete_Client(FMLLoadCompleteEvent event) {
         compatibilityProviders.values().forEach(provider -> {
             if(isModLoaded(provider.getModId())) {
-                logger.info("Performing client-side compatibility setup for " + provider.getModId() + "...");
-                provider.setupClient();
+                logger.info("Performing client-side compatibility loadComplete for " + provider.getModId() + "...");
+                provider.loadComplete_Client(event);
             }
         });
     }
 
-    public static void setup() {
+    public static void loadComplete(FMLLoadCompleteEvent event) {
         compatibilityProviders.values().forEach(provider -> {
             if(isModLoaded(provider.getModId())) {
-                logger.info("Performing server-side compatibility setup for " + provider.getModId() + "...");
-                provider.setup();
+                logger.info("Performing server-side compatibility loadComplete for " + provider.getModId() + "...");
+                provider.loadComplete(event);
+            }
+        });
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void postInit_Client(FMLPostInitializationEvent event) {
+        compatibilityProviders.values().forEach(provider -> {
+            if(isModLoaded(provider.getModId())) {
+                logger.info("Performing client-side compatibility postInit for " + provider.getModId() + "...");
+                provider.postInit_Client(event);
+            }
+        });
+    }
+
+    public static void postInit(FMLPostInitializationEvent event) {
+        compatibilityProviders.values().forEach(provider -> {
+            if(isModLoaded(provider.getModId())) {
+                logger.info("Performing server-side compatibility postInit for " + provider.getModId() + "...");
+                provider.postInit(event);
+            }
+        });
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void init_Client(FMLInitializationEvent event) {
+        compatibilityProviders.values().forEach(provider -> {
+            if(isModLoaded(provider.getModId())) {
+                logger.info("Performing client-side compatibility init for " + provider.getModId() + "...");
+                provider.init_Client(event);
+            }
+        });
+    }
+
+    public static void init(FMLInitializationEvent event) {
+        compatibilityProviders.values().forEach(provider -> {
+            if(isModLoaded(provider.getModId())) {
+                logger.info("Performing server-side compatibility init for " + provider.getModId() + "...");
+                provider.init(event);
+            }
+        });
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void preInit_Client(FMLPreInitializationEvent event) {
+        compatibilityProviders.values().forEach(provider -> {
+            if(isModLoaded(provider.getModId())) {
+                logger.info("Performing client-side compatibility preInit for " + provider.getModId() + "...");
+                provider.preInit_Client(event);
+            }
+        });
+    }
+
+    public static void preInit(FMLPreInitializationEvent event) {
+        compatibilityProviders.values().forEach(provider -> {
+            if(isModLoaded(provider.getModId())) {
+                logger.info("Performing server-side compatibility preInit for " + provider.getModId() + "...");
+                provider.preInit(event);
             }
         });
     }

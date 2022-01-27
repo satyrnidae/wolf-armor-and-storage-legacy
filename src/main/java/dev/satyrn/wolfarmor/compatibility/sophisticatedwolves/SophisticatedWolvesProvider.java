@@ -3,13 +3,11 @@ package dev.satyrn.wolfarmor.compatibility.sophisticatedwolves;
 import dev.satyrn.wolfarmor.api.compatibility.Compatibility;
 import dev.satyrn.wolfarmor.api.compatibility.CompatibilityProvider;
 import dev.satyrn.wolfarmor.api.compatibility.Provider;
-import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfArmor;
-import dev.satyrn.wolfarmor.client.renderer.entity.layer.LayerWolfBackpack;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -24,7 +22,7 @@ public class SophisticatedWolvesProvider extends CompatibilityProvider {
      */
     @Override
     @SideOnly(Side.CLIENT)
-    public void setupClient() {
+    public void loadComplete_Client(FMLLoadCompleteEvent event) {
         @Nonnull final String className = "sophisticated_wolves.entity.EntitySophisticatedWolf";
         @Nonnull final Map<Class<? extends Entity>, Render<? extends Entity>> pendingRenderers = new HashMap<>();
         RenderingRegistry.loadEntityRenderers(pendingRenderers);
