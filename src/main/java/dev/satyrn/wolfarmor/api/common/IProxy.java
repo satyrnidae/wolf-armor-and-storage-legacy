@@ -17,20 +17,6 @@ public interface IProxy {
     void postInit(@Nonnull FMLPostInitializationEvent postInitializationEvent);
     void loadComplete(@Nonnull FMLLoadCompleteEvent loadCompleteEvent);
 
-    void registerEntityRenderingHandlers();
-    void registerEventListeners();
-    void registerGuiHandlers();
-    void registerLootTables();
-    void registerItemRenders(@Nonnull FMLInitializationEvent initializationEvent);
-    void registerItemColorHandlers(@Nonnull FMLInitializationEvent initializationEvent);
-
-    void setupCompatibilityProviders();
-
-    /**
-     * Registers criteria triggers.
-     */
-    void registerCriteriaTriggers();
-
     IThreadListener getThreadFromContext(MessageContext context);
 
     EntityPlayer getPlayerFromContext(MessageContext context);

@@ -69,6 +69,7 @@ public class WolfArmorMod {
         Compatibility.register("dev.satyrn.wolfarmor.compatibility.sophisticatedwolves.SophisticatedWolvesProvider");
         Compatibility.register("dev.satyrn.wolfarmor.compatibility.dogslie.LetSleepingDogsLieProvider");
         Compatibility.register("dev.satyrn.wolfarmor.compatibility.ebwizardry.WizardryProvider");
+        Compatibility.register("dev.satyrn.wolfarmor.compatibility.mobends.MoBendsProvider");
 
         config.initialize(preInitializationEvent.getModConfigurationDirectory() + "/satyrn");
         proxy.preInit(preInitializationEvent);

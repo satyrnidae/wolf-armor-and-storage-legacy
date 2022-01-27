@@ -21,7 +21,9 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -131,15 +133,28 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void setupCompatibilityProviders() {
-        super.setupCompatibilityProviders();
-        Compatibility.setupClient();
-    }
-
-    @Override
     public void postInit(FMLPostInitializationEvent event) {
         super.postInit(event);
         Compatibility.registerLayerProviders();
+        Compatibility.postInit_Client(event);
+    }
+
+    @Override
+    public void loadComplete(@Nonnull FMLLoadCompleteEvent loadCompleteEvent) {
+        super.loadComplete(loadCompleteEvent);
+        Compatibility.loadComplete_Client(loadCompleteEvent);
+    }
+
+    @Override
+    public void preInit(@Nonnull FMLPreInitializationEvent preInitializationEvent) {
+        super.preInit(preInitializationEvent);
+        Compatibility.preInit_Client(preInitializationEvent);
+    }
+
+    @Override
+    public void init(@Nonnull FMLInitializationEvent initializationEvent) {
+        super.init(initializationEvent);
+        Compatibility.init_Client(initializationEvent);
     }
 
     //endregion Public / Protected Methods

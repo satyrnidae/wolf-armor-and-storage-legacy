@@ -155,6 +155,22 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
         this.armorLayers[1] = armorInnerLayer;
     }
 
+    /**
+     * Gets the outer armor layer.
+     * @return The outer armor layer.
+     */
+    public @Nullable ModelBase getArmorOuterLayer() {
+        return this.armorLayers.length >= 1 ? this.armorLayers[0] : null;
+    }
+
+    /**
+     * Gets the inner armor layer.
+     * @return The inner armor layer.
+     */
+    public @Nullable ModelBase getArmorInnerLayer() {
+        return this.armorLayers.length >= 2 ? this.armorLayers[1] : null;
+    }
+
     //endregion Public / Protected Methods
 
     //region Accessors / Mutators
