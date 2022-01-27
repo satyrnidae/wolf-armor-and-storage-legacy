@@ -19,10 +19,10 @@ import static java.lang.Math.PI;
  */
 @SideOnly(Side.CLIENT)
 public class ModelWolfBackpack extends ModelBase {
-    protected final ModelRenderer backpackRightTop;
-    protected final ModelRenderer backpackRightBottom;
-    protected final ModelRenderer backpackLeftTop;
-    protected final ModelRenderer backpackLeftBottom;
+    public ModelRenderer backpackRightTop;
+    public ModelRenderer backpackRightBottom;
+    public ModelRenderer backpackLeftTop;
+    public ModelRenderer backpackLeftBottom;
 
     private final static float INITIAL_Z_ROTATION = 0.139626F;
 
