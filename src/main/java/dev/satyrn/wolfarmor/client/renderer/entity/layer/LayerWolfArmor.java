@@ -18,7 +18,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -97,7 +96,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
                 model.setModelAttributes(this.renderer.getMainModel());
                 model.setLivingAnimations(entityWolf, limbSwing, limbSwingAmount, partialTicks);
 
-                this.renderer.bindTexture(this.getArmorResource(itemStack, layer, null));
+                this.renderer.bindTexture(this.getArmorResource(itemStack, layer, false));
 
                 int color = armorItem.getColor(itemStack);
 
@@ -115,7 +114,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
                 GlStateManager.color(getColorRed(), getColorGreen(), getColorBlue(), getAlpha());
 
                 if (armorItem.getHasOverlay(itemStack)) {
-                    this.renderer.bindTexture(this.getArmorResource(itemStack, layer, "overlay"));
+                    this.renderer.bindTexture(this.getArmorResource(itemStack, layer, true));
                     model.render(entityWolf, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
                 }
 
@@ -180,13 +179,13 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
      *
      * @param itemStack  The item stack in the armor slot.
      * @param layer      The current layer.
-     * @param type       The texture variant. May be null or overlay.
+     * @param isOverlay  If the overlay texture should be used
      * @return A new or cached resource location corresponding to the generated / api path.
      */
     @Nonnull
     private ResourceLocation getArmorResource(@Nonnull ItemStack itemStack,
                                               int layer,
-                                              @Nullable String type) {
+                                              boolean isOverlay) {
         ItemWolfArmor armor = (ItemWolfArmor) itemStack.getItem();
         String texture = armor.getMaterial().getName();
         String domain = Resources.MOD_ID;
@@ -196,7 +195,7 @@ public class LayerWolfArmor implements LayerRenderer<EntityWolf> {
             texture = texture.substring(i);
         }
 
-        String path = String.format("%s:textures/models/armor/wolf_%s_%d%s.png", domain, texture, layer, type == null ? "" : String.format("_%s", type));
+        String path = String.format("%s:textures/entity/wolf/armor/%s_layer_%d%s.png", domain, texture, layer + 1, isOverlay ? "_overlay" : "");
 
         //TODO: API / JSON call to get wolf armor layer path
 
