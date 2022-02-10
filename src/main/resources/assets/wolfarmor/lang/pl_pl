@@ -1,0 +1,42 @@
+item.wolfarmor.leatherWolfArmor.name=Skórzana wilcza zbroja
+item.wolfarmor.chainWolfArmor.name=Kolczuga wilcza
+item.wolfarmor.ironWolfArmor.name=Żelazna wilcza zbroja
+item.wolfarmor.goldWolfArmor.name=Złota wilcza zbroja
+item.wolfarmor.diamondWolfArmor.name=Diamentowa wilcza zbroja
+
+config.wolfarmor.general.enableChests=Aktywuj Wilcze Skrzynie
+config.wolfarmor.general.enableChests.comment=Włącz lub wyłącz wilcze plecaki
+config.wolfarmor.client.enableWolfArmorRender=Wyświetlaj model wilczej zbroi
+config.wolfarmor.client.enableWolfArmorRender.comment=Włącza lub wyłącza renderowanie zbroi wilka.
+config.wolfarmor.client.enableWolfChestRender=Wyświetlaj model wilczego plecaka
+config.wolfarmor.client.enableWolfChestRender.comment=Włącza lub wyłącza renderowanie plecaków wilka.
+config.wolfarmor.client.enableWolfArmorDisplay=Wyświetlaj stan wilczej zbroi w ekwipunku
+config.wolfarmor.client.enableWolfArmorDisplay.comment=Włącza lub wyłącza wyświetlanie wartości pancerza wilka na ekranie ekwipunku wilka.
+config.wolfarmor.client.enableWolfHealthDisplay=Wyświetlaj zdrowie wilka w ekwipunku
+config.wolfarmor.client.enableWolfHealthDisplay.comment=Włącza lub wyłącza wyświetlanie wartości zdrowia wilka na ekranie ekwipunku wilka.
+config.wolfarmor.behavior.enableHowlingUntamedWolves=Włącz Wycie Dzikiego Wilka
+config.wolfarmor.behavior.enableHowlingUntamedWolves.comment=Włącza lub wyłącza wycie wilka o północy.
+config.wolfarmor.behavior.shouldWolvesEatWhenDamaged=Włącz automatyczne leczenie wilków
+config.wolfarmor.behavior.shouldWolvesEatWhenDamaged.comment=Jeśli ta opcja jest włączona wilki będą automatycznie jeść mięso przechowywane w ich ekwipunku.
+config.wolfarmor.general.chestSize.horizontal=Poziomy rozmiar plecaka
+config.wolfarmor.general.chestSize.horizontal.comment=Ustawia poziomy rozmiar wilczego plecaka
+config.wolfarmor.general.chestSize.vertical=Pionowy rozmiar plecaka
+config.wolfarmor.general.chestSize.vertical.comment=Ustawia pionowy rozmiar wilczego plecaka
+
+advancements.husbandry.armor_up.title=Uzbrojony!
+advancements.husbandry.armor_up.description=Wyposaż swojego wilka w zbroję
+advancements.husbandry.wolf_pack.title=Wilczy Ekwipunek
+advancements.husbandry.wolf_pack.description=Wyposaż swojego wilka w plecak
+
+inventory.wolfarmor.wolf=%1$s
+
+gui.wolfarmor.config= Zbroja Wilka Mod
+gui.wolfarmor.config.subtitle=Ustawienia Konfiguracji
+gui.wolfarmor.config.category.general=Ustawienia Główne
+gui.wolfarmor.config.category.client=Ustawienia Klienta
+gui.wolfarmor.config.category.client.render=Ustawienia Renderowania
+gui.wolfarmor.config.category.client.gui=Ustawienia Interfejsu
+gui.wolfarmor.config.category.behavior=Niestandardowe Zachowania
+gui.wolfarmor.inventory.remove_chest=Usuń plecak
+
+entity.wolfarmor.wolf_armored.name=Wilk
