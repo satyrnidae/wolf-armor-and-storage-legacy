@@ -48,22 +48,21 @@ file "${projectDir.getAbsolutePath()}/config.json" withReader {
 }
 
 def shortVersion = "${config.version.major}.${config.version.minor}.${config.version.patch}"
-
+version = "${shortVersion}+${config.minecraft}"
 if (project.hasProperty("versionSuffix")) {
+    version = "$version.${project.getProperties()['versionSuffix']}"
     shortVersion = "$shortVersion+${project.getProperties()['versionSuffix']}"
 }
-
-version = "${config.minecraft}-${shortVersion}"
-group = 'dev.satyrn.wolfarmor'
-archivesBaseName = 'WolfArmorAndStorage'
-
-println "Current version is ${version}"
-
 if (project.hasProperty('channel')) {
     version = version + "-${project.getProperties()['channel']}"
 } else {
     version = version + "-universal"
 }
+
+group = 'dev.satyrn.wolfarmor'
+archivesBaseName = 'WolfArmorAndStorage'
+
+println "${archivesBaseName}-${version}"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 

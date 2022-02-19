@@ -64,6 +64,8 @@ public class ArmoredWolfMutator extends WolfMutator {
     public ModelWolf vanillaInnerArmorModel;
     public ModelWolfBackpack vanillaWolfBackpackModel;
 
+    private boolean isCompatibleWolf;
+
     /**
      * Initializes a new armored wolf mutator.
      * @param dataFactory The data factory.
@@ -452,72 +454,59 @@ public class ArmoredWolfMutator extends WolfMutator {
         this.backpackRightBottom.setTextureSize(16, 32);
         this.backpackRightBottom.addBox(3F, 0F, -4F, 3, 4, 5, scale);
     }
-    
+
     @Override
     public void syncUpWithData(WolfData data) {
         super.syncUpWithData(data);
 
-        wolfHeadMainArmorOuter.syncUp(data.head);
-        wolfBodyArmorOuter.syncUp(data.body);
-        wolfLeg1ArmorOuter.syncUp(data.leg1);
-        wolfLeg2ArmorOuter.syncUp(data.leg2);
-        wolfLeg3ArmorOuter.syncUp(data.leg3);
-        wolfLeg4ArmorOuter.syncUp(data.leg4);
-        wolfTailArmorOuter.syncUp(data.tail);
-        wolfManeArmorOuter.syncUp(data.mane);
+        if (this.wolfHeadMainArmorOuter != null) {
+            wolfHeadMainArmorOuter.syncUp(data.head);
+            wolfBodyArmorOuter.syncUp(data.body);
+            wolfLeg1ArmorOuter.syncUp(data.leg1);
+            wolfLeg2ArmorOuter.syncUp(data.leg2);
+            wolfLeg3ArmorOuter.syncUp(data.leg3);
+            wolfLeg4ArmorOuter.syncUp(data.leg4);
+            wolfTailArmorOuter.syncUp(data.tail);
+            wolfManeArmorOuter.syncUp(data.mane);
 
-        noseArmorOuter.syncUp(data.nose);
-        mouthArmorOuter.syncUp(data.mouth);
-        leftEarArmorOuter.syncUp(data.leftEar);
-        rightEarArmorOuter.syncUp(data.rightEar);
-        foreLeg1ArmorOuter.syncUp(data.foreLeg1);
-        foreLeg2ArmorOuter.syncUp(data.foreLeg2);
-        foreLeg3ArmorOuter.syncUp(data.foreLeg3);
-        foreLeg4ArmorOuter.syncUp(data.foreLeg4);
+            noseArmorOuter.syncUp(data.nose);
+            mouthArmorOuter.syncUp(data.mouth);
+            leftEarArmorOuter.syncUp(data.leftEar);
+            rightEarArmorOuter.syncUp(data.rightEar);
+            foreLeg1ArmorOuter.syncUp(data.foreLeg1);
+            foreLeg2ArmorOuter.syncUp(data.foreLeg2);
+            foreLeg3ArmorOuter.syncUp(data.foreLeg3);
+            foreLeg4ArmorOuter.syncUp(data.foreLeg4);
+        }
+        if (this.wolfHeadMainArmorInner != null) {
+            wolfHeadMainArmorInner.syncUp(data.head);
+            wolfBodyArmorInner.syncUp(data.body);
+            wolfLeg1ArmorInner.syncUp(data.leg1);
+            wolfLeg2ArmorInner.syncUp(data.leg2);
+            wolfLeg3ArmorInner.syncUp(data.leg3);
+            wolfLeg4ArmorInner.syncUp(data.leg4);
+            wolfTailArmorInner.syncUp(data.tail);
+            wolfManeArmorInner.syncUp(data.mane);
 
-        wolfHeadMainArmorInner.syncUp(data.head);
-        wolfBodyArmorInner.syncUp(data.body);
-        wolfLeg1ArmorInner.syncUp(data.leg1);
-        wolfLeg2ArmorInner.syncUp(data.leg2);
-        wolfLeg3ArmorInner.syncUp(data.leg3);
-        wolfLeg4ArmorInner.syncUp(data.leg4);
-        wolfTailArmorInner.syncUp(data.tail);
-        wolfManeArmorInner.syncUp(data.mane);
-
-        noseArmorInner.syncUp(data.nose);
-        mouthArmorInner.syncUp(data.mouth);
-        leftEarArmorInner.syncUp(data.leftEar);
-        rightEarArmorInner.syncUp(data.rightEar);
-        foreLeg1ArmorInner.syncUp(data.foreLeg1);
-        foreLeg2ArmorInner.syncUp(data.foreLeg2);
-        foreLeg3ArmorInner.syncUp(data.foreLeg3);
-        foreLeg4ArmorInner.syncUp(data.foreLeg4);
-
-        backpackLeftTop.syncUp(data.body);
-        backpackRightTop.syncUp(data.body);
-        backpackLeftBottom.syncUp(data.body);
-        backpackRightBottom.syncUp(data.body);
+            noseArmorInner.syncUp(data.nose);
+            mouthArmorInner.syncUp(data.mouth);
+            leftEarArmorInner.syncUp(data.leftEar);
+            rightEarArmorInner.syncUp(data.rightEar);
+            foreLeg1ArmorInner.syncUp(data.foreLeg1);
+            foreLeg2ArmorInner.syncUp(data.foreLeg2);
+            foreLeg3ArmorInner.syncUp(data.foreLeg3);
+            foreLeg4ArmorInner.syncUp(data.foreLeg4);
+        }
+        if (this.backpackLeftTop != null) {
+            backpackLeftTop.syncUp(data.body);
+            backpackRightTop.syncUp(data.body);
+            backpackLeftBottom.syncUp(data.body);
+            backpackRightBottom.syncUp(data.body);
+        }
     }
 
     private boolean isModelVanilla(ModelWolfBackpack model)
     {
         return !(model.backpackRightTop instanceof IModelPart);
     }
-
-    /*private boolean createBackpack(ModelWolfBackpack original, float scale) {
-        original.backpackLeftBottom = this.backpackLeftBottom = new ModelPart(original, 0, 0);
-        this.backpackLeftBottom.setTextureSize(16, 32);
-        this.backpackLeftBottom.developBox(3, -2, 0, 2, 2, 5, scale)
-                .offsetTextureQuad(BoxSide.TOP, 5F, 2F)
-                .rotateTextureQuad(BoxSide.TOP, FaceRotation.HALF_TURN)
-                .offsetTextureQuad(BoxSide.BACK, -4F, -5F)
-                .offsetTextureQuad(BoxSide.BOTTOM, 0F, 5F)
-                .rotateTextureQuad(BoxSide.BOTTOM, FaceRotation.HALF_TURN)
-                .offsetTextureQuad(BoxSide.LEFT, 3F, -2F)
-                .rotateTextureQuad(BoxSide.LEFT, FaceRotation.CLOCKWISE)
-                .offsetTextureQuad(BoxSide.RIGHT, 0F, -2F)
-                .rotateTextureQuad(BoxSide.RIGHT, FaceRotation.COUNTER_CLOCKWISE)
-                .create();
-        return true;
-    }*/
 }
