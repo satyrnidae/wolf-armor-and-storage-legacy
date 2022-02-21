@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         # Use these Java versions
-        java: [ 1.8 ]
+        java: [ 1.8, 11 ]
         # and run on both Linux and Windows
         os: [ubuntu-20.04, windows-latest]
     runs-on: ${{ matrix.os }}
