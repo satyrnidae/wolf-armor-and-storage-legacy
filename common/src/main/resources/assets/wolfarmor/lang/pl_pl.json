@@ -31,10 +31,11 @@
   "gui.wolfarmor.config.subtitle": "Ustawienia Konfiguracji",
   "gui.wolfarmor.inventory.remove_chest": "Usuń plecak",
   "inventory.wolfarmor.wolf": "%1$s",
+  "item.modifiers.wolfarmor": "[PM] Po założeniu na wilka:",
   "item.wolfarmor.chainmail_wolf_armor": "Kolczuga wilcza",
   "item.wolfarmor.diamond_wolf_armor": "Diamentowa wilcza zbroja",
   "item.wolfarmor.golden_wolf_armor": "Złota wilcza zbroja",
   "item.wolfarmor.iron_wolf_armor": "Żelazna wilcza zbroja",
   "item.wolfarmor.leather_wolf_armor": "Skórzana wilcza zbroja",
-  "item.wolfarmor.netherite_wolf_armor": "Netherytu wilcza zbroja"
+  "item.wolfarmor.netherite_wolf_armor": "[PM] Netherytu wilcza zbroja"
 }

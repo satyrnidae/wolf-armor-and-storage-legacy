@@ -31,10 +31,11 @@
   "gui.wolfarmor.config.subtitle": "Конфигурационные параметры",
   "gui.wolfarmor.inventory.remove_chest": "Снять сундук",
   "inventory.wolfarmor.wolf": "%1$s",
+  "item.modifiers.wolfarmor": "[МП] Когда на волчья:",
   "item.wolfarmor.chainmail_wolf_armor": "Кольчужная волчья броня",
   "item.wolfarmor.diamond_wolf_armor": "Алмазная волчья броня",
   "item.wolfarmor.golden_wolf_armor": "Золотая волчья броня",
   "item.wolfarmor.iron_wolf_armor": "Железная волчья броня",
   "item.wolfarmor.leather_wolf_armor": "Кожаная волчья броня",
-  "item.wolfarmor.netherite_wolf_armor": "Незеритоый волчья броня"
+  "item.wolfarmor.netherite_wolf_armor": "[МП] Незеритоый волчья броня"
 }

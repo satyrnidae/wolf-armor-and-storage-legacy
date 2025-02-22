@@ -31,10 +31,11 @@
   "gui.wolfarmor.config.subtitle": "組態設定",
   "gui.wolfarmor.inventory.remove_chest": "移除背包",
   "inventory.wolfarmor.wolf": "%1$s",
+  "item.modifiers.wolfarmor": "[機器翻譯] 裝備在狼身上時：",
   "item.wolfarmor.chainmail_wolf_armor": "鎖鏈狼鎧",
   "item.wolfarmor.diamond_wolf_armor": "鑽石狼鎧",
   "item.wolfarmor.golden_wolf_armor": "金狼鎧",
   "item.wolfarmor.iron_wolf_armor": "鐵狼鎧",
   "item.wolfarmor.leather_wolf_armor": "皮革狼鎧",
-  "item.wolfarmor.netherite_wolf_armor": "地獄合金狼鎧"
+  "item.wolfarmor.netherite_wolf_armor": "[機器翻譯] 地獄合金狼鎧"
 }

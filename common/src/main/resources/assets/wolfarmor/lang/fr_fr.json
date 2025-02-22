@@ -31,10 +31,11 @@
   "gui.wolfarmor.config.subtitle": "Paramètres de Configuration",
   "gui.wolfarmor.inventory.remove_chest": "Retirer le Coffre",
   "inventory.wolfarmor.wolf": "%1$s",
+  "item.modifiers.wolfarmor": "[TA] Lorsque sur des loups:",
   "item.wolfarmor.chainmail_wolf_armor": "Armure de Loup en Maille",
   "item.wolfarmor.diamond_wolf_armor": "Armure de Loup en Diamant",
   "item.wolfarmor.golden_wolf_armor": "Armure de Loup en Or",
   "item.wolfarmor.iron_wolf_armor": "Armure de Loup en Fer",
   "item.wolfarmor.leather_wolf_armor": "Armure de Loup en Cuir",
-  "item.wolfarmor.netherite_wolf_armor": "Armure de Loup en Netherite"
+  "item.wolfarmor.netherite_wolf_armor": "[TA] Armure de Loup en Netherite"
 }
