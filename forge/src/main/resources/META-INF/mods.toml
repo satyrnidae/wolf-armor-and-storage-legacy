@@ -1,0 +1,36 @@
+modLoader = "javafml"
+loaderVersion = "[43,)"
+issueTrackerURL = "https://github.com/satyrnidae/wolf-armor-and-storage-legacy/issues"
+license = "MIT"
+
+[[mods]]
+modId = "wolfarmor"
+version = "${version}"
+displayName = "Wolf Armor and Storage: Legacy"
+authors = "satyrnidae"
+description = '''
+Ten years of armored wolves!
+Adds new functionality and features to allow wolves to become the adventuring companions they were always meant to be!
+'''
+logoFile = "assets/wolfarmor/logo.png"
+
+[[dependencies.wolfarmor]]
+modId = "forge"
+mandatory = true
+versionRange = "[43,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.wolfarmor]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.19.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.wolfarmor]]
+modId = "architectury"
+mandatory = true
+versionRange = "[6.6.92,)"
+ordering = "AFTER"
+side = "BOTH"

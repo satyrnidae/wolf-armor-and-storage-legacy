@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "wolfarmor",
+  "version": "${version}",
+  "name": "Wolf Armor and Storage Legacy",
+  "description": "Ten years of armored wolves!\nAdds new functionality and features to allow wolves to become the adventuring companions they were always meant to be!",
+  "authors": [
+    "satyrnidae"
+  ],
+  "contact": {
+    "homepage": "https://satyrn.dev/",
+    "sources": "https://github.com/satyrnidae/wolf-armor-and-storage-legacy"
+  },
+  "license": "MIT",
+  "icon": "assets/wolfarmor/modpic.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.satyrn.wolfarmor.fabric.WolfArmorFabric"
+    ],
+    "client": [
+      "dev.satyrn.wolfarmor.fabric.client.WolfArmorFabricClient"
+    ]
+  },
+  "mixins": [
+    "wolfarmor.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "~1.19.2",
+    "java": ">=17",
+    "architectury": ">=6.6.92",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

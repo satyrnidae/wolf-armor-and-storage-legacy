@@ -1,0 +1,16 @@
+{
+  "package": "dev.satyrn.wolfarmor.mixins",
+  "required": true,
+  "target": "@env(DEFAULT)",
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.7",
+  "client": [],
+  "mixins": [
+    "entity.TamableAnimalMixin",
+    "entity.TamableAnimalMixin",
+    "entity.WolfMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

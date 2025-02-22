@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "${group}",
+    "id": "wolfarmor",
+    "version": "${version}",
+    "metadata": {
+      "name": "Wolf Armor and Storage Legacy",
+      "description": "Ten years of armored wolves!\nAdds new functionality and features to allow wolves to become the adventuring companions they were always meant to be!",
+      "contributors": {
+        "satyrnidae": "Author"
+      },
+      "icon": "assets/wolfarmor/modpic.png"
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "entrypoints": {
+      "init": [
+        "dev.satyrn.wolfarmor.quilt.WolfArmorQuilt"
+      ],
+      "client": [
+        "dev.satyrn.wolfarmor.quilt.client.WolfArmorQuiltClient"
+      ]
+    },
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "version": "*"
+      },
+      {
+        "id": "quilt_base",
+        "version": "*"
+      },
+      {
+        "id": "minecraft",
+        "version": ">=1.19.2"
+      },
+      {
+        "id": "architectury",
+        "version": ">=6.6.92"
+      }
+    ]
+  },
+  "mixin": [
+    "wolfarmor.mixins.json"
+  ]
+}
