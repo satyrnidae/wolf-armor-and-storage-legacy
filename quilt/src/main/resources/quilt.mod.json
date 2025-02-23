@@ -17,7 +17,7 @@
       "init": [
         "dev.satyrn.wolfarmor.quilt.WolfArmorQuilt"
       ],
-      "client": [
+      "client_init": [
         "dev.satyrn.wolfarmor.quilt.client.WolfArmorQuiltClient"
       ]
     },
