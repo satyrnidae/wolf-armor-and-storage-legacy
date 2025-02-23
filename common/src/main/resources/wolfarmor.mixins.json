@@ -7,7 +7,6 @@
   "client": [],
   "mixins": [
     "entity.TamableAnimalMixin",
-    "entity.TamableAnimalMixin",
     "entity.WolfMixin"
   ],
   "injectors": {
