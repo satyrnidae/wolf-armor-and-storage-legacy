@@ -1,7 +1,11 @@
 package dev.satyrn.wolfarmor.api.entity;
 
 public interface ExtendedTamableAnimal {
-    boolean wolfarmor$getFlag(int flagId);
+    default boolean wolfarmor$getFlag(int flagId) {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
 
-    void wolfarmor$setFlag(int flagId, boolean value);
+    default void wolfarmor$setFlag(int flagId, boolean value) {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
 }

@@ -4,8 +4,11 @@ import dev.satyrn.wolfarmor.api.food.EntityFoodData;
 import org.jetbrains.annotations.NotNull;
 
 public interface HungryEntity {
-    @NotNull
-    EntityFoodData wolfarmor$getFoodData();
+    default @NotNull EntityFoodData wolfarmor$getFoodData() {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
 
-    void wolfarmor$addExhaustion(float exhaustion);
+    default void wolfarmor$addExhaustion(float exhaustion) {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
 }

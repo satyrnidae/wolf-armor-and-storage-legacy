@@ -1,27 +1,43 @@
 package dev.satyrn.wolfarmor.api.entity;
 
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerListener;
-import net.minecraft.world.entity.HasCustomInventoryScreen;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public interface ExtendedWolf extends ContainerListener, HasCustomInventoryScreen, ExtendedTamableAnimal, HungryEntity {
-    int wolfarmor$getInventorySize();
+public interface ExtendedWolf extends ExtendedTamableAnimal, HungryEntity {
+    default int wolfarmor$getInventorySize() {
+        throw new UnsupportedOperationException("Not Implemented");
+    };
 
-    boolean wolfarmor$isArmor(final @NotNull ItemStack stack);
+    default boolean wolfarmor$isArmor(final @NotNull ItemStack stack) {
+        throw new UnsupportedOperationException("Not Implemented");
+    };
 
-    boolean wolfarmor$hasInventoryChanged(final @NotNull Container container);
+    default boolean wolfarmor$hasInventoryChanged(final @NotNull Container container) {
+        throw new UnsupportedOperationException("Not Implemented");
+    };
 
-    boolean wolfarmor$getHasChest();
+    default boolean wolfarmor$getHasChest() {
+        throw new UnsupportedOperationException("Not Implemented");
+    };
 
-    void wolfarmor$setHasChest(boolean value);
+    default void wolfarmor$setHasChest(boolean value) {
+        throw new UnsupportedOperationException("Not Implemented");
+    };
 
-    @NotNull ItemStack wolfarmor$getChestItem();
+    default @NotNull ItemStack wolfarmor$getChestItem() {
+        throw new UnsupportedOperationException("Not Implemented");
+    };
 
-    void wolfarmor$setChestItem(final @NotNull ItemStack itemStack);
+    default void wolfarmor$setChestItem(final @NotNull ItemStack itemStack) {
+        throw new UnsupportedOperationException("Not Implemented");
+    };
 
-    @NotNull ItemStack wolfarmor$getArmor();
+    default @NotNull ItemStack wolfarmor$getArmor() {
+        throw new UnsupportedOperationException("Not Implemented");
+    };
 
-    void wolfarmor$setArmor(final @NotNull ItemStack itemStack);
+    default boolean wolfarmor$equipArmor(final @NotNull ItemStack itemStack) {
+        throw new UnsupportedOperationException("Not Implemented");
+    };
 }
