@@ -373,7 +373,7 @@ public abstract class MixinEntityWolf extends EntityTameable implements IArmored
         if (this.getHasArmor()) {
             ItemStack stackInSlot = this.inventory.getStackInSlot(ContainerWolfInventory.INVENTORY_SLOT_ARMOR);
             if (!stackInSlot.isEmpty()) {
-                stackInSlot.damageItem((int) Math.ceil(damage), (EntityLivingBase) (Object) this);
+                stackInSlot.damageItem((int) Math.ceil(damage), this);
                 if (stackInSlot.getCount() == 0) {
                     @Nonnull ItemStack particleStack = stackInSlot.copy();
                     particleStack.setCount(1);
@@ -475,29 +475,28 @@ public abstract class MixinEntityWolf extends EntityTameable implements IArmored
 
         if(entityIn instanceof EntityLivingBase) {
             damage += EnchantmentHelper.getModifierForCreature(this.getArmorItemStack(), ((EntityLivingBase)entityIn).getCreatureAttribute());
-            knockback += EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.KNOCKBACK, (EntityLivingBase)(Object)this);
+            knockback += EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.KNOCKBACK, this);
         }
 
-        boolean atkFlag = entityIn.attackEntityFrom(DamageSource.causeMobDamage((EntityLivingBase)(Object)this), damage);
+        boolean atkFlag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), damage);
 
         if(atkFlag) {
             if(knockback > 0) {
-                ((EntityLivingBase)entityIn).knockBack((Entity)(Object)this, knockback * 0.5F, MathHelper.sin(this.rotationYaw * (float)(Math.PI / 180)), -MathHelper.cos(this.rotationYaw * (float)(Math.PI / 180)));
+                ((EntityLivingBase)entityIn).knockBack(this, knockback * 0.5F, MathHelper.sin(this.rotationYaw * (float)(Math.PI / 180)), -MathHelper.cos(this.rotationYaw * (float)(Math.PI / 180)));
                 this.motionX *= 0.6f;
                 this.motionZ *= 0.6f;
             }
 
-            int fireAspect = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.FIRE_ASPECT, (EntityLivingBase)(Object)this);
+            int fireAspect = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.FIRE_ASPECT, this);
             if(fireAspect > 0) {
                 entityIn.setFire(fireAspect * 4);
             }
 
-            this.applyEnchantments((EntityLivingBase)(Object)this, entityIn);
+            this.applyEnchantments(this, entityIn);
             this.foodStats.addExhaustion(0.1F);
         }
 
         cir.setReturnValue(atkFlag);
-        cir.cancel();
     }
 
     @Inject(method = "entityInit", at = @At("RETURN"))
@@ -513,7 +512,7 @@ public abstract class MixinEntityWolf extends EntityTameable implements IArmored
         if (this.foodStats != null && this.isTamed() && !this.getEntityWorld().isRemote &&
                 this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED) {
             //noinspection ConstantConditions this is actually fine it's a mixin
-            this.foodStats.onUpdate((EntityLivingBase)(Object)this);
+            this.foodStats.onUpdate(this);
             this.connection.sendToAll(new UpdateFoodStatsMessage(this.getEntityId(), this.foodStats.getFoodLevel(), this.foodStats.getSaturationLevel()));
         }
         --this.entityXpCooldown;
@@ -522,7 +521,7 @@ public abstract class MixinEntityWolf extends EntityTameable implements IArmored
     @Inject(method="onLivingUpdate", at=@At("TAIL"))
     private void onLivingUpdate(CallbackInfo ci) {
         if (!this.isDead && !this.getEntityWorld().isRemote) {
-            @Nonnull ItemStack enchantedItem = EnchantmentHelper.getEnchantedItem(Enchantments.MENDING, (EntityLivingBase) (Object) this);
+            @Nonnull ItemStack enchantedItem = EnchantmentHelper.getEnchantedItem(Enchantments.MENDING, this);
             if (!enchantedItem.isEmpty() && enchantedItem.isItemDamaged()) {
                 AxisAlignedBB aabb;
                 if (this.isRiding() && !this.getRidingEntity().isDead) {
@@ -531,7 +530,7 @@ public abstract class MixinEntityWolf extends EntityTameable implements IArmored
                     aabb = this.getEntityBoundingBox();
                 }
 
-                List<Entity> collidedEntities = this.getEntityWorld().getEntitiesWithinAABBExcludingEntity((Entity) (Object) this, aabb);
+                List<Entity> collidedEntities = this.getEntityWorld().getEntitiesWithinAABBExcludingEntity(this, aabb);
 
                 for (Entity entity : collidedEntities) {
                     if (entity instanceof EntityXPOrb && !entity.isDead) {
