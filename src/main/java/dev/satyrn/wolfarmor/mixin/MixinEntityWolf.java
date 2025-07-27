@@ -27,6 +27,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -47,11 +48,13 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.apache.logging.log4j.Level;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -68,12 +71,16 @@ import java.util.List;
  * @since 3.0.20
  */
 @Mixin(EntityWolf.class)
-public abstract class MixinEntityWolf extends MixinEntityTameable implements IArmoredWolf {
-    private int entityXpCooldown;
-    private ContainerHorseChest inventory;
-    private CreatureFoodStats foodStats;
-    private WolfArmorConfig config;
-    private SimpleNetworkWrapper connection;
+public abstract class MixinEntityWolf extends EntityTameable implements IArmoredWolf {
+    public MixinEntityWolf(World worldIn) {
+        super(worldIn);
+    }
+
+    @Unique private int entityXpCooldown;
+    @Unique private ContainerHorseChest inventory;
+    @Unique private CreatureFoodStats foodStats;
+    @Unique private WolfArmorConfig config;
+    @Unique private SimpleNetworkWrapper connection;
 
     // Static ctor injection to add new data manager keys before any sub-classes can add their own.  Prevents nasty ID conflicts,
     // and lessens the number of packets we need to write or send.
@@ -114,6 +121,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.6.0
      */
     @Override
+    @Unique
     public void addExhaustion(float exhaustion) {
         if (this.config.getFoodStatsLevel() != WolfFoodStatsLevel.DISABLED
                 && this.foodStats != null
@@ -147,6 +155,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public Item getChestType() {
         ItemStack chestType = this.dataManager.get(DataHelper.CHEST_TYPE);
         return chestType.isEmpty() ? null : chestType.getItem();
@@ -158,6 +167,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public void setChestType(@Nonnull ItemStack stack) {
         ItemStack chestType = stack.copy();
         if(!chestType.isEmpty())
@@ -171,6 +181,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public boolean getHasChest() { return this.dataManager.get(DataHelper.HAS_CHEST); }
 
     /**
@@ -179,6 +190,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public void setHasChest(boolean hasChest) {
         this.dataManager.set(DataHelper.HAS_CHEST, hasChest);
         if(!hasChest) {
@@ -192,6 +204,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public int getMaxSizeInventory() { return 1 + (this.config.getChestSize().getColumns() * this.config.getChestSize().getRows()); }
 
     /**
@@ -201,6 +214,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     @Nonnull public InventoryBasic getInventory() { return this.inventory; }
 
     /**
@@ -209,6 +223,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     @Nonnull public ItemStack getArmorItemStack() {
         return this.dataManager.get(DataHelper.ARMOR_ITEM);
     }
@@ -219,6 +234,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public void setArmorItemStack(@Nonnull ItemStack armorItemStack) {
         if(armorItemStack != this.dataManager.get(DataHelper.ARMOR_ITEM)) {
             this.dataManager.set(DataHelper.ARMOR_ITEM, armorItemStack);
@@ -241,6 +257,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public boolean getHasArmor() {
         return !this.getArmorItemStack().isEmpty();
     }
@@ -252,6 +269,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public boolean canEquipItem(@Nonnull ItemStack armorItemStack) {
         return armorItemStack.isEmpty() || (!this.getHasArmor() && armorItemStack.getItem() instanceof ItemWolfArmor);
     }
@@ -262,6 +280,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public void equipArmor(@Nonnull ItemStack armorItemStack) {
         if (canEquipItem(armorItemStack)) {
             this.inventory.setInventorySlotContents(ContainerWolfInventory.INVENTORY_SLOT_ARMOR, armorItemStack);
@@ -275,6 +294,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public void setInventoryItem(int index, @Nonnull ItemStack itemStack) {
         if (index >= 0 && index < this.inventory.getSizeInventory()) {
             this.inventory.setInventorySlotContents(index, itemStack);
@@ -288,6 +308,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public void dropEquipment() {
         if(this.getHasArmor()) {
             @Nonnull ItemStack armorItemStack = this.getArmorItemStack();
@@ -303,6 +324,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public void dropChest() {
         if(this.getHasChest()) {
             if (!this.getEntityWorld().isRemote) {
@@ -318,6 +340,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
      * @since 3.0.20
      */
     @Override
+    @Unique
     public void dropInventoryContents() {
         for(int slotIndex = ContainerWolfInventory.INVENTORY_SLOT_CHEST_START; slotIndex <= this.getMaxSizeInventory() - 1; ++slotIndex) {
             @Nonnull ItemStack stackInSlot = this.inventory.getStackInSlot(slotIndex);
@@ -668,7 +691,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
                             this.setSitting(!this.isSitting());
                             this.isJumping = false;
                             this.getNavigator().clearPath();
-                            this.setAttackTarget((EntityLivingBase)null);
+                            this.setAttackTarget(null);
                         }
                     }
                     cir.cancel();
@@ -714,6 +737,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
     }
 
+    @Unique
     private void applyArmorModifiers(@Nullable IAttributeInstance instance, @Nonnull ItemStack stack) {
         if(instance == null) {
             return;
@@ -729,6 +753,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
     }
 
+    @Unique
     private void addMovementStat(double deltaX, double deltaY, double deltaZ) {
         if (!this.isRiding()) {
             if (this.isInsideOfMaterial(Material.WATER))  {
@@ -750,6 +775,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
     }
 
+    @Unique
     private void inventoryInit() {
         ContainerHorseChest inventoryExisting = this.inventory;
         this.inventory = new ContainerHorseChest("inventory.wolfarmor.wolf", this.getMaxSizeInventory());
@@ -774,7 +800,8 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         this.inventory.markDirty();
     }
 
-    private void playEquipSound(@Nonnull ItemStack itemStack) {
+    @Override
+    protected void playEquipSound(@Nonnull ItemStack itemStack) {
         if (itemStack.isEmpty()) {
             return;
         }
@@ -788,6 +815,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
     }
 
+    @Unique
     private void openWolfInventory(@Nonnull EntityPlayer player) {
         if (!this.getEntityWorld().isRemote) {
             this.getAISit().setSitting(true);
@@ -800,6 +828,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
     }
 
+    @Unique
     private void processLegacyDataTags(@Nonnull NBTTagCompound compound) {
         WolfArmorMod.getLogger().log(Level.INFO, "[NBT LOAD] Updating capable wolf to mixin wolf...");
         boolean hasChest = compound.getBoolean("hasChest");
@@ -828,6 +857,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
     }
 
+    @Unique
     private void dispatchPotionEffectMessage(PotionEffect effect, boolean removeEffect) {
         MessageBase<?> message = removeEffect
                 ? new RemovePotionEffectMessage(this.getEntityId(), effect.getPotion())
@@ -835,6 +865,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         this.connection.sendToAll(message);
     }
 
+    @Unique
     private int xpRoundAverage(float value) {
         float floor = MathHelper.floor(value);
         return (int) floor + (Math.random() < value - floor ? 1 : 0);
