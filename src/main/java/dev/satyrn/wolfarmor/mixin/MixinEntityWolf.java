@@ -470,14 +470,15 @@ public abstract class MixinEntityWolf extends EntityTameable implements IArmored
     @SuppressWarnings("ConstantConditions")
     @Inject(method = "attackEntityAsMob", at = @At("HEAD"), cancellable = true)
     private void onAttackEntityAsMob(Entity entityIn, CallbackInfoReturnable<Boolean> cir) {
-        float damage = (int)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
+        float damage = (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
         int knockback = 0;
 
         if(entityIn instanceof EntityLivingBase) {
             damage += EnchantmentHelper.getModifierForCreature(this.getArmorItemStack(), ((EntityLivingBase)entityIn).getCreatureAttribute());
-            knockback += EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.KNOCKBACK, this);
+            knockback += EnchantmentHelper.getKnockbackModifier(this);
         }
 
+        if (damage <= 0.0F) return;
         boolean atkFlag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), damage);
 
         if(atkFlag) {
@@ -487,8 +488,8 @@ public abstract class MixinEntityWolf extends EntityTameable implements IArmored
                 this.motionZ *= 0.6f;
             }
 
-            int fireAspect = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.FIRE_ASPECT, this);
-            if(fireAspect > 0) {
+            int fireAspect = EnchantmentHelper.getFireAspectModifier(this);
+            if (fireAspect > 0) {
                 entityIn.setFire(fireAspect * 4);
             }
 
