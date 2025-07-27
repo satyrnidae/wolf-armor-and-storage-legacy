@@ -619,7 +619,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
 
         NBTTagCompound armorTags = compound.getCompoundTag("ArmorItem");
-        if (!armorTags.hasNoTags()) {
+        if (!armorTags.isEmpty()) {
             @Nonnull ItemStack armorItemStack = new ItemStack(armorTags);
             this.equipArmor(armorItemStack);
         }
@@ -822,7 +822,7 @@ public abstract class MixinEntityWolf extends MixinEntityTameable implements IAr
         }
 
         NBTTagCompound armorTags = compound.getCompoundTag("armorItem");
-        if (!armorTags.hasNoTags()) {
+        if (!armorTags.isEmpty()) {
             @Nonnull ItemStack armorItemStack = new ItemStack(armorTags);
             this.equipArmor(armorItemStack);
         }

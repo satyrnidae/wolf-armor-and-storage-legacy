@@ -3,25 +3,18 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
 buildscript {
-    repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url = 'https://repo.spongepowered.org/maven' }
-        mavenCentral()
-    }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:5+'
-        classpath 'org.spongepowered:mixingradle:0.7+'
         classpath 'org.codehaus.groovy:groovy-all:3.0.8'
     }
 }
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'eclipse'
+    id 'idea'
+    id 'net.minecraftforge.gradle' version "${forge_gradle_version}"
+    id 'org.spongepowered.mixin' version "${mixin_gradle_version}"
+    id 'com.github.johnrengelman.shadow' version "${shadow_gradle_version}"
 }
-
-apply plugin: 'java'
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.spongepowered.mixin'
 
 repositories {
     maven {
@@ -67,9 +60,10 @@ println "${archivesBaseName}-${version}"
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 dependencies {
-    minecraft group: 'net.minecraftforge', name: 'forge', version: "${config.minecraft}-${config.forge}"
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    shadow "org.spongepowered:mixin:${mixin_version}"
+    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
     implementation (group: 'org.spongepowered', name: 'mixin', version: '0.7+') {
         exclude module: 'launchwrapper'
@@ -98,7 +92,7 @@ minecraft {
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
     //mappings channel: 'snapshot', version: '20171003-1.12'
-    mappings channel: 'snapshot', version: '20171003-1.12'
+    mappings channel: mappings_channel, version: mappings_version
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     runs {
