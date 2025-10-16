@@ -10,14 +10,7 @@
     "accessors.RenderAccessor"
   ],
   "mixins": [
-    "MixinEntity",
-    "MixinEntityAgeable",
     "MixinEntityAISit",
-    "MixinEntityAnimal",
-    "MixinEntityCreature",
-    "MixinEntityLiving",
-    "MixinEntityLivingBase",
-    "MixinEntityTameable",
     "MixinEntityWolf",
     "MixinPotion",
     "accessors.EntityLivingAccessor"
